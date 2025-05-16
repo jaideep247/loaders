@@ -1,0 +1,307 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        id="helpDialog"
+        title="Asset Retirement without Revenue Excel Upload Help"
+        contentWidth="600px"
+    >
+        <content>
+            <IconTabBar
+                id="helpTabBar"
+                expanded="true"
+            >
+                <items>
+                    <IconTabFilter
+                        id="gettingStartedTab"
+                        icon="sap-icon://hint"
+                        text="Getting Started"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox12"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle3"
+                                        text="How to Upload Asset Retirement without Revenues"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText7"
+                                        text="1. Download the template using the 'Download Sample Template' button."
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText8"
+                                        text="2. Fill in the template with your Asset Retirement without Revenue data."
+                                    />
+                                    <Text
+                                        id="_IDGenText9"
+                                        text="3. Upload the completed file using the 'Browse Files' button."
+                                    />
+                                    <Text
+                                        id="_IDGenText10"
+                                        text="4. Review validation results and fix any errors."
+                                    />
+                                    <Text
+                                        id="_IDGenText11"
+                                        text="5. Click 'Submit Asset Retirement without Revenues' to process valid entries."
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="commonErrorsTab"
+                        icon="sap-icon://alert"
+                        text="Common Errors"
+                    >
+                        <content>
+                            <List id="_IDGenList6">
+                                <items>
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem37"
+                                        title="Missing Company Code"
+                                        description="Company Code is required for each Asset Retirement without Revenue."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem38"
+                                        title="Invalid Master Fixed Asset"
+                                        description="Master Fixed Asset must exist in the system."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem5"
+                                        title="Invalid Date Format"
+                                        description="Dates should be in YYYY-MM-DD format."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem6"
+                                        title="Missing Transaction Type"
+                                        description="Business Transaction Type is required for retirements (usually starts with RA)."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem7"
+                                        title="Invalid Retirement Type"
+                                        description="Retirement Type must be one of the valid types (1-5)."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem77"
+                                        title="Invalid Amount"
+                                        description="Retirement amount must be properly formatted."
+                                    />
+                                </items>
+                            </List>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="fileFormatTab"
+                        icon="sap-icon://attachment-text-file"
+                        text="File Format"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox13"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Text
+                                        id="_IDGenText3"
+                                        text="The Excel file should contain the following columns:"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Panel
+                                        id="_IDGenPanel7"
+                                        headerText="Required Fields"
+                                        expandable="true"
+                                        expanded="true"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList7">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem8"
+                                                        title="SequenceID: Line sequence number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem9"
+                                                        title="CompanyCode: Company code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem10"
+                                                        title="MasterFixedAsset: Master asset number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem11"
+                                                        title="FixedAsset: Fixed asset sub-number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem12"
+                                                        title="BusinessTransactionType: Transaction type code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem13"
+                                                        title="PostingDate: Posting date (YYYY-MM-DD)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem14"
+                                                        title="DocumentDate: Document date (YYYY-MM-DD)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem113"
+                                                        title="ReferenceDocumentItem: Reference document item"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem114"
+                                                        title="FixedAssetRetirementType: Retirement type code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem16"
+                                                        title="AstRtrmtAmtInTransCrcy: Retirement amount"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem17"
+                                                        title="FxdAstRtrmtRevnTransCrcy: Currency code"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Panel
+                                        id="_IDGenPanel6"
+                                        headerText="Optional Fields"
+                                        expandable="true"
+                                        expanded="false"
+                                        class="sapUiTinyMarginTop"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList4">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem15"
+                                                        title="AssetValueDate: Asset value date (YYYY-MM-DD)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem21"
+                                                        title="DocumentReferenceID: Document reference ID"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem22"
+                                                        title="AccountingDocumentHeaderText: Header text"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem23"
+                                                        title="AccountingDocumentType: Document type"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem24"
+                                                        title="AssignmentReference: Assignment reference"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem25"
+                                                        title="DocumentItemText: Item text"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem27"
+                                                        title="FxdAstRtrmtQuantityInBaseUnit: Quantity in base unit"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem28"
+                                                        title="BaseUnitSAPCode: SAP unit code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem29"
+                                                        title="BaseUnitISOCode: ISO unit code"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Link
+                                        id="_IDGenLink"
+                                        text="Download Sample Template"
+                                        press=".onDownloadTemplateLinkPress"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="processingRulesTab"
+                        icon="sap-icon://process"
+                        text="Processing Rules"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox14"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle6"
+                                        text="Asset Retirement without Revenue Processing Rules"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText6"
+                                        text="Each Asset Retirement without Revenue must follow these rules:"
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <List id="_IDGenList5">
+                                        <items>
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem30"
+                                                title="Valid Company Code"
+                                                description="Company code must exist in the system."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem31"
+                                                title="Valid Master Fixed Asset"
+                                                description="Master Fixed Asset must exist in the specified company code."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem32"
+                                                title="Valid Transaction Type"
+                                                description="Business Transaction Type must be valid for retirements (typically starts with RA)."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem40"
+                                                title="Valid Retirement Type"
+                                                description="Retirement Type must be one of the valid types (1-5)."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem34"
+                                                title="Valid Currency"
+                                                description="Transaction currency must be valid for the company code."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem35"
+                                                title="Date Consistency"
+                                                description="Document Date, Posting Date, and Asset Value Date must be logical and in the correct periods."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem39"
+                                                title="Valid Reference Document Item"
+                                                description="Reference Document Item must be provided and valid."
+                                            />
+                                        </items>
+                                    </List>
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+        <beginButton>
+            <Button
+                id="_IDGenButton"
+                text="Close"
+                press=".onHelpDialogClose"
+            />
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

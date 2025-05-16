@@ -1,0 +1,33 @@
+/* Enter your custom styles here */
+/* Custom styling for error items */
+#validationErrorsList .sapMTextBold {
+    color: var(--sapNegativeTextColor);
+}
+
+#errorCountBadge .sapMObjStatusText {
+    font-weight: bold;
+}
+
+#errorListItem {
+    background-color: var(--sapErrorBackground);
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+#errorListItem:hover {
+    background-color: var(--sapErrorBackground);
+}
+/* Make progress bars bolder */
+.sapContrastPlus .sapMPIBar {
+    border-width: 0;
+    height: 10px;
+}
+
+.sapContrastPlus .sapMPIBarRemaining {
+    border-width: 0;
+}
+
+.sapContrastPlus .sapMPIBarPositive {
+    background-color: #256F3A !important; /* Darker green */
+    border-color: #256F3A !important;
+}

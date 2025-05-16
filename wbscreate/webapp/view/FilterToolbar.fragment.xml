@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+>
+    <Toolbar
+        id="filterToolbar"
+        design="Solid"
+        class="sapUiTinyMarginTop sapUiTinyMarginBottom"
+    >
+        <Title
+            id="_IDGenTitle5"
+            text="Filters"
+            level="H3"
+        />
+        <ToolbarSpacer id="_IDGenToolbarSpacer" />
+
+        <!-- Status filter -->
+        <Label
+            id="_IDGenLabel"
+            text="Status:"
+            class="sapUiTinyMarginEnd"
+        />
+        <ComboBox
+            id="statusFilterComboBoxFilter"
+            items="{statusModel>/}"
+            selectedKey="All"
+            change=".onStatusFilterChange"
+            class="sapUiTinyMarginEnd"
+        >
+            <core:Item
+                id="_IDGenItem"
+                key="{statusModel>key}"
+                text="{statusModel>text}"
+            />
+        </ComboBox>
+
+        <!-- Date range filter -->
+        <Label
+            id="_IDGenLabel1"
+            text="Document Date:"
+            class="sapUiTinyMarginEnd"
+        />
+        <DateRangeSelection
+            id="documentDateFilte1"
+            change=".onDateRangeChange"
+            class="sapUiTinyMarginEnd"
+        />
+
+        <!-- Search field -->
+        <SearchField
+            id="searchField"
+            search=".onSearchItems"
+            placeholder="Search by GRN, Material, Plant..."
+            width="250px"
+            class="sapUiTinyMarginEnd"
+        />
+
+        <!-- Reset button -->
+        <Button
+            id="_IDGenButton12"
+            icon="sap-icon://clear-filter"
+            tooltip="Reset Filters"
+            press=".onResetFilters"
+        />
+    </Toolbar>
+
+    <!-- Filtered entries count -->
+    <HBox
+        id="_IDGenHBox"
+        class="sapUiTinyMarginBottom"
+    >
+        <Label
+            id="_IDGenLabel2"
+            text="Showing {materialDocuments>/filteredCount} entries"
+            class="sapUiTinyMarginEnd"
+        />
+        <ToolbarSpacer id="_IDGenToolbarSpacer1" />
+
+        <!-- View selector for quick filtering -->
+        <SegmentedButton
+            id="tableViewSelectorFilter"
+            selectedKey="All"
+            selectionChange=".onTableViewChange"
+        >
+            <items>
+                <SegmentedButtonItem
+                    id="_IDGenSegmentedButtonItem1"
+                    key="All"
+                    text="All"
+                />
+                <SegmentedButtonItem
+                    id="_IDGenSegmentedButtonItem2"
+                    key="Valid"
+                    text="Valid"
+                />
+                <SegmentedButtonItem
+                    id="_IDGenSegmentedButtonItem3"
+                    key="Invalid"
+                    text="Invalid"
+                />
+            </items>
+        </SegmentedButton>
+    </HBox>
+</core:FragmentDefinition>

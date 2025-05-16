@@ -1,0 +1,513 @@
+<mvc:View
+    controllerName="grn.controller.MaterialDocument"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:l="sap.ui.layout"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:unified="sap.ui.unified"
+    xmlns:m="sap.m"
+    displayBlock="true"
+    height="100%"
+>
+    <!--
+    ============================================================
+    DOCUMENTATION: Material Document BULK UPLOAD
+    ============================================================
+
+    PURPOSE:
+    This view provides an interface for bulk uploading Excel files containing material documents,
+    validating them, and submitting them to SAP via OData service.
+
+    MAIN COMPONENTS:
+    1. Upload Section - For selecting and uploading Excel files
+    2. Upload Summary - Shows validation statistics and progress
+    3. Batch Processing - Shows detailed batch processing information for large uploads
+    4. Items Table - Displays material document items from Excel
+    5. Filters Panel - Filtering options for the material documents
+    6. Material Documents Table - Displays and allows manipulation of entries
+    7. Action Buttons - For submitting, retrying validation, or clearing entries
+    
+    FILE FORMAT REQUIREMENTS:
+    - Excel (.xlsx) with Material Document
+    - Required columns match OData service fields
+
+    WORKFLOW:
+    1. Download template (optional)
+    2. Upload Excel file
+    3. Review validation results
+    4. Filter/examine entries as needed
+    5. Submit valid entries or retry validation for failed entries
+
+    CONTROLLER: materialdocument.controller.MaterialDocument
+    MODELS:
+    - materialDocuments: Contains material document data
+    - uploadSummary: Contains summary statistics
+    - statusModel: Contains status filter options
+    - userModel: Contains user information fetched in controller's init method      
+    ============================================================
+    -->
+    <Page
+        id="MaterialDocument"
+        title="{i18n>title}"
+        showFooter="true"
+    >
+        <!-- User Information Display - Read Only -->
+        <Label
+            id="userInfoLabel"
+            text="Current User:"
+            class="sapUiTinyMarginEnd"
+        />
+        <ObjectStatus
+            id="userNameStatus"
+            text="{userInfo>/displayName}"
+            state="Information"
+            icon="sap-icon://person-placeholder"
+            class="sapUiMediumMarginEnd"
+        />
+        <headerContent>
+            <Text
+                id="infoText"
+                text="Click for instructions on uploading material documents from Excel to SAP."
+            />
+            <Button
+                id="headerHelpButton"
+                icon="sap-icon://sys-help"
+                tooltip="Help"
+                press="onShowHelp"
+            />
+        </headerContent>
+        <content>
+            <f:DynamicPage
+                id="dynamicPageId"
+                headerExpanded="true"
+                toggleHeaderOnTitleClick="true"
+            >
+                <f:title>
+                    <f:DynamicPageTitle id="dynamicPageTitleId">
+                        <f:heading>
+                            <Title
+                                id="pageTitle"
+                                text="GRN Bulk Loader"
+                            />
+                        </f:heading>
+                        <f:snappedContent>
+                            <Text
+                                id="snappedSubtitleText"
+                                text="Upload multiple GRN documents from Excel to SAP"
+                            />
+                        </f:snappedContent>
+                        <f:expandedContent>
+                            <Text
+                                id="expandedSubtitleText"
+                                text="Upload multiple material documents from Excel to SAP"
+                            />
+                        </f:expandedContent>
+                    </f:DynamicPageTitle>
+                </f:title>
+                <f:content>
+                    <VBox id="mainContentVBox">
+                        <!-- Excel Upload Panel -->
+                        <Panel
+                            id="uploadPanel"
+                            headerText="Excel File Upload"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <VBox id="uploadPanelContentBox">
+                                    <HBox
+                                        id="uploadControlsBox"
+                                        alignItems="Center"
+                                        justifyContent="SpaceBetween"
+                                        class="sapUiSmallMarginBottom sapUiSmallMarginTop"
+                                    >
+                                        <VBox
+                                            id="uploaderBox"
+                                            width="60%"
+                                        >
+                                            <unified:FileUploader
+                                                id="fileUploader"
+                                                width="100%"
+                                                placeholder="Select Excel File (.xlsx) containing material documents"
+                                                change="onFileChange"
+                                                buttonText="Browse Files"
+                                                fileType="xlsx"
+                                                style="Emphasized"
+                                                icon="sap-icon://upload"
+                                                name="materialDocumentUpload"
+                                            />
+                                            <Text
+                                                id="fileFormatHelper"
+                                                text="Please upload Excel file containing material documents with required fields (GRN Document Number, Material, Plant, Quantity, etc.)"
+                                                class="sapUiTinyMarginTop"
+                                            />
+                                        </VBox>
+                                        <Button
+                                            id="downloadTemplateBtn"
+                                            text="Download Sample Template"
+                                            press="onDownloadTemplate"
+                                            type="Emphasized"
+                                            icon="sap-icon://download"
+                                        />
+                                    </HBox>
+                                </VBox>
+                            </content>
+                        </Panel>
+
+                        <!-- Batch Processing Display Container -->
+                        <Panel
+                            id="batchProcessingDisplayContainer"
+                            headerText="Batch Processing Progress"
+                            expandable="true"
+                            expanded="true"
+                            visible="{= ${uploadSummary>/isSubmitting} === true}"
+                        >
+                            <content>
+                                <VBox id="batchProcessingContentBox">
+                                    <!-- Batch processing display will be loaded from fragment -->
+                                </VBox>
+                            </content>
+                        </Panel>
+
+                        <!-- Filters Panel -->
+                        <Panel
+                            id="filtersPanel"
+                            headerText="Filters"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <HBox
+                                    id="filterControlsBox"
+                                    justifyContent="SpaceBetween"
+                                    wrap="Wrap"
+                                    class="sapUiSmallMarginBottom"
+                                >
+                                    <ComboBox
+                                        id="statusFilterComboBox"
+                                        width="12rem"
+                                        items="{
+                                            path: 'statusModel>/',
+                                            templateShareable: false
+                                        }"
+                                        selectionChange="onStatusFilterChange"
+                                        placeholder="Filter by Status"
+                                    >
+                                        <core:Item
+                                            id="_IDGenStatusItem"
+                                            text="{statusModel>text}"
+                                            key="{statusModel>key}"
+                                        />
+                                    </ComboBox>
+                                    <DateRangeSelection
+                                        id="documentDateFilter"
+                                        width="18rem"
+                                        placeholder="Document Date Range"
+                                        change="onDateRangeChange"
+                                    />
+                                    <!-- Sequence ID Filter -->
+                                    <Input
+                                        id="sequenceFilter"
+                                        width="12rem"
+                                        placeholder="Sequence ID"
+                                        liveChange="onFilterChange"
+                                    />
+                                    <!-- Purchase Order Filter -->
+                                    <Input
+                                        id="purchaseOrderFilter"
+                                        width="12rem"
+                                        placeholder="Purchase Order"
+                                        liveChange="onFilterChange"
+                                    />
+                                    <!-- Material Filter -->
+                                    <Input
+                                        id="productFilter"
+                                        width="12rem"
+                                        placeholder="Material"
+                                        liveChange="onFilterChange"
+                                    />
+
+                                    <!-- Plant Filter -->
+                                    <Input
+                                        id="plantFilter"
+                                        width="12rem"
+                                        placeholder="Plant"
+                                        liveChange="onFilterChange"
+                                    />
+
+                                    <!-- Storage Location Filter -->
+                                    <Input
+                                        id="storageLocationFilter"
+                                        width="12rem"
+                                        placeholder="Storage Location"
+                                        liveChange="onFilterChange"
+                                    />
+
+                                    <Button
+                                        id="resetFiltersBtn"
+                                        text="Reset Filters"
+                                        type="Emphasized"
+                                        icon="sap-icon://clear-filter"
+                                        press="onResetFilters"
+                                    />
+                                </HBox>
+                            </content>
+                        </Panel>
+
+                        <!-- Material Document Items Panel -->
+                        <Panel
+                            id="itemsPanel"
+                            headerText="Material Document Line Items"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <VBox id="itemsPanelContentBox">
+                                    <Toolbar id="itemsToolbar">
+                                        <Title
+                                            id="itemsTableTitle"
+                                            text="Uploaded Material Document Items"
+                                        />
+                                        <ToolbarSpacer
+                                            id="itemsToolbarSpacer"
+                                        />
+                                        <SegmentedButton
+                                            id="tableViewSelector"
+                                            selectionChange="onTableViewChange"
+                                            selectedKey="All"
+                                        >
+                                            <items>
+                                                <SegmentedButtonItem
+                                                    id="allItemsBtn"
+                                                    text="All"
+                                                    key="All"
+                                                    press="onStatusFilterChange"
+                                                />
+                                                <SegmentedButtonItem
+                                                    id="validItemsBtn"
+                                                    text="Valid"
+                                                    key="Valid"
+                                                    press="onStatusFilterChange"
+                                                />
+                                                <SegmentedButtonItem
+                                                    id="invalidItemsBtn"
+                                                    text="Invalid"
+                                                    key="Invalid"
+                                                    press="onStatusFilterChange"
+                                                />
+                                            </items>
+                                        </SegmentedButton>
+                                        <SearchField
+                                            id="itemSearchField"
+                                            width="30%"
+                                            search="onSearchItems"
+                                            placeholder="Search by GRN, Material, Plant, PO..."
+                                            showRefreshButton="false"
+                                        />
+                                        <Button
+                                            id="refreshTableBtn"
+                                            icon="sap-icon://refresh"
+                                            tooltip="Refresh Table"
+                                            press="onRefreshTable"
+                                            type="Transparent"
+                                        />
+                                    </Toolbar>
+
+                                    <Table
+                                        id="itemsTable"
+                                        items="{materialDocuments>/entries}"
+                                        mode="None"
+                                        noDataText="No items available. Please upload an Excel file with material document entries."
+                                        growing="true"
+                                        growingThreshold="15"
+                                        alternateRowColors="true"
+                                        sticky="ColumnHeaders,HeaderToolbar"
+                                    >
+                                        <columns>
+                                            <Column
+                                                id="sequenceIdColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="sequenceIdText"
+                                                    text="Sequence Number"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="grnDocNumberColumn"
+                                                width="15%"
+                                            >
+                                                <Text
+                                                    id="grnDocNumberText"
+                                                    text="GRN Document Number"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="documentDateColumn"
+                                                width="15%"
+                                            >
+                                                <Text
+                                                    id="documentDateText"
+                                                    text="Document Date"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="materialColumn"
+                                                width="15%"
+                                            >
+                                                <Text
+                                                    id="materialText"
+                                                    text="Material"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="quantityColumn"
+                                                width="15%"
+                                            >
+                                                <Text
+                                                    id="quantityText"
+                                                    text="Quantity"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="statusColumn"
+                                                width="15%"
+                                            >
+                                                <Text
+                                                    id="statusText"
+                                                    text="Status"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="actionsColumn"
+                                                width="15%"
+                                            >
+                                                <Text
+                                                    id="actionsText"
+                                                    text="Actions"
+                                                />
+                                            </Column>
+                                        </columns>
+                                        <core:Fragment
+                                            fragmentName="grn.view.FilterToolbar"
+                                        />
+                                        <items>
+                                            <ColumnListItem
+                                                id="tableItem"
+                                                type="Active"
+                                            >
+                                                <cells>
+                                                    <Text
+                                                        id="_IDGenText58"
+                                                        text="{materialDocuments>SequenceNumber}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText59"
+                                                        text="{materialDocuments>GRNDocumentNumber}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText3"
+                                                        text="{path: 'materialDocuments>DocumentDate'}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText8"
+                                                        text="{materialDocuments>Material}"
+                                                    />
+                                                    <ObjectNumber
+                                                        id="_IDGenObjectNumber4"
+                                                        number="{materialDocuments>QuantityInEntryUnit}"
+                                                        unit="{materialDocuments>EntryUnit}"
+                                                    />
+                                                    <ObjectStatus
+                                                        id="_IDGenObjectStatus1"
+                                                        text="{materialDocuments>Status}"
+                                                        state="{= ${materialDocuments>Status} === 'Valid' ? 'Success' : 'Error'}"
+                                                        icon="{= ${materialDocuments>Status} === 'Valid' ? 'sap-icon://accept' : 'sap-icon://error'}"
+                                                    />
+                                                    <Button
+                                                        id="_IDGenButtonAction"
+                                                        text="Details"
+                                                        type="Transparent"
+                                                        icon="sap-icon://detail-view"
+                                                        press="onViewEntryDetails"
+                                                    />
+                                                </cells>
+                                            </ColumnListItem>
+                                        </items>
+                                        <noData>
+                                            <MessageStrip
+                                                id="noItemsMessageStrip"
+                                                text="No Material Document items available. Please upload an Excel file containing Material Document records with Sequence Number, GRN Document Number, Material, Plant, etc."
+                                                type="Information"
+                                                showIcon="true"
+                                                class="sapUiMediumMargin"
+                                            />
+                                        </noData>
+                                    </Table>
+                                </VBox>
+                            </content>
+                        </Panel>
+                    </VBox>
+                </f:content>
+            </f:DynamicPage>
+        </content>
+        <footer>
+            <!-- Action Buttons -->
+            <Toolbar id="actionToolbar">
+                <ToolbarSpacer id="actionToolbarSpacer" />
+                <Button
+                    id="resetButton"
+                    text="{= ${uploadSummary>/ProcessingComplete} ? 'Upload New File' : 'Clear Data'}"
+                    type="{= ${uploadSummary>/ProcessingComplete} ? 'Default' : 'Transparent'}"
+                    press="onReset"
+                    enabled="{= ${uploadSummary>/TotalEntries} > 0}"
+                    icon="{= ${uploadSummary>/ProcessingComplete} ? 'sap-icon://create-form' : 'sap-icon://clear-all'}"
+                />
+                <Button
+                    id="createButton"
+                    type="Emphasized"
+                    text="Submit Material Documents"
+                    enabled="{= ${uploadSummary>/IsSubmitEnabled} === true &amp;&amp; ${uploadSummary>/HasBeenSubmitted} !== true }"
+                    press="onCreateMaterialDocument"
+                    icon="sap-icon://accept"
+                />
+                <m:HBox
+                    id="downloadButtonsContainer"
+                    visible="{= ${uploadSummary>/ProcessingComplete} === true}"
+                    class="sapUiSmallMarginStart"
+                    justifyContent="End"
+                >
+                    <m:Button
+                        id="downloadResultsExcelButton"
+                        text="Download Excel"
+                        press="onExportPress"
+                        visible="false"
+                        type="Emphasized"
+                        icon="sap-icon://excel-attachment"
+                        class="sapUiSmallMarginEnd"
+                    />
+                    <m:Button
+                        id="downloadResultsCSVButton"
+                        text="Download CSV"
+                        press="onExportPress"
+                        visible="false"
+                        type="Emphasized"
+                        icon="sap-icon://document-text"
+                        class="sapUiSmallMarginEnd"
+                    />
+                    <m:Button
+                        id="downloadResultsPDFButton"
+                        text="Download PDF"
+                        press="onExportPress"
+                        visible="false"
+                        type="Emphasized"
+                        icon="sap-icon://pdf-attachment"
+                        class="sapUiSmallMarginEnd"
+                    />
+                </m:HBox>
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

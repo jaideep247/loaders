@@ -1,0 +1,239 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:layout="sap.ui.layout"
+    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
+    <Dialog
+        id="batchProcessingDialog"
+        class="sapUiSizeCompact"
+        contentWidth="650px"
+        contentHeight="auto"
+        title="Processing Asset Retirements"
+        resizable="true"
+        draggable="true"
+        stretch="{device>/system/phone}"
+    >
+        <content>
+            <VBox
+                id="bpd_mainVBox"
+                class="sapUiSmallMargin"
+            >
+                <MessageStrip
+                    id="bpd_infoMessageStrip"
+                    type="Information"
+                    showIcon="true"
+                    visible="{= !!${batchDisplay>/status} &amp;&amp; !${batchDisplay>/isError}}"
+                    text="{batchDisplay>/status}"
+                    class="sapUiSmallMarginBottom"
+                />
+
+                <MessageStrip
+                    id="bpd_errorMessageStrip"
+                    type="Error"
+                    showIcon="true"
+                    visible="{= !!${batchDisplay>/error} || (${batchDisplay>/isCompleted} &amp;&amp; ${batchDisplay>/isError})}"
+                    text="{= ${batchDisplay>/error} || ${batchDisplay>/status} }"
+                    class="sapUiSmallMarginBottom"
+                />
+
+                <form:SimpleForm
+                    id="bpd_progressForm"
+                    editable="false"
+                    layout="ResponsiveGridLayout"
+                    labelSpanXL="4"
+                    labelSpanL="4"
+                    labelSpanM="4"
+                    labelSpanS="12"
+                    emptySpanXL="0"
+                    emptySpanL="0"
+                    emptySpanM="0"
+                    emptySpanS="0"
+                    columnsXL="2"
+                    columnsL="2"
+                    columnsM="1"
+                >
+                    <form:content>
+                        <Label
+                            id="bpd_totalRecordsLabel"
+                            text="Total Fixed Assets"
+                        />
+                        <Text
+                            id="bpd_totalRecordsText"
+                            text="{batchDisplay>/totalEntries}"
+                        />
+
+                        <Label
+                            id="bpd_processedLabel"
+                            text="Processed"
+                        />
+                        <Text
+                            id="bpd_processedText"
+                            text="{batchDisplay>/processedEntries}"
+                        />
+
+                        <Label
+                            id="bpd_successLabel"
+                            text="Successful Assets"
+                        />
+                        <Text
+                            id="bpd_successText"
+                            text="{batchDisplay>/successCount}"
+                        />
+
+                        <Label
+                            id="bpd_failedLabel"
+                            text="Failed Assets"
+                        />
+                        <Text
+                            id="bpd_failedText"
+                            text="{batchDisplay>/failureCount}"
+                        />
+
+                        <Label
+                            id="bpd_speedLabel"
+                            text="Processing Speed"
+                        />
+                        <Text
+                            id="bpd_speedText"
+                            text="{batchDisplay>/processingSpeed}"
+                        />
+
+                        <Label
+                            id="bpd_timeLabel"
+                            text="Time Remaining"
+                        />
+                        <Text
+                            id="bpd_timeText"
+                            text="{batchDisplay>/timeRemaining}"
+                        />
+                    </form:content>
+                </form:SimpleForm>
+
+                <VBox
+                    id="bpd_progressVBox"
+                    class="sapUiSmallMarginTop sapUiSmallMarginBottom"
+                >
+                    <Label
+                        id="bpd_overallProgressLabel"
+                        text="Overall Progress"
+                        design="Bold"
+                        class="sapUiTinyMarginBottom"
+                    />
+                    <ProgressIndicator
+                        id="bpd_overallProgressIndicator"
+                        percentValue="{batchDisplay>/entriesProgress}"
+                        displayValue="{= ${batchDisplay>/processedEntries} + ' of ' + ${batchDisplay>/totalEntries} + ' assets processed'}"
+                        showValue="true"
+                        state="{= ${batchDisplay>/isError} ? 'Error' : (${batchDisplay>/isCompleted} ? 'Success' : 'None') }"
+                        class="sapUiSmallMarginBottom"
+                        height="2rem"
+                    />
+                </VBox>
+
+                <Panel
+                    id="exportPanel"
+                    visible="{batchDisplay>/isCompleted}"
+                    headerText="Export Processing Log"
+                    expandable="true"
+                    expanded="true"
+                    class="sapUiSmallMarginTop sapUiNoContentPadding"
+                >
+                    <HBox
+                        id="exportMessageButtonsContainer"
+                        justifyContent="Start"
+                        wrap="Wrap"
+                        class="sapUiSmallMargin"
+                    >
+                        <Button
+                            id="bpd_exportMessagesExcelBtn"
+                            text="Export Log (Excel)"
+                            icon="sap-icon://excel-attachment"
+                            type="Transparent"
+                            press=".onExportPress"
+                            class="sapUiTinyMarginEnd"
+                            tooltip="Export all processing messages to an Excel file"
+                            enabled="{= ${batchDisplay>/processedEntries} > 0 }"
+                        >
+                            <customData>
+                                <core:CustomData
+                                    key="type"
+                                    value="messages"
+                                />
+                                <core:CustomData
+                                    key="format"
+                                    value="xlsx"
+                                />
+                            </customData>
+                        </Button>
+
+                        <Button
+                            id="bpd_exportMessagesCSVBtn"
+                            text="Export Log (CSV)"
+                            icon="sap-icon://attachment-text-file"
+                            type="Transparent"
+                            press=".onExportPress"
+                            class="sapUiTinyMarginEnd"
+                            tooltip="Export all processing messages to a CSV file"
+                            enabled="{= ${batchDisplay>/processedEntries} > 0 }"
+                        >
+                            <customData>
+                                <core:CustomData
+                                    key="type"
+                                    value="messages"
+                                />
+                                <core:CustomData
+                                    key="format"
+                                    value="csv"
+                                />
+                            </customData>
+                        </Button>
+
+                        <Button
+                            id="bpd_exportMessagesPDFBtn"
+                            text="Export Log (PDF)"
+                            icon="sap-icon://pdf-attachment"
+                            type="Transparent"
+                            press=".onExportPress"
+                            class="sapUiTinyMarginEnd"
+                            tooltip="Export all processing messages to a PDF file (requires PDF library)"
+                            enabled="{= ${batchDisplay>/processedEntries} > 0 }"
+                        >
+                            <customData>
+                                <core:CustomData
+                                    key="type"
+                                    value="messages"
+                                />
+                                <core:CustomData
+                                    key="format"
+                                    value="pdf"
+                                />
+                            </customData>
+                        </Button>
+                    </HBox>
+                </Panel>
+            </VBox>
+        </content>
+
+        <buttons>
+            <Button
+                id="bpd_cancelButton"
+                text="Cancel"
+                icon="sap-icon://decline"
+                type="Reject"
+                press=".onBatchProcessingDialogCancel"
+                visible="{= !${batchDisplay>/isCompleted} }"
+            />
+
+            <Button
+                id="bpd_closeButton"
+                text="Close"
+                icon="sap-icon://accept"
+                type="Emphasized"
+                press=".onBatchProcessingDialogClose"
+                visible="{= ${batchDisplay>/isCompleted} }"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

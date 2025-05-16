@@ -1,0 +1,466 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        id="helpDialog"
+        title="Purchase Order Excel Upload Help"
+        contentWidth="700px"
+    >
+        <content>
+            <IconTabBar
+                id="helpTabBar"
+                expanded="true"
+            >
+                <items>
+                    <IconTabFilter
+                        id="gettingStartedTab"
+                        icon="sap-icon://hint"
+                        text="Getting Started"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox4"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle2"
+                                        text="How to Upload Purchase Orders"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText39"
+                                        text="1. Download the template using the 'Download Template' button."
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText40"
+                                        text="2. Fill in the template with your purchase order data."
+                                    />
+                                    <Text
+                                        id="_IDGenText41"
+                                        text="3. Upload the completed file using the 'Choose File' button."
+                                    />
+                                    <Text
+                                        id="_IDGenText42"
+                                        text="4. Review validation results and fix any errors."
+                                    />
+                                    <Text
+                                        id="_IDGenText43"
+                                        text="5. Click 'Submit Purchase Orders' to process valid entries."
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="multipleItemsTab"
+                        icon="sap-icon://customize"
+                        text="Multiple Line Items"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox5"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle3"
+                                        text="Creating Purchase Orders with Multiple Items"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText57"
+                                        text="Important: Multiple line items with the SAME Sequence will be combined into a SINGLE Purchase Order."
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText78"
+                                        text="Example:"
+                                    />
+                                    <Panel
+                                        id="_IDGenPanel1"
+                                        headerText="Multiple Items Same Sequence"
+                                        expandable="true"
+                                        expanded="true"
+                                        class="sapUiSmallMarginTop"
+                                    >
+                                        <content>
+                                            <Table id="_IDGenTable2">
+                                                <columns>
+                                                    <Column id="_IDGenColumn8">
+                                                        <header>
+                                                            <Text
+                                                                id="_IDGenText83"
+                                                                text="Sequence"
+                                                            />
+                                                        </header>
+                                                    </Column>
+                                                    <Column id="_IDGenColumn9">
+                                                        <header>
+                                                            <Text
+                                                                id="_IDGenText89"
+                                                                text="Item"
+                                                            />
+                                                        </header>
+                                                    </Column>
+                                                    <Column id="_IDGenColumn10">
+                                                        <header>
+                                                            <Text
+                                                                id="_IDGenText90"
+                                                                text="Material"
+                                                            />
+                                                        </header>
+                                                    </Column>
+                                                    <Column id="_IDGenColumn11">
+                                                        <header>
+                                                            <Text
+                                                                id="_IDGenText91"
+                                                                text="Quantity"
+                                                            />
+                                                        </header>
+                                                    </Column>
+                                                    <Column id="_IDGenColumn12">
+                                                        <header>
+                                                            <Text
+                                                                id="_IDGenText92"
+                                                                text="Additional Details"
+                                                            />
+                                                        </header>
+                                                    </Column>
+                                                </columns>
+                                                <items>
+                                                    <ColumnListItem
+                                                        id="_IDGenColumnListItem2"
+                                                    >
+                                                        <cells>
+                                                            <Text
+                                                                id="_IDGenText93"
+                                                                text="1"
+                                                            />
+                                                            <Text
+                                                                id="_IDGenText94"
+                                                                text="10"
+                                                            />
+                                                            <Text
+                                                                id="_IDGenText95"
+                                                                text="100000271"
+                                                            />
+                                                            <Text
+                                                                id="_IDGenText96"
+                                                                text="2 EA"
+                                                            />
+                                                            <Text
+                                                                id="_IDGenText97"
+                                                                text="Plant: 2001, Storage: WH01"
+                                                            />
+                                                        </cells>
+                                                    </ColumnListItem>
+                                                    <ColumnListItem
+                                                        id="_IDGenColumnListItem3"
+                                                    >
+                                                        <cells>
+                                                            <Text
+                                                                id="_IDGenText98"
+                                                                text="1"
+                                                            />
+                                                            <Text
+                                                                id="_IDGenText99"
+                                                                text="20"
+                                                            />
+                                                            <Text
+                                                                id="_IDGenText100"
+                                                                text="100000274"
+                                                            />
+                                                            <Text
+                                                                id="_IDGenText101"
+                                                                text="2 PC"
+                                                            />
+                                                            <Text
+                                                                id="_IDGenText102"
+                                                                text="WBS: I-24-DEP-100-BATHR"
+                                                            />
+                                                        </cells>
+                                                    </ColumnListItem>
+                                                </items>
+                                            </Table>
+                                        </content>
+                                    </Panel>
+                                    <Text
+                                        id="_IDGenText103"
+                                        text="In this example, both items with Sequence 1 will be part of the SAME Purchase Order."
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <MessageStrip
+                                        id="_IDGenMessageStrip"
+                                        text="Key Points:"
+                                        type="Information"
+                                        showIcon="true"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <List id="_IDGenList">
+                                        <items>
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem"
+                                                title="Consistent Header Information"
+                                                description="Ensure all items with the same Sequence have matching header details like Company Code, Purchasing Organization, etc."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem1"
+                                                title="Sequence Grouping"
+                                                description="Items with the same Sequence number will be grouped into a single Purchase Order"
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem3"
+                                                title="Item Numbering"
+                                                description="Each item will be assigned a sequential item number (10, 20, etc.) within the Purchase Order"
+                                            />
+                                        </items>
+                                    </List>
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="commonErrorsTab"
+                        icon="sap-icon://alert"
+                        text="Common Errors"
+                    >
+                        <content>
+                            <List id="_IDGenList1">
+                                <items>
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem5"
+                                        title="Missing Required Fields"
+                                        description="All required fields must be filled in for each entry."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem6"
+                                        title="Invalid Date Format"
+                                        description="Dates should be in YYYY-MM-DD format."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem7"
+                                        title="Account Assignment Category"
+                                        description="Must be a single character. K=Cost Center, P=WBS Element, etc."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem8"
+                                        title="Missing Cost Center"
+                                        description="Cost Center is required when Account Assignment Category is K."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem9"
+                                        title="Missing WBS Element"
+                                        description="WBS Element is required when Account Assignment Category is P."
+                                    />
+                                </items>
+                            </List>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="fileFormatTab"
+                        icon="sap-icon://attachment-text-file"
+                        text="File Format"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox8"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Text
+                                        id="_IDGenText104"
+                                        text="The Excel file should contain the following columns:"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Panel
+                                        id="_IDGenPanel2"
+                                        headerText="Required Fields"
+                                        expandable="true"
+                                        expanded="true"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList3">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem10"
+                                                        title="Sequence: Unique identifier for grouping line items"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem11"
+                                                        title="Company Code: Company code (4 characters)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem12"
+                                                        title="Purchase Order Type: Type code (4 characters)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem13"
+                                                        title="Supplier Account Number: Supplier ID (up to 10 characters)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem14"
+                                                        title="Purchasing Organization: Organization code (4 characters)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem15"
+                                                        title="Purchase Order Date: Date in YYYY-MM-DD format"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem16"
+                                                        title="Purchase Order Item: Item number of purchasing document"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem17"
+                                                        title="Account Assignment Category: Account assignment type (K, P, etc.)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem18"
+                                                        title="Plant: Plant code (4 characters)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem19"
+                                                        title="Order Quantity: Quantity to be ordered"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Panel
+                                        id="_IDGenPanel3"
+                                        headerText="Optional Fields"
+                                        expandable="true"
+                                        expanded="false"
+                                        class="sapUiTinyMarginTop"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList4">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem20"
+                                                        title="Purchasing Group: Purchasing group code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem21"
+                                                        title="Document Currency: Currency code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem22"
+                                                        title="Material: Product/Material number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem23"
+                                                        title="Storage Location: Storage location code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem24"
+                                                        title="Net Price Amount: Unit price"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem25"
+                                                        title="Tax Code: Tax code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem26"
+                                                        title="Purchase Contract: Reference to framework agreement"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem27"
+                                                        title="WBS Element: Work Breakdown Structure element code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem28"
+                                                        title="Cost Center: Cost center code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem29"
+                                                        title="GL Account: GL account number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem30"
+                                                        title="Purchase Order Item Text: Description for the item"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Link
+                                        id="downloadTemplateLink"
+                                        text="Download Sample Template"
+                                        press="onDownloadTemplateLinkPress"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="accountAssignmentTab"
+                        icon="sap-icon://credit-card"
+                        text="Account Assignment"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox9"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle8"
+                                        text="Account Assignment Rules"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <MessageStrip
+                                        id="_IDGenMessageStrip3"
+                                        text="The Account Assignment Category determines which fields are required:"
+                                        type="Information"
+                                        showIcon="true"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <List id="_IDGenList5">
+                                        <items>
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem31"
+                                                title="Cost Center (K)"
+                                                description="When Account Assignment Category is 'K', Cost Center is required"
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem32"
+                                                title="WBS Element (P)"
+                                                description="When Account Assignment Category is 'P', WBS Element is required"
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem33"
+                                                title="Asset (A)"
+                                                description="When Account Assignment Category is 'A', Asset and Sub-Number are required"
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem34"
+                                                title="GL Account (No Category or 'blank')"
+                                                description="When no specific category is provided, only GL Account is required"
+                                            />
+                                        </items>
+                                    </List>
+                                    <Text
+                                        id="_IDGenText105"
+                                        text="Note: Always ensure the GL Account is compatible with the Account Assignment Category."
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+        <beginButton>
+            <Button
+                id="closeHelpDialogButton"
+                text="Close"
+                press="onHelpDialogClose"
+            />
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

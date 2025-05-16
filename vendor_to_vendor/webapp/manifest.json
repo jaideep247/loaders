@@ -1,0 +1,123 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "vendortovendor",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.17.3",
+      "toolsId": "b4f225a1-9f20-4975-b0b3-7cb8a4568efb"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/sap/bc/srt/scs_ext/sap/journalentrycreaterequestconfi",
+        "type": "XML",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/metadata.xml",
+          "odataVersion": "2.0",
+          "useBatch": true
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.134.1",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "vendortovendor.i18n.i18n"
+        }
+      }
+    },
+    "resourceRoots": {
+      "utils": "./utils/"
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ],
+      "js": [
+        {
+          "name": "utils",
+          "uri": "utils/"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "vendortovendor.view",
+        "async": true,
+        "viewPath": "vendortovendor.view"
+      },
+      "routes": [
+        {
+          "name": "Routevendor_to_vendor",
+          "pattern": ":?query:",
+          "target": [
+            "Targetvendor_to_vendor"
+          ]
+        }
+      ],
+      "targets": {
+        "Targetvendor_to_vendor": {
+          "id": "vendor_to_vendor",
+          "name": "vendor_to_vendor"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "vendortovendor.view.App",
+      "type": "XML",
+      "id": "App",
+      "async": true
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "vendortovendor"
+  }
+}

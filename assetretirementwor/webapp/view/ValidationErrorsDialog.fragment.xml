@@ -1,0 +1,49 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        id="validationErrorsDialog"
+        title="Validation Errors"
+        contentWidth="50%"
+        afterClose="onCloseValidationErrorsDialog"
+    >
+        <VBox
+            id="_IDGenVBox7"
+            class="sapUiSmallMargin"
+        >
+            <Text
+                id="_IDGenText5"
+                text="{= 'Found ' + ${validation>/errorCount} + ' validation errors in ' + ${validation>/fileName}}"
+                class="sapUiSmallMarginBottom"
+            />
+
+            <List
+                id="_IDGenList2"
+                items="{validation>/errors}"
+                noDataText="No validation errors to display"
+            >
+                <StandardListItem
+                    id="_IDGenStandardListItem4"
+                    title="{validation>message}"
+                    description="{= ${validation>rowIndex} !== undefined ? 'Row ' + (${validation>rowIndex} + 1) : ''}"
+                    info="{validation>field}"
+                    type="Active"
+                />
+            </List>
+        </VBox>
+        <buttons>
+            <Button
+                id="_IDGenButton3"
+                text="Export Errors"
+                icon="sap-icon://excel-attachment"
+                press="onExportErrors"
+            />
+            <Button
+                id="_IDGenButton6"
+                text="Close"
+                press="onCloseValidationErrorsDialog"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

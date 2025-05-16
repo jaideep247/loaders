@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Create/Change WBS Elements</title>
+    <style>
+        html, body, body > div, #container, #container-uiarea {
+            height: 100%;
+        }
+    </style>
+    <script
+        id="sap-ui-bootstrap"
+        src="https://openui5.hana.ondemand.com/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-resourceroots='{
+            "wbsupload": "./"
+        }'
+        data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-theme="sap_fiori_3"
+        data-sap-ui-frameOptions="trusted"
+        data-sap-ui-xx-no-eval="true"
+    ></script>
+     <!-- Include the XLSX library -->
+     
+     <!-- <script src="resources/utils/xlsx.full.min.js"></script>Add XLSX library here -->
+    
+</head>
+<body class="sapUiBody sapUiSizeCompact" id="content">
+    <div
+        data-sap-ui-component
+        data-name="wbsupload"
+        data-id="container"
+        data-settings='{"id" : "wbsupload"}'
+        data-handle-validation="true"
+    ></div>
+</body>
+</html>

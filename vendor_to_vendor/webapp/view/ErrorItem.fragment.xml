@@ -1,0 +1,60 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <CustomListItem id="_IDGenCustomListItem2"  type="Active">
+        <VBox id="_IDGenVBox4" class="sapUiSmallMargin">
+            <!-- Sequence ID -->
+            <HBox id="_IDGenHBox9"  >
+                <items>
+                    <core:Icon id="_IDGenIcon2" 
+                        src="sap-icon://error"
+                        color="Negative"
+                        class="sapUiTinyMarginEnd" />
+                    <Title id="_IDGenTitle6" 
+                        text="{errorSummary>sequenceId}"
+                        level="H4" />
+                </items>
+            </HBox>
+            
+            <!-- Main error message -->
+            <Text id="_IDGenText58"
+                text="{= ${errorSummary>messages}[0] || 'Unknown error'}"
+                class="sapUiTinyMarginTop" />
+            
+            <!-- Transaction ID (if available) -->
+            <HBox id="_IDGenHBox4"
+                visible="{= !!${errorSummary>transactionId}}"
+                alignItems="Center"
+                class="sapUiTinyMarginTop">
+                <items>
+                    <Label id="_IDGenLabel3"  
+                        text="Transaction ID:"
+                        class="sapUiTinyMarginEnd" />
+                    <ObjectStatus id="_IDGenObjectStatus2" 
+                        text="{errorSummary>transactionId}"
+                        state="Warning" />
+                    <Button id="_IDGenButton2"  
+                        icon="sap-icon://copy"
+                        type="Transparent"
+                        tooltip="Copy Transaction ID"
+                        press=".onCopyTransactionId" />
+                </items>
+            </HBox>
+            
+            <!-- Additional messages (if any) -->
+            <List id="_IDGenList5"  
+                visible="{= ${errorSummary>messages}.length > 1}"
+                showNoData="false"
+                items="{
+                    path: 'errorSummary>messages',
+                    templateShareable: false,
+                    filters: [{ path: '', operator: 'GT', value1: 0 }]
+                }"
+                class="sapUiTinyMarginTop">
+                <StandardListItem id="_IDGenStandardListItem10"
+                    title="{errorSummary>}"
+                    icon="sap-icon://message-error" />
+            </List>
+        </VBox>
+    </CustomListItem>
+</core:FragmentDefinition>

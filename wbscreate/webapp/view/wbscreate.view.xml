@@ -1,0 +1,458 @@
+<mvc:View
+    controllerName="wbscreate.controller.wbscreate"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:l="sap.ui.layout"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:unified="sap.ui.unified"
+    displayBlock="true"
+    height="100%"
+>
+    <Page
+        id="page"
+        title="{i18n>title}"
+        showFooter="true"
+    >
+        <headerContent>
+            <Label
+                id="userInfoLabel"
+                text="Current User:"
+                class="sapUiTinyMarginEnd"
+            />
+            <ObjectStatus
+                id="userNameStatus"
+                text="{userInfo>/displayName}"
+                state="Information"
+                icon="sap-icon://person-placeholder"
+                class="sapUiMediumMarginEnd"
+            />
+            <Text
+                id="infoText"
+                text="Click for instructions on uploading WBS elements from Excel to SAP."
+            />
+            <Button
+                id="headerHelpButton"
+                icon="sap-icon://sys-help"
+                tooltip="Help"
+                press="onShowHelp"
+            />
+        </headerContent>
+
+        <content>
+            <f:DynamicPage
+                id="dynamicPageId"
+                headerExpanded="true"
+                toggleHeaderOnTitleClick="true"
+            >
+                <f:title>
+                    <f:DynamicPageTitle id="dynamicPageTitleId">
+                        <f:heading>
+                            <Title
+                                id="pageTitle"
+                                text="WBS Element Create Loader"
+                            />
+                        </f:heading>
+                        <f:snappedContent>
+                            <Text
+                                id="snappedSubtitleText"
+                                text="Upload multiple WBS elements from Excel to SAP"
+                            />
+                        </f:snappedContent>
+                        <f:expandedContent>
+                            <Text
+                                id="expandedSubtitleText"
+                                text="Upload multiple WBS elements from Excel to SAP"
+                            />
+                        </f:expandedContent>
+                    </f:DynamicPageTitle>
+                </f:title>
+
+                <f:content>
+                    <VBox id="mainContentVBox">
+                        <!-- Excel Upload Panel -->
+                        <Panel
+                            id="uploadPanel"
+                            headerText="Excel File Upload"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <VBox id="uploadPanelContentBox">
+                                    <HBox
+                                        id="uploadControlsBox"
+                                        alignItems="Center"
+                                        justifyContent="SpaceBetween"
+                                        class="sapUiSmallMarginBottom sapUiSmallMarginTop"
+                                    >
+                                        <VBox
+                                            id="uploaderBox"
+                                            width="60%"
+                                        >
+                                            <unified:FileUploader
+                                                id="fileUploader"
+                                                width="100%"
+                                                placeholder="Select Excel File (.xlsx) containing WBS elements"
+                                                change="onFileChange"
+                                                buttonText="Browse Files"
+                                                fileType="xlsx"
+                                                style="Emphasized"
+                                                icon="sap-icon://upload"
+                                                name="wbsElementUpload"
+                                            />
+                                            <Text
+                                                id="fileFormatHelper"
+                                                text="Please upload Excel file containing WBS elements with required fields"
+                                                class="sapUiTinyMarginTop"
+                                            />
+                                        </VBox>
+                                        <Button
+                                            id="downloadTemplateBtn"
+                                            text="Download Sample Template"
+                                            press="onDownloadTemplate"
+                                            type="Emphasized"
+                                            icon="sap-icon://download"
+                                        />
+                                    </HBox>
+                                </VBox>
+                            </content>
+                        </Panel>
+
+                        <!-- Filters Panel -->
+                        <Panel
+                            id="filtersPanel"
+                            headerText="Filters"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <FlexBox
+                                    id="filterControlsBox"
+                                    wrap="Wrap"
+                                    alignItems="Start"
+                                    class="sapUiSmallMarginBottom"
+                                >
+                                    <FlexBox
+                                        id="statusFilterBox"
+                                        alignItems="Start"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <ComboBox
+                                            id="statusFilterComboBox"
+                                            width="100%"
+                                            selectionChange="onStatusFilterChange"
+                                            placeholder="Filter by Status"
+                                        >
+                                            <core:Item
+                                                id="_IDGenItem1"
+                                                text="Valid"
+                                                key="Valid"
+                                            />
+                                            <core:Item
+                                                id="_IDGenItem2"
+                                                text="Invalid"
+                                                key="Invalid"
+                                            />
+                                        </ComboBox>
+                                    </FlexBox>
+
+                                    <FlexBox
+                                        id="projectElementFilterBox"
+                                        alignItems="Start"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <Input
+                                            id="projectElementFilter"
+                                            width="100%"
+                                            placeholder="Project Element"
+                                            liveChange="onFilterChange"
+                                        />
+                                    </FlexBox>
+
+                                    <FlexBox
+                                        id="companyCodeFilterBox"
+                                        alignItems="Start"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <Input
+                                            id="companyCodeFilter"
+                                            width="100%"
+                                            placeholder="Company Code"
+                                            liveChange="onFilterChange"
+                                        />
+                                    </FlexBox>
+
+                                    <FlexBox
+                                        id="resetFiltersBox"
+                                        alignItems="Start"
+                                        class="sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <Button
+                                            id="resetFiltersBtn"
+                                            text="Reset Filters"
+                                            width="100%"
+                                            type="Emphasized"
+                                            icon="sap-icon://clear-filter"
+                                            press="onResetFilters"
+                                        />
+                                    </FlexBox>
+                                </FlexBox>
+                            </content>
+                        </Panel>
+
+                        <!-- WBS Element Items Panel -->
+                        <Panel
+                            id="itemsPanel"
+                            headerText="WBS Element Items"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <VBox id="itemsPanelContentBox">
+                                    <Toolbar id="itemsToolbar">
+                                        <Title
+                                            id="itemsTableTitle"
+                                            text="Uploaded WBS Elements"
+                                        />
+                                        <ToolbarSpacer
+                                            id="itemsToolbarSpacer"
+                                        />
+                                        <SearchField
+                                            id="itemSearchField"
+                                            width="30%"
+                                            search="onSearchItems"
+                                            placeholder="Search WBS Elements"
+                                            showRefreshButton="false"
+                                        />
+                                        <Button
+                                            id="refreshTableBtn"
+                                            icon="sap-icon://refresh"
+                                            tooltip="Refresh Table"
+                                            press="onRefreshTable"
+                                            type="Transparent"
+                                        />
+                                    </Toolbar>
+
+                                    <Table
+                                        id="itemsTable"
+                                        items="{wbsElements>/entries}"
+                                        mode="MultiSelect"
+                                        noDataText="No items available. Please upload an Excel file."
+                                        growing="true"
+                                        growingThreshold="15"
+                                        alternateRowColors="true"
+                                        sticky="ColumnHeaders,HeaderToolbar"
+                                    >
+                                        <columns>
+                                            <Column
+                                                id="projectElementColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText29"
+                                                    text="Project Element"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="projectUUIDColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText42"
+                                                    text="Project UUID"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="descriptionColumn"
+                                                width="15%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText43"
+                                                    text="Description"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="startDateColumn"
+                                                width="8%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText50"
+                                                    text="Planned Start"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="endDateColumn"
+                                                width="8%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText58"
+                                                    text="Planned End"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="costCenterColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText59"
+                                                    text="Resp. Cost Center"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="companyCodeColumn"
+                                                width="8%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText60"
+                                                    text="Company Code"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="profitCenterColumn"
+                                                width="8%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText61"
+                                                    text="Profit Center"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="controllingAreaColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText62"
+                                                    text="Controlling Area"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="billingElementColumn"
+                                                width="8%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText63"
+                                                    text="Billing Element"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="statusColumn"
+                                                width="7%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText64"
+                                                    text="Status"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="actionsColumn"
+                                                width="8%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText65"
+                                                    text="Actions"
+                                                />
+                                            </Column>
+                                        </columns>
+
+                                        <items>
+                                            <ColumnListItem
+                                                id="tableItem"
+                                                type="Active"
+                                                press="onItemPress"
+                                            >
+                                                <cells>
+                                                    <Text
+                                                        id="_IDGenText66"
+                                                        text="{wbsElements>ProjectElement}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText67"
+                                                        text="{wbsElements>ProjectUUID}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText68"
+                                                        text="{wbsElements>ProjectElementDescription}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText69"
+                                                        text="{path: 'wbsElements>PlannedStartDate'}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText70"
+                                                        text="{path: 'wbsElements>PlannedEndDate'}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText71"
+                                                        text="{wbsElements>ResponsibleCostCenter}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText72"
+                                                        text="{wbsElements>CompanyCode}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText73"
+                                                        text="{wbsElements>ProfitCenter}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText74"
+                                                        text="{wbsElements>ControllingArea}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText75"
+                                                        text="{= ${wbsElements>WBSElementIsBillingElement} === true ? 'Yes' : 'No'}"
+                                                    />
+                                                    <ObjectStatus
+                                                        id="_IDGenObjectStatus1"
+                                                        text="{wbsElements>Status}"
+                                                        state="{= ${wbsElements>Status} === 'Valid' ? 'Success' : 'Error'}"
+                                                        icon="{= ${wbsElements>Status} === 'Valid' ? 'sap-icon://accept' : 'sap-icon://error'}"
+                                                    />
+                                                    <HBox id="_IDGenHBox8">
+                                                        <Button
+                                                            id="_IDGenButton"
+                                                            text="Details"
+                                                            type="Transparent"
+                                                            icon="sap-icon://detail-view"
+                                                            press="onViewEntryDetails"
+                                                        />
+                                                    </HBox>
+                                                </cells>
+                                            </ColumnListItem>
+                                        </items>
+                                    </Table>
+                                </VBox>
+                            </content>
+                        </Panel>
+                    </VBox>
+                </f:content>
+            </f:DynamicPage>
+        </content>
+
+        <footer>
+            <Toolbar id="actionToolbar">
+                <ToolbarSpacer id="actionToolbarSpacer" />
+                <Button
+                    id="resetButton"
+                    text="{= ${uploadSummary>/ProcessingComplete} ? 'Upload New File' : 'Clear Data'}"
+                    type="{= ${uploadSummary>/ProcessingComplete} ? 'Default' : 'Transparent'}"
+                    press="onReset"
+                    enabled="{= ${uploadSummary>/TotalEntries} > 0}"
+                    icon="{= ${uploadSummary>/ProcessingComplete} ? 'sap-icon://create-form' : 'sap-icon://clear-all'}"
+                />
+                <Button
+                    id="createButton"
+                    type="Emphasized"
+                    text="Submit WBS Elements"
+                    enabled="{uploadSummary>/IsSubmitEnabled}"
+                    press="onCreateProjectElements"
+                    icon="sap-icon://accept"
+                />
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

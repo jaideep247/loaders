@@ -1,0 +1,34 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Dialog
+        id="validationErrorsDialog"
+        title="Validation Errors ({= ${validation>/errorCount} || 0 })"
+        titleAlignment="Center"
+        state="Error"
+        icon="sap-icon://message-error"
+        contentWidth="650px">
+        <content>
+            <MessageStrip id="_IDGenMessageStrip"
+                text="The following issues need to be fixed before submitting entries."
+                type="Error" showIcon="true" class="sapUiSmallMarginTop sapUiSmallMarginBottom" />
+
+            <List id="_IDGenList"
+                mode="None"
+                items="{path: 'validation>/flatErrors', templateShareable: false}"
+                noDataText="No validation errors found.">
+                <StandardListItem id="_IDGenStandardListItem"
+                    title="{= ${validation>field} &amp;&amp; ${validation>field} !== 'Unknown' ? ${validation>field} + ': ' + ${validation>message} : ${validation>message} }"
+                    description="Category: {validation>category}"
+                    info="{= ${validation>sequenceId} &amp;&amp; ${validation>sequenceId} !== 'N/A' ? 'Sequence Id: ' + ${validation>sequenceId} : '' }"
+                    infoState="Error"
+                    icon="sap-icon://error"
+                    iconInset="false" />
+            </List>
+        </content>
+        <beginButton>
+            <Button id="_IDGenButton2" text="Close" press=".onValidationDialogClose" /> </beginButton>
+        <endButton>
+            <Button id="_IDGenButton3" text="Export Errors" icon="sap-icon://excel-attachment" press=".onExportValidationErrors" /> </endButton>
+    </Dialog>
+</core:FragmentDefinition>

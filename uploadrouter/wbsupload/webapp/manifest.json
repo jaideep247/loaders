@@ -1,0 +1,141 @@
+{
+  "_version": "1.64.0",
+  "sap.app": {
+    "id": "wbsupload",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.16.3",
+      "toolsId": "ae85c2ba-ed8c-46db-9e98-ffa6b9199479"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/sap/opu/odata/sap/api_enterprise_project_srv;v=0002/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/metadata.xml",
+          "odataVersion": "2.0",
+          "useBatch": true
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "YY1_WBSUPLOAD-uploadwbs": {
+          "semanticObject": "YY1_WBSUPLOAD",
+          "action": "uploadwbs",
+          "title": "{{flpTitle}}",
+          "subTitle": "{{flpSubtitle}}",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.124.11",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "wbsupload.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {}
+      }
+    },
+    "resourceRoots": {
+      "utils": "./utils/"
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ],
+      "js": [
+        {
+          "name": "utils",
+          "uri": "webapp/utils/"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "wbsupload.view",
+        "async": true,
+        "viewPath": "wbsupload.view"
+      },
+      "routes": [
+        {
+          "name": "RouteFileupload",
+          "pattern": ":?query:",
+          "target": [
+            "TargetFileupload"
+          ]
+        }
+      ],
+      "targets": {
+        "TargetFileupload": {
+          "id": "Fileupload",
+          "name": "Fileupload"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "wbsupload.view.App",
+      "type": "XML",
+      "id": "App"
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "uploadrouter"
+  }
+}

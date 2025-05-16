@@ -1,0 +1,578 @@
+<mvc:View
+    controllerName="purchaseorder.controller.PurchaseOrder"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:l="sap.ui.layout"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:unified="sap.ui.unified"
+    xmlns:m="sap.m"
+    displayBlock="true"
+    height="100%"
+>
+    <!--
+    ============================================================
+    DOCUMENTATION: PURCHASE ORDER BULK UPLOAD
+    ============================================================
+
+    PURPOSE:
+    This view provides an interface for bulk uploading Excel files containing purchase order data,
+    validating them, and submitting them to SAP via OData service.
+
+    MAIN COMPONENTS:
+    1. Upload Section - For selecting and uploading Excel files
+    2. Upload Summary - Shows validation statistics and progress
+    3. Batch Processing - Shows detailed batch processing information for large uploads
+    4. Items Table - Displays purchase order items from Excel
+    5. Filters Panel - Filtering options for the purchase orders
+    6. Action Buttons - For submitting, retrying validation, or clearing entries
+    
+    FILE FORMAT REQUIREMENTS:
+    - Excel (.xlsx) with Purchase Orders sheet
+    - Required columns match OData service fields
+
+    WORKFLOW:
+    1. Download template (optional)
+    2. Upload Excel file
+    3. Review validation results
+    4. Filter/examine entries as needed
+    5. Submit valid entries or retry validation for failed entries
+
+    CONTROLLER: purchaseorder.controller.PurchaseOrder
+    MODELS:
+    - purchaseOrders: Contains purchase order data
+    - uploadSummary: Contains summary statistics
+    - statusModel: Contains status filter options
+    - userModel: Contains user information fetched in controller's init method      
+    ============================================================
+    -->
+    <Page
+        id="PurchaseOrder"
+        title="{i18n>title}"
+        showFooter="true"
+    >
+        <!-- User Information Display - Read Only -->
+        <Label
+            id="userInfoLabel"
+            text="Current User:"
+            class="sapUiTinyMarginEnd"
+        />
+        <ObjectStatus
+            id="userNameStatus"
+            text="{userInfo>/displayName}"
+            state="Information"
+            icon="sap-icon://person-placeholder"
+            class="sapUiMediumMarginEnd"
+        />
+        <headerContent>
+            <Text
+                id="infoText"
+                text="Click for instructions on uploading purchase orders from Excel to SAP."
+            />
+            <Button
+                id="headerHelpButton"
+                icon="sap-icon://sys-help"
+                tooltip="Help"
+                press="onShowHelp"
+            />
+        </headerContent>
+        <content>
+            <f:DynamicPage
+                id="dynamicPageId"
+                headerExpanded="true"
+                toggleHeaderOnTitleClick="true"
+            >
+                <f:title>
+                    <f:DynamicPageTitle id="dynamicPageTitleId">
+                        <f:heading>
+                            <Title
+                                id="pageTitle"
+                                text="Purchase Order Bulk Upload"
+                            />
+                        </f:heading>
+                        <f:snappedContent>
+                            <Text
+                                id="snappedSubtitleText"
+                                text="Upload multiple purchase orders from Excel to SAP"
+                            />
+                        </f:snappedContent>
+                        <f:expandedContent>
+                            <Text
+                                id="expandedSubtitleText"
+                                text="Upload multiple purchase orders from Excel to SAP"
+                            />
+                        </f:expandedContent>
+                    </f:DynamicPageTitle>
+                </f:title>
+                <f:content>
+                    <VBox id="mainContentVBox">
+                        <!-- Excel Upload Panel -->
+                        <Panel
+                            id="uploadPanel"
+                            headerText="Excel File Upload"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <VBox id="uploadPanelContentBox">
+                                    <HBox
+                                        id="uploadControlsBox"
+                                        alignItems="Center"
+                                        justifyContent="SpaceBetween"
+                                        class="sapUiSmallMarginBottom sapUiSmallMarginTop"
+                                    >
+                                        <VBox
+                                            id="uploaderBox"
+                                            width="60%"
+                                        >
+                                            <unified:FileUploader
+                                                id="fileUploader"
+                                                width="100%"
+                                                placeholder="Select Excel File (.xlsx) containing purchase orders"
+                                                change="onFileChange"
+                                                buttonText="Browse Files"
+                                                fileType="xlsx"
+                                                style="Emphasized"
+                                                icon="sap-icon://upload"
+                                                name="purchaseOrderUpload"
+                                            />
+                                            <Text
+                                                id="fileFormatHelper"
+                                                text="Please upload Excel file containing purchase orders with required fields (Purchasing Document Number, Item, Company Code, etc.)"
+                                                class="sapUiTinyMarginTop"
+                                            />
+                                        </VBox>
+                                        <Button
+                                            id="downloadTemplateBtn"
+                                            text="Download Sample Template"
+                                            press="onDownloadTemplate"
+                                            type="Emphasized"
+                                            icon="sap-icon://download"
+                                        />
+                                    </HBox>
+                                </VBox>
+                            </content>
+                        </Panel>
+
+                        <!-- Batch Processing Display Container -->
+                        <Panel
+                            id="batchProcessingDisplayContainer"
+                            headerText="Batch Processing Progress"
+                            expandable="true"
+                            expanded="true"
+                            visible="{= ${uploadSummary>/isSubmitting} === true}"
+                        >
+                            <content>
+                                <VBox id="batchProcessingContentBox">
+                                    <!-- Batch processing display will be loaded from fragment -->
+                                </VBox>
+                            </content>
+                        </Panel>
+
+                        <!-- Filters Panel -->
+                        <Panel
+                            id="filtersPanel"
+                            headerText="Filters"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <HBox
+                                    id="filterControlsBox"
+                                    justifyContent="SpaceBetween"
+                                    wrap="Wrap"
+                                    class="sapUiSmallMarginBottom"
+                                >
+                                    <!-- Status Filter -->
+                                    <ComboBox
+                                        id="statusFilterComboBox"
+                                        width="12rem"
+                                        items="{
+                    path: 'statusModel>/',
+                    templateShareable: false
+                }"
+                                        selectedKey="All"
+                                        selectionChange="onStatusFilterChange"
+                                        placeholder="Filter by Status"
+                                    >
+                                        <core:Item
+                                            id="_IDGenItem1"
+                                            key="{statusModel>key}"
+                                            text="{statusModel>text}"
+                                        />
+                                    </ComboBox>
+
+                                    <!-- Sequence ID Filter -->
+                                    <Input
+                                        id="sequenceFilter"
+                                        width="12rem"
+                                        placeholder="Sequence ID"
+                                        liveChange="onFilterChange"
+                                    />
+
+                                    <!-- Product Filter -->
+                                    <Input
+                                        id="productFilter"
+                                        width="12rem"
+                                        placeholder="Product Number"
+                                        liveChange="onFilterChange"
+                                    />
+
+                                    <!-- Date Range Filter -->
+                                    <DateRangeSelection
+                                        id="documentDateFilter"
+                                        width="18rem"
+                                        placeholder="Document Date Range"
+                                        change="onDateRangeChange"
+                                    />
+
+                                    <!-- Company Code Filter -->
+                                    <Input
+                                        id="companyCodeFilter"
+                                        width="12rem"
+                                        placeholder="Company Code"
+                                        liveChange="onFilterChange"
+                                    />
+
+                                    <!-- Supplier Filter -->
+                                    <Input
+                                        id="supplierFilter"
+                                        width="12rem"
+                                        placeholder="Supplier"
+                                        liveChange="onFilterChange"
+                                    />
+
+                                    <!-- Reset Button -->
+                                    <Button
+                                        id="resetFiltersBtn"
+                                        text="Reset Filters"
+                                        type="Emphasized"
+                                        icon="sap-icon://clear-filter"
+                                        press="onResetFilters"
+                                    />
+                                </HBox>
+                            </content>
+                        </Panel>
+
+                        <!-- Purchase Order Items Panel -->
+                        <Panel
+                            id="itemsPanel"
+                            headerText="Purchase Order Line Items"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <VBox id="itemsPanelContentBox">
+                                    <Toolbar id="itemsToolbar">
+                                        <Title
+                                            id="itemsTableTitle"
+                                            text="Uploaded Purchase Order Items"
+                                        />
+                                        <ToolbarSpacer
+                                            id="itemsToolbarSpacer"
+                                        />
+                                        <SegmentedButton
+                                            id="tableViewSelector"
+                                            selectionChange="onTableViewChange"
+                                            selectedKey="All"
+                                        >
+                                            <items>
+                                                <SegmentedButtonItem
+                                                    id="allItemsBtn"
+                                                    text="All"
+                                                    key="All"
+                                                />
+                                                <SegmentedButtonItem
+                                                    id="validItemsBtn"
+                                                    text="Valid"
+                                                    key="Valid"
+                                                />
+                                                <SegmentedButtonItem
+                                                    id="invalidItemsBtn"
+                                                    text="Invalid"
+                                                    key="Invalid"
+                                                />
+                                            </items>
+                                        </SegmentedButton>
+                                        <SearchField
+                                            id="itemSearchField"
+                                            width="30%"
+                                            search="onSearchItems"
+                                            liveChange="onSearchLiveChange"
+                                            placeholder="Search by Supplier, Document Number, Company Code..."
+                                            showRefreshButton="false"
+                                        />
+                                        <Button
+                                            id="refreshTableBtn"
+                                            icon="sap-icon://refresh"
+                                            tooltip="Refresh Table"
+                                            press="onRefreshTable"
+                                            type="Transparent"
+                                        />
+                                    </Toolbar>
+                                    <Table
+                                        id="itemsTable"
+                                        items="{purchaseOrders>/entries}"
+                                        mode="MultiSelect"
+                                        noDataText="No items available. Please upload an Excel file with purchase orders."
+                                        growing="true"
+                                        growingThreshold="15"
+                                        alternateRowColors="true"
+                                        sticky="ColumnHeaders,HeaderToolbar"
+                                    >
+                                        <columns>
+                                            <Column
+                                                id="sequenceColumn"
+                                                width="8%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText1"
+                                                    text="Sequence"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="companyCodeColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText2"
+                                                    text="Company Code"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="_IDGenColumn7"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText34"
+                                                    text="Doc. Type"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="_IDGenColumn"
+                                                width="8%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText32"
+                                                    text="Purchasing Org."
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="_IDGenColumn6"
+                                                width="8%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText33"
+                                                    text="Purchasing Grp."
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="supplierAccountColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText3"
+                                                    text="Supplier"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="plantColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText6"
+                                                    text="Plant"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="docDateColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText5"
+                                                    text="Document Date"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="productNumberColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText7"
+                                                    text="Product"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="storageLocationColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText35"
+                                                    text="Storage Loc."
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="orderQuantityColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText8"
+                                                    text="Quantity"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="statusColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText9"
+                                                    text="Status"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="actionsColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="_IDGenText10"
+                                                    text="Actions"
+                                                />
+                                            </Column>
+                                        </columns>
+                                        <items>
+                                            <ColumnListItem
+                                                id="_IDGenColumnListItem"
+                                                type="Active"
+                                            >
+                                                <cells>
+                                                    <Text
+                                                        id="_IDGenText11"
+                                                        text="{purchaseOrders>Sequence}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText29"
+                                                        text="{purchaseOrders>CompanyCode}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText28"
+                                                        text="{purchaseOrders>PurchasingDocumentType}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText30"
+                                                        text="{purchaseOrders>PurchasingOrganization}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText31"
+                                                        text="{purchaseOrders>PurchasingGroup}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText58"
+                                                        text="{purchaseOrders>SupplierAccountNumber}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText60"
+                                                        text="{purchaseOrders>Plant}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText59"
+                                                        text="{path: 'purchaseOrders>PurchasingDocumentDate'}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText61"
+                                                        text="{purchaseOrders>ProductNumber}"
+                                                    />
+                                                    <Text id="_IDGenText36"
+                                                        text="{purchaseOrders>StorageLocation}"
+                                                    />
+                                                    <ObjectNumber
+                                                        id="_IDGenObjectNumber"
+                                                        number="{purchaseOrders>OrderQuantity}"
+                                                    />
+                                                    <ObjectStatus
+                                                        id="_IDGenObjectStatus"
+                                                        text="{purchaseOrders>Status}"
+                                                        state="{= ${purchaseOrders>Status} === 'Valid' ? 'Success' : 'Error'}"
+                                                        icon="{= ${purchaseOrders>Status} === 'Valid' ? 'sap-icon://accept' : 'sap-icon://error'}"
+                                                    />
+                                                    <HBox
+                                                        id="_IDGenHBox2"
+                                                        justifyContent="Center"
+                                                    >
+                                                        <Button
+                                                            id="_IDGenButton3"
+                                                            icon="sap-icon://detail-view"
+                                                            type="Transparent"
+                                                            press="onShowPurchaseOrderDetails"
+                                                            tooltip="View Purchase Order Details"
+                                                        />
+                                                    </HBox>
+                                                </cells>
+                                            </ColumnListItem>
+                                        </items>
+                                    </Table>
+                                </VBox>
+                            </content>
+                        </Panel>
+                    </VBox>
+                </f:content>
+            </f:DynamicPage>
+        </content>
+        <footer>
+            <!-- Action Buttons -->
+            <Toolbar id="actionToolbar">
+                <ToolbarSpacer id="actionToolbarSpacer" />
+                <Button
+                    id="resetButton"
+                    text="{= ${uploadSummary>/ProcessingComplete} ? 'Upload New File' : 'Clear Data'}"
+                    type="{= ${uploadSummary>/ProcessingComplete} ? 'Default' : 'Transparent'}"
+                    press="onReset"
+                    enabled="{= ${uploadSummary>/TotalEntries} > 0}"
+                    icon="{= ${uploadSummary>/ProcessingComplete} ? 'sap-icon://create-form' : 'sap-icon://clear-all'}"
+                />
+                <Button
+                    id="createButton"
+                    type="Emphasized"
+                    text="Submit Purchase Orders"
+                    enabled="{= ${uploadSummary>/IsSubmitEnabled} === true &amp;&amp; ${uploadSummary>/HasBeenSubmitted} !== true }"
+                    press="onCreatePurchaseOrder"
+                    icon="sap-icon://accept"
+                />
+                <m:HBox
+                    id="downloadButtonsContainer"
+                    visible="{= ${uploadSummary>/ProcessingComplete} === true}"
+                    class="sapUiSmallMarginStart"
+                    justifyContent="End"
+                >
+                    <m:Button
+                        id="downloadResultsExcelButton"
+                        text="Download Excel"
+                        press="onExportPress"
+                        visible="false"
+                        type="Emphasized"
+                        icon="sap-icon://excel-attachment"
+                        class="sapUiSmallMarginEnd"
+                    />
+                    <m:Button
+                        id="downloadResultsCSVButton"
+                        text="Download CSV"
+                        press="onExportPress"
+                        visible="false"
+                        type="Emphasized"
+                        icon="sap-icon://document-text"
+                        class="sapUiSmallMarginEnd"
+                    />
+                    <m:Button
+                        id="downloadResultsPDFButton"
+                        text="Download PDF"
+                        press="onExportPress"
+                        visible="false"
+                        type="Emphasized"
+                        icon="sap-icon://pdf-attachment"
+                        class="sapUiSmallMarginEnd"
+                    />
+                </m:HBox>
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

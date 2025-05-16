@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout"
+>
+    <Dialog
+        id="purchaseOrderDetailsDialog"
+        title="Purchase Order Details"
+        contentWidth="900px"
+        stretch="false"
+    >
+        <VBox
+            id="poDetailsMainVBox"
+            class="sapUiMediumMargin"
+        >
+            <!-- Header with Status -->
+            <l:BlockLayout id="headerBlockLayout">
+                <l:BlockLayoutRow id="_IDGenBlockLayoutRow">
+                    <l:BlockLayoutCell
+                        id="_IDGenBlockLayoutCell"
+                        class="sapUiNoPadding"
+                        backgroundColorSet="ColorSet5"
+                        backgroundColorShade="ShadeB"
+                    >
+                        <VBox
+                            id="_IDGenVBox2"
+                            width="100%"
+                            class="sapUiMediumMargin"
+                        >
+                            <HBox
+                                id="_IDGenHBox3"
+                                alignItems="Center"
+                                justifyContent="SpaceBetween"
+                                width="100%"
+                                class="sapUiTinyMarginBottom"
+                            >
+                                <Title
+                                    id="_IDGenTitle4"
+                                    text="Sequence ID:{entryDetails>/Sequence}"
+                                    level="H2"
+                                />
+                                <ObjectStatus
+                                    id="poDetailsStatus"
+                                    text="{entryDetails>/Status}"
+                                    state="{= ${entryDetails>/Status} === 'Valid' ? 'Success' : 'Error'}"
+                                    icon="{= ${entryDetails>/Status} === 'Valid' ? 'sap-icon://accept' : 'sap-icon://error'}"
+                                />
+                            </HBox>
+                        </VBox>
+                    </l:BlockLayoutCell>
+                </l:BlockLayoutRow>
+            </l:BlockLayout>
+
+            <!-- Detailed Information Form -->
+            <f:SimpleForm
+                id="poDetailsForm"
+                layout="ResponsiveGridLayout"
+                editable="false"
+                labelSpanXL="4"
+                labelSpanL="4"
+                labelSpanM="4"
+                labelSpanS="12"
+                columnsXL="2"
+                columnsL="2"
+                columnsM="2"
+                class="sapUiSmallMarginTop"
+            >
+                <f:content>
+                    <!-- Column 1: Primary Information -->
+                    <core:Title
+                        id="_IDGenTitle5"
+                        text="Purchase Order Primary Information"
+                    />
+
+                    <Label
+                        id="_IDGenLabel3"
+                        text="Legacy Purchasing Document Number"
+                    />
+                    <Text
+                        id="_IDGenText"
+                        text="{entryDetails>/LegacyPurchasingDocumentNumber}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel4"
+                        text="Company Code"
+                    />
+                    <Text
+                        id="_IDGenText62"
+                        text="{entryDetails>/CompanyCode}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel5"
+                        text="Purchasing Document Type"
+                    />
+                    <Text
+                        id="_IDGenText63"
+                        text="{entryDetails>/PurchasingDocumentType}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel6"
+                        text="Supplier Account Number"
+                    />
+                    <Text
+                        id="_IDGenText64"
+                        text="{entryDetails>/SupplierAccountNumber}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel7"
+                        text="Purchasing Organization"
+                    />
+                    <Text
+                        id="_IDGenText65"
+                        text="{entryDetails>/PurchasingOrganization}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel11"
+                        text="Purchasing Group"
+                    />
+                    <Text
+                        id="_IDGenText66"
+                        text="{entryDetails>/PurchasingGroup}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel12"
+                        text="Purchasing Document Date"
+                    />
+                    <Text
+                        id="_IDGenText67"
+                        text="{path: 'entryDetails>/PurchasingDocumentDate', formatter: '.formatDate'}"
+                    />
+
+                    <!-- Column 2: Item Details -->
+                    <core:Title
+                        id="_IDGenTitle6"
+                        text="Item Details"
+                    />
+                    <!-- Item Text Section -->
+                    <Label
+                        id="_IDGenLabel13"
+                        text="Item Number"
+                    />
+                    <Text
+                        id="_IDGenText68"
+                        text="{entryDetails>/ItemNumberOfPurchasingDocument}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel25"
+                        text="Item Text"
+                    />
+                    <Text
+                        id="_IDGenText38"
+                        text="{entryDetails>/ItemText}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel14"
+                        text="Account Assignment Category"
+                    />
+                    <Text
+                        id="_IDGenText69"
+                        text="{entryDetails>/AccountAssignmentCategory}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel15"
+                        text="Product Number"
+                    />
+                    <Text
+                        id="_IDGenText70"
+                        text="{entryDetails>/ProductNumber}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel16"
+                        text="Plant"
+                    />
+                    <Text
+                        id="_IDGenText71"
+                        text="{entryDetails>/Plant}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel17"
+                        text="Storage Location"
+                    />
+                    <Text
+                        id="_IDGenText72"
+                        text="{entryDetails>/StorageLocation}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel18"
+                        text="Order Quantity"
+                    />
+                    <ObjectNumber
+                        id="_IDGenObjectNumber1"
+                        number="{entryDetails>/OrderQuantity}"
+                        unit="{entryDetails>/PriceUnit}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel19"
+                        text="Delivery Days"
+                    />
+                    <Text
+                        id="_IDGenText73"
+                        text="{entryDetails>/DeliveryDays}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel20"
+                        text="Net Price"
+                    />
+                    <ObjectNumber
+                        id="_IDGenObjectNumber2"
+                        number="{entryDetails>/NetPrice}"
+                        unit="INR"
+                    />
+
+                    <!-- Additional Information -->
+                    <core:Title
+                        id="_IDGenTitle7"
+                        text="Additional Information"
+                    />
+
+                    <Label
+                        id="_IDGenLabel21"
+                        text="Price Unit"
+                    />
+                    <Text
+                        id="_IDGenText74"
+                        text="{entryDetails>/PriceUnit}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel22"
+                        text="Tax Code"
+                    />
+                    <Text
+                        id="_IDGenText75"
+                        text="{entryDetails>/TaxCode}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel23"
+                        text="Return"
+                    />
+                    <Text
+                        id="_IDGenText76"
+                        text="{entryDetails>/Return}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel32"
+                        text="Purchase Contract"
+                    />
+                    <Text
+                        id="_IDGenText88"
+                        text="{entryDetails>/PurchaseContract}"
+                    />
+                    <Label
+                        id="_IDGenLabel24"
+                        text="Purchase Contract Item"
+                    />
+                    <Text
+                        id="_IDGenText77"
+                        text="{entryDetails>/PurchaseContractItem}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel26"
+                        text="Account Assignment Number"
+                    />
+                    <Text
+                        id="_IDGenText79"
+                        text="{entryDetails>/AccountAssignmentnumber}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel27"
+                        text="WBS Element External ID"
+                    />
+                    <Text
+                        id="_IDGenText80"
+                        text="{entryDetails>/WBSElementExternalID}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel28"
+                        text="Cost Center"
+                    />
+                    <Text
+                        id="_IDGenText81"
+                        text="{entryDetails>/CostCenter}"
+                    />
+
+                    <Label
+                        id="_IDGenLabel29"
+                        text="GL Account Number"
+                    />
+                    <Text
+                        id="_IDGenText82"
+                        text="{entryDetails>/GLAccountNumber}"
+                    />
+                </f:content>
+            </f:SimpleForm>
+        </VBox>
+        <VBox
+            id="validationErrorsBox"
+            visible="{= ${entryDetails>/Status} === 'Invalid'}"
+            class="sapUiMediumMarginTop"
+        >
+            <!-- Header with Error Count -->
+            <HBox
+                id="errorHeaderBox"
+                justifyContent="SpaceBetween"
+                alignItems="Center"
+                class="sapUiSmallMarginBottom"
+            >
+                <Title
+                    id="errorTitle"
+                    text="Validation Errors"
+                    level="H3"
+                    titleStyle="H3"
+                    class="sapUiTinyMarginEnd"
+                />
+                <ObjectStatus
+                    id="errorCountBadge"
+                    text="{= ${entryDetails>/ValidationErrors}.length + ' Error(s)'}"
+                    state="Error"
+                    icon="sap-icon://alert"
+                    class="sapUiTinyMarginBegin"
+                />
+            </HBox>
+
+            <!-- Error List with Cards -->
+            <List
+                id="validationErrorsList"
+                items="{path: 'entryDetails>/ValidationErrors'}"
+                mode="None"
+                showSeparators="Inner"
+                width="100%"
+            >
+                <CustomListItem
+                    id="errorListItem"
+                    type="Active"
+                    class="sapUiSmallMarginTop"
+                >
+                    <VBox
+                        id="errorContentBox"
+                        class="sapUiSmallMargin"
+                    >
+                        <HBox
+                            id="_IDGenHBox4"
+                            alignItems="Center"
+                        >
+                            <core:Icon
+                                id="_IDGenIcon1"
+                                src="sap-icon://message-error"
+                                color="Negative"
+                                size="1.5rem"
+                                class="sapUiTinyMarginEnd"
+                            />
+                            <Text
+                                id="_IDGenText84"
+                                text="{entryDetails>message}"
+                                class="sapMTextBold sapUiSmallMarginEnd"
+                                wrapping="true"
+                            />
+                        </HBox>
+
+                        <HBox
+                            id="_IDGenHBox5"
+                            class="sapUiSmallMarginTop"
+                        >
+                            <Label
+                                id="_IDGenLabel30"
+                                text="Field:"
+                                design="Bold"
+                                class="sapUiTinyMarginEnd"
+                            />
+                            <Text
+                                id="_IDGenText85"
+                                text="{entryDetails>field}"
+                                class="sapMText"
+                            />
+                        </HBox>
+
+                        <HBox
+                            id="_IDGenHBox6"
+                            visible="{= !!${entryDetails>sheet}}"
+                            class="sapUiTinyMarginTop"
+                        >
+                            <Label
+                                id="_IDGenLabel31"
+                                text="Sheet:"
+                                design="Bold"
+                                class="sapUiTinyMarginEnd"
+                            />
+                            <Text
+                                id="_IDGenText86"
+                                text="{entryDetails>sheet}"
+                                class="sapMText"
+                            />
+                        </HBox>
+                    </VBox>
+                </CustomListItem>
+            </List>
+
+            <!-- No Errors Fallback (shouldn't appear but good practice) -->
+            <VBox
+                id="noErrorsBox"
+                visible="{= ${entryDetails>/Status} === 'Invalid' &amp;&amp; (!${entryDetails>/ValidationErrors} || ${entryDetails>/ValidationErrors}.length === 0)}"
+                alignItems="Center"
+                justifyContent="Center"
+                class="sapUiMediumMargin"
+            >
+                <core:Icon
+                    id="_IDGenIcon2"
+                    src="sap-icon://sys-help"
+                    size="2rem"
+                    class="sapUiSmallMarginBottom"
+                />
+                <Text
+                    id="_IDGenText87"
+                    text="No specific validation errors available"
+                    class="sapMText sapUiSmallMarginBottom"
+                />
+                <Button
+                    id="_IDGenButton21"
+                    text="View Raw Data"
+                    press="onShowRawData"
+                    type="Transparent"
+                    class="sapUiTinyMarginTop"
+                />
+            </VBox>
+        </VBox>
+        <buttons>
+            <Button
+                id="closeDetailsButton"
+                text="Close"
+                type="Emphasized"
+                press="onPurchaseOrderDetailsDialogClose"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

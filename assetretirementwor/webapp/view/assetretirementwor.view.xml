@@ -1,0 +1,653 @@
+<mvc:View
+    controllerName="assetretirementwor.controller.assetretirementwor"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:l="sap.ui.layout"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:unified="sap.ui.unified"
+    displayBlock="true"
+    height="100%"
+>
+    <Page
+        id="FixedAssetRetirementPage"
+        title="Asset Retirement without Revenue Bulk Upload"
+        showFooter="true"
+    >
+        <!-- User Information Display - Read Only -->
+        <Label
+            id="userInfoLabel"
+            text="Current User:"
+            class="sapUiTinyMarginEnd"
+        />
+        <ObjectStatus
+            id="userNameStatus"
+            text="{userInfo>/displayName}"
+            state="Information"
+            icon="sap-icon://person-placeholder"
+            class="sapUiTinyMarginEnd"
+        />
+        <headerContent>
+            <Text
+                id="infoText"
+                text="Click for instructions on uploading Asset Retirement without Revenue from Excel to SAP."
+            />
+            <Button
+                id="headerHelpButton"
+                icon="sap-icon://sys-help"
+                tooltip="Help"
+                press="onShowHelp"
+            />
+        </headerContent>
+        <content>
+            <f:DynamicPage
+                id="dynamicPageId"
+                headerExpanded="true"
+                toggleHeaderOnTitleClick="true"
+            >
+                <f:title>
+                    <f:DynamicPageTitle id="dynamicPageTitleId">
+                        <f:heading>
+                            <Title
+                                id="pageTitle"
+                                text="Asset Retirement without Revenue Bulk Loader"
+                            />
+                        </f:heading>
+                        <f:snappedContent>
+                            <Text
+                                id="snappedSubtitleText"
+                                text="Upload multiple Asset Retirement without Revenue from Excel to SAP"
+                            />
+                        </f:snappedContent>
+                        <f:expandedContent>
+                            <Text
+                                id="expandedSubtitleText"
+                                text="Upload multiple Asset Retirement without Revenue from Excel to SAP"
+                            />
+                        </f:expandedContent>
+                    </f:DynamicPageTitle>
+                </f:title>
+                <f:content>
+                    <VBox id="mainContentVBox">
+                        <!-- Excel Upload Panel -->
+                        <Panel
+                            id="uploadPanel"
+                            headerText="Excel File Upload"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <VBox id="uploadPanelContentBox">
+                                    <HBox
+                                        id="uploadControlsBox"
+                                        alignItems="Center"
+                                        justifyContent="SpaceBetween"
+                                        class="sapUiTinyMarginBottom sapUiTinyMarginTop"
+                                    >
+                                        <VBox
+                                            id="uploaderBox"
+                                            width="60%"
+                                        >
+                                            <unified:FileUploader
+                                                id="fileUploader"
+                                                width="100%"
+                                                placeholder="Select Excel File (.xlsx) containing Asset Retirement without Revenue"
+                                                change="onFileChange"
+                                                buttonText="Browse Files"
+                                                fileType="xlsx"
+                                                style="Emphasized"
+                                                icon="sap-icon://upload"
+                                                name="FixedAssetRetirementUpload"
+                                            />
+                                            <Text
+                                                id="fileFormatHelper"
+                                                text="Please upload Excel file containing Asset Retirement without Revenue with required fields (Sequence Number, Master Fixed Assets, Retirement Type etc.)"
+                                                class="sapUiTinyMarginTop"
+                                            />
+                                        </VBox>
+                                        <Button
+                                            id="downloadTemplateBtn"
+                                            text="Download Sample Template"
+                                            press="onDownloadTemplate"
+                                            type="Emphasized"
+                                            icon="sap-icon://download"
+                                        />
+                                    </HBox>
+                                </VBox>
+                            </content>
+                        </Panel>
+
+                        <!-- Batch Processing Display Container -->
+                        <Panel
+                            id="batchProcessingDisplayContainer"
+                            headerText="Batch Processing Progress"
+                            expandable="true"
+                            expanded="true"
+                            visible="{= ${uploadSummary>/isSubmitting} === true}"
+                        >
+                            <content>
+                                <VBox id="batchProcessingContentBox">
+                                    <VBox
+                                        id="_IDGenVBox9"
+                                        class="sapUiSmallMargin"
+                                    >
+                                        <HBox
+                                            id="_IDGenHBox3"
+                                            alignItems="Center"
+                                            class="sapUiSmallMarginBottom"
+                                        >
+                                            <Label
+                                                id="_IDGenLabel2"
+                                                text="Status: "
+                                                class="sapUiTinyMarginEnd"
+                                            />
+                                            <ObjectStatus
+                                                id="_IDGenObjectStatus"
+                                                text="{batchDisplay>/status}"
+                                                state="{= ${batchDisplay>/status} === 'Error' ? 'Error' : 
+                                                        ${batchDisplay>/status} === 'Complete' ? 'Success' : 'Warning' }"
+                                            />
+                                        </HBox>
+                                        <ProgressIndicator
+                                            id="_IDGenProgressIndicator1"
+                                            percentValue="{batchDisplay>/progressPercentage}"
+                                            displayValue="{batchDisplay>/processedItems} of {batchDisplay>/totalItems} items processed"
+                                            showValue="true"
+                                            state="{= ${batchDisplay>/status} === 'Error' ? 'Error' : 
+                                                    ${batchDisplay>/status} === 'Complete' ? 'Success' : 'Warning' }"
+                                        />
+                                        <HBox
+                                            id="_IDGenHBox6"
+                                            justifyContent="SpaceBetween"
+                                            class="sapUiSmallMarginTop"
+                                        >
+                                            <Text
+                                                id="_IDGenText72"
+                                                text="Batch: {batchDisplay>/currentBatch} of {batchDisplay>/totalBatches}"
+                                            />
+                                            <Text
+                                                id="_IDGenText73"
+                                                text="Estimated time remaining: {batchDisplay>/remainingTime}"
+                                            />
+                                        </HBox>
+                                    </VBox>
+                                    <List
+                                        id="_IDGenList"
+                                        items="{batchDisplay>/errors}"
+                                        visible="{= ${batchDisplay>/errors}.length > 0}"
+                                        headerText="Processing Errors"
+                                        showSeparators="Inner"
+                                    >
+                                        <StandardListItem
+                                            id="_IDGenStandardListItem"
+                                            title="{batchDisplay>message}"
+                                            description="Asset: {batchDisplay>assetNumber} (Sequence ID: {batchDisplay>sequenceId})"
+                                            type="Inactive"
+                                            icon="sap-icon://error"
+                                        />
+                                    </List>
+                                </VBox>
+                            </content>
+                        </Panel>
+
+                        <!-- Filters Panel -->
+                        <Panel
+                            id="filtersPanel"
+                            headerText="Filters"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <HBox
+                                    id="filterControlsBox"
+                                    justifyContent="SpaceBetween"
+                                    wrap="Wrap"
+                                    class="sapUiTinyMarginBottom"
+                                >
+                                    <!-- Status Filter -->
+                                    <ComboBox
+                                        id="statusFilterCombo"
+                                        width="10rem"
+                                        placeholder="Filter by Status"
+                                        selectionChange="onStatusFilterChange"
+                                        class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+                                    >
+                                        <core:Item
+                                            id="allStatusItem"
+                                            key="All"
+                                            text="All Statuses"
+                                        />
+                                        <core:Item
+                                            id="validStatusItem"
+                                            key="Valid"
+                                            text="Valid"
+                                        />
+                                        <core:Item
+                                            id="invalidStatusItem"
+                                            key="Invalid"
+                                            text="Invalid"
+                                        />
+                                    </ComboBox>
+
+                                    <!-- Company Code Filter -->
+                                    <Input
+                                        id="_IDGenInput"
+                                        width="10rem"
+                                        placeholder="Company Code"
+                                        liveChange="onFilterChange"
+                                        class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+                                    />
+
+                                    <!-- Master Fixed Asset Filter -->
+                                    <Input
+                                        id="_IDGenInput1"
+                                        width="10rem"
+                                        placeholder="Master Fixed Asset"
+                                        liveChange="onFilterChange"
+                                        class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+                                    />
+
+                                    <!-- Fixed Asset Filter -->
+                                    <Input
+                                        id="_IDGenInput2"
+                                        width="10rem"
+                                        placeholder="Fixed Asset"
+                                        liveChange="onFilterChange"
+                                        class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+                                    />
+
+                                    <!-- Business Transaction Type Filter -->
+                                    <Input
+                                        id="_IDGenInput3"
+                                        width="10rem"
+                                        placeholder="Transaction Type"
+                                        liveChange="onFilterChange"
+                                        class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+                                    />
+
+                                    <!-- Retirement Type Filter -->
+                                    <Input
+                                        id="retirementTypeFilter"
+                                        width="10rem"
+                                        placeholder="Retirement Type"
+                                        liveChange="onFilterChange"
+                                        class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+                                    />
+
+                                    <!-- Document Reference ID Filter -->
+                                    <Input
+                                        id="documentReferenceIDFilter"
+                                        width="10rem"
+                                        placeholder="Document Reference"
+                                        liveChange="onFilterChange"
+                                        class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+                                    />
+
+                                    <!-- Additional Filters -->
+
+                                    <Input
+                                        id="accountingDocumentTypeFilter"
+                                        width="10rem"
+                                        placeholder="Doc Type"
+                                        liveChange="onFilterChange"
+                                        class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+                                    />
+
+                                    <Input
+                                        id="assignmentReferenceFilter"
+                                        width="10rem"
+                                        placeholder="Assignment Ref"
+                                        liveChange="onFilterChange"
+                                        class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+                                    />
+
+                                    <!-- Reset Button -->
+                                    <Button
+                                        id="resetFiltersBtn"
+                                        text="Reset Filters"
+                                        type="Emphasized"
+                                        icon="sap-icon://clear-filter"
+                                        press="onResetFilters"
+                                        class="sapUiTinyMarginEnd sapUiTinyMarginBottom"
+                                    />
+                                </HBox>
+                            </content>
+                        </Panel>
+
+                        <!-- Asset Retirement without Revenue Items Panel -->
+                        <Panel
+                            id="itemsPanel"
+                            headerText="Asset Retirement without Revenue Line Items"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <VBox id="itemsPanelContentBox">
+                                    <Toolbar id="itemsToolbar">
+                                        <Title
+                                            id="itemsTableTitle"
+                                            text="Uploaded Asset Retirement without Revenue Items"
+                                        />
+                                        <ToolbarSpacer
+                                            id="itemsToolbarSpacer"
+                                        />
+                                        <SegmentedButton
+                                            id="tableViewSelector"
+                                            selectionChange="onTableViewChange"
+                                            selectedKey="All"
+                                        >
+                                            <items>
+                                                <SegmentedButtonItem
+                                                    id="allItemsBtn"
+                                                    text="All"
+                                                    key="All"
+                                                    press="onStatusFilterChange"
+                                                />
+                                                <SegmentedButtonItem
+                                                    id="validItemsBtn"
+                                                    text="Valid"
+                                                    key="Valid"
+                                                    press="onStatusFilterChange"
+                                                />
+                                                <SegmentedButtonItem
+                                                    id="invalidItemsBtn"
+                                                    text="Invalid"
+                                                    key="Invalid"
+                                                    press="onStatusFilterChange"
+                                                />
+                                            </items>
+                                        </SegmentedButton>
+                                        <SearchField
+                                            id="itemSearchField"
+                                            width="30%"
+                                            search="onSearchItems"
+                                            placeholder="Search by Fixed Asset, Master Asset, Retirement Type, etc..."
+                                            showRefreshButton="false"
+                                        />
+                                        <Button
+                                            id="refreshTableBtn"
+                                            icon="sap-icon://refresh"
+                                            tooltip="Refresh Table"
+                                            press="onRefreshTable"
+                                            type="Transparent"
+                                        />
+                                    </Toolbar>
+
+                                    <Table
+                                        id="fixedAssetEntriesTable"
+                                        items="{
+                                        path: 'fixedAssetEntries>/entries',
+                                        sorter: {
+                                            path: 'SequenceID'
+                                        }
+                                    }"
+                                        growing="true"
+                                        growingThreshold="100"
+                                        growingScrollToLoad="true"
+                                    >
+                                        <columns>
+                                            <Column
+                                                id="colSequenceID"
+                                                width="5rem"
+                                                hAlign="Center"
+                                            >
+                                                <Text
+                                                    id="txtSequenceID"
+                                                    text="Seq ID"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="colCompanyCode"
+                                                width="5rem"
+                                                hAlign="Center"
+                                            >
+                                                <Text
+                                                    id="txtCompanyCode"
+                                                    text="Company"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="colMasterAsset"
+                                                width="7rem"
+                                                hAlign="Center"
+                                            >
+                                                <Text
+                                                    id="txtMasterAsset"
+                                                    text="Master Asset"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="colFixedAsset"
+                                                width="6rem"
+                                                hAlign="Center"
+                                            >
+                                                <Text
+                                                    id="txtFixedAsset"
+                                                    text="Asset No"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="colBusinessTransType"
+                                                width="7rem"
+                                                hAlign="Center"
+                                            >
+                                                <Text
+                                                    id="txtBusinessTransType"
+                                                    text="Trans Type"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="colRetirementType"
+                                                width="7rem"
+                                                hAlign="Center"
+                                            >
+                                                <Text
+                                                    id="txtRetirementType"
+                                                    text="Retirement Type"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="colDocumentDate"
+                                                width="8rem"
+                                                hAlign="Center"
+                                            >
+                                                <Text
+                                                    id="txtDocumentDate"
+                                                    text="Doc Date"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="colPostingDate"
+                                                width="8rem"
+                                                hAlign="Center"
+                                            >
+                                                <Text
+                                                    id="txtPostingDate"
+                                                    text="Posting Date"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="colAssetValueDate"
+                                                width="8rem"
+                                                hAlign="Center"
+                                            >
+                                                <Text
+                                                    id="txtAssetValueDate"
+                                                    text="Value Date"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="colDocType"
+                                                width="6rem"
+                                                hAlign="Center"
+                                            >
+                                                <Text
+                                                    id="txtDocType"
+                                                    text="Doc Type"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="colAssignmentRef"
+                                                width="9rem"
+                                                hAlign="Center"
+                                            >
+                                                <Text
+                                                    id="txtAssignmentRef"
+                                                    text="Assignment"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="colStatus"
+                                                width="6rem"
+                                                hAlign="Center"
+                                            >
+                                                <Text
+                                                    id="txtStatus"
+                                                    text="Status"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="colActions"
+                                                width="5rem"
+                                                hAlign="Center"
+                                            >
+                                                <Text
+                                                    id="txtActions"
+                                                    text="Actions"
+                                                />
+                                            </Column>
+                                        </columns>
+                                        <items>
+                                            <ColumnListItem
+                                                id="itemTemplate"
+                                                type="Navigation"
+                                                press="onRowPress"
+                                            >
+                                                <cells>
+                                                    <Text
+                                                        id="cellSequenceID"
+                                                        text="{fixedAssetEntries>SequenceID}"
+                                                    />
+                                                    <Text
+                                                        id="cellCompanyCode"
+                                                        text="{fixedAssetEntries>CompanyCode}"
+                                                    />
+                                                    <Text
+                                                        id="cellMasterAsset"
+                                                        text="{fixedAssetEntries>MasterFixedAsset}"
+                                                    />
+                                                    <Text
+                                                        id="cellFixedAsset"
+                                                        text="{fixedAssetEntries>FixedAsset}"
+                                                    />
+                                                    <Text
+                                                        id="cellBusinessTransType"
+                                                        text="{fixedAssetEntries>BusinessTransactionType}"
+                                                    />
+                                                    <Text
+                                                        id="cellRetirementType"
+                                                        text="{fixedAssetEntries>FixedAssetRetirementType}"
+                                                    />
+                                                    <Text
+                                                        id="cellDocumentDate"
+                                                        text="{path: 'fixedAssetEntries>DocumentDate'}"
+                                                    />
+                                                    <Text
+                                                        id="cellPostingDate"
+                                                        text="{path: 'fixedAssetEntries>PostingDate'}"
+                                                    />
+                                                    <Text
+                                                        id="cellAssetValueDate"
+                                                        text="{path: 'fixedAssetEntries>AssetValueDate'}"
+                                                    />
+
+                                                    <Text
+                                                        id="cellDocType"
+                                                        text="{fixedAssetEntries>AccountingDocumentType}"
+                                                    />
+                                                    <Text
+                                                        id="cellAssignmentRef"
+                                                        text="{fixedAssetEntries>AssignmentReference}"
+                                                    />
+                                                    <ObjectStatus
+                                                        id="cellStatus"
+                                                        text="{fixedAssetEntries>Status}"
+                                                        state="{= ${fixedAssetEntries>Status} === 'Valid' ? 'Success' : 'Error'}"
+                                                    />
+                                                    <Button
+                                                        id="btnDetails"
+                                                        icon="sap-icon://detail-view"
+                                                        type="Transparent"
+                                                        tooltip="View Details"
+                                                        press="onViewEntryDetails"
+                                                    />
+                                                </cells>
+                                            </ColumnListItem>
+                                        </items>
+                                    </Table>
+                                </VBox>
+                            </content>
+                        </Panel>
+                    </VBox>
+                </f:content>
+            </f:DynamicPage>
+        </content>
+        <footer>
+            <!-- Action Buttons -->
+            <Toolbar id="actionToolbar">
+                <ToolbarSpacer id="actionToolbarSpacer" />
+                <Button
+                    id="resetButton"
+                    text="{= ${uploadSummary>/ProcessingComplete} ? 'Upload New File' : 'Clear Data'}"
+                    type="{= ${uploadSummary>/ProcessingComplete} ? 'Default' : 'Transparent'}"
+                    press="onReset"
+                    enabled="{= ${uploadSummary>/TotalEntries} > 0}"
+                    icon="{= ${uploadSummary>/ProcessingComplete} ? 'sap-icon://create-form' : 'sap-icon://clear-all'}"
+                />
+                <Button
+                    id="createButton"
+                    type="Emphasized"
+                    text="Submit Asset Retirement without Revenue"
+                    enabled="{= ${uploadSummary>/SuccessfulEntries} > 0 &amp;&amp; !${uploadSummary>/HasBeenSubmitted} &amp;&amp; !${uploadSummary>/isSubmitting} }"
+                    press="onSubmitRetirements"
+                    icon="sap-icon://accept"
+                />
+                <HBox
+                    id="downloadButtonsContainer"
+                    visible="{= ${uploadSummary>/ProcessingComplete} === true}"
+                    class="sapUiTinyMarginStart"
+                    justifyContent="End"
+                >
+                    <Button
+                        id="downloadResultsExcelButton"
+                        text="Download Excel"
+                        press="onExportPress"
+                        visible="false"
+                        type="Emphasized"
+                        icon="sap-icon://excel-attachment"
+                        class="sapUiTinyMarginEnd"
+                    />
+                    <Button
+                        id="downloadResultsCSVButton"
+                        text="Download CSV"
+                        press="onExportPress"
+                        visible="false"
+                        type="Emphasized"
+                        icon="sap-icon://document-text"
+                        class="sapUiTinyMarginEnd"
+                    />
+                    <Button
+                        id="downloadResultsPDFButton"
+                        text="Download PDF"
+                        press="onExportPress"
+                        visible="false"
+                        type="Emphasized"
+                        icon="sap-icon://pdf-attachment"
+                        class="sapUiTinyMarginEnd"
+                    />
+                </HBox>
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

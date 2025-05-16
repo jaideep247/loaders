@@ -1,0 +1,94 @@
+_schema-version: "3.2"
+ID: uploadrouter
+description: WBS Upload Router
+version: 0.0.1
+modules:
+- name: uploadrouter-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: uploadrouter-destination-service
+    parameters:
+      content-target: true
+  - name: uploadrouter-repo-host
+    parameters:
+      service-key:
+        name: uploadrouter-repo-host-key
+  - name: uploadrouter-uaa
+    parameters:
+      service-key:
+        name: uploadrouter-uaa-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: uploadrouter_html_repo_host
+          ServiceInstanceName: uploadrouter-html5-service
+          ServiceKeyName: uploadrouter-repo-host-key
+          sap.cloud.service: uploadrouter
+        - Authentication: OAuth2UserTokenExchange
+          Name: uploadrouter_uaa
+          ServiceInstanceName: uploadrouter-xsuaa-service
+          ServiceKeyName: uploadrouter-uaa-key
+          sap.cloud.service: uploadrouter
+        existing_destinations_policy: update
+  build-parameters:
+    no-source: true
+- name: uploadrouter-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: uploadrouter-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - wbsupload.zip
+      name: wbsupload
+      target-path: resources/
+- name: wbsupload
+  type: html5
+  path: wbsupload
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: uploadrouter-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: uploadrouter-destination-service
+    service-plan: lite
+- name: uploadrouter-uaa
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: uploadrouter-xsuaa-service
+    service-plan: application
+- name: uploadrouter-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: uploadrouter-html5-service
+    service-plan: app-host
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true

@@ -1,0 +1,142 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+>
+    <Dialog
+        id="_IDGenDialog2"
+        title="{errorData>/title}"
+        state="Error"
+        contentWidth="50rem"
+    >
+        <content>
+            <VBox
+                id="_IDGenVBox6"
+                class="sapUiSmallMargin"
+            >
+                <Text
+                    id="_IDGenText44"
+                    text="{errorData>/message}"
+                    class="sapUiSmallMarginBottom"
+                />
+                <Table
+                    id="_IDGenTable1"
+                    items="{errorData>/errors}"
+                    growing="true"
+                    growingScrollToLoad="true"
+                    growingThreshold="20"
+                >
+                    <columns>
+                        <Column
+                            id="_IDGenColumn14"
+                            width="8em"
+                        >
+                            <Text
+                                id="_IDGenText45"
+                                text="Sequence ID"
+                            />
+                        </Column>
+                        <Column
+                            id="_IDGenColumn15"
+                            width="8em"
+                        >
+                            <Text
+                                id="_IDGenText46"
+                                text="Company Code"
+                            />
+                        </Column>
+                        <Column
+                            id="_IDGenColumn16"
+                            width="10em"
+                        >
+                            <Text
+                                id="_IDGenText47"
+                                text="Master Fixed Asset"
+                            />
+                        </Column>
+                        <Column
+                            id="_IDGenColumn26"
+                            width="6em"
+                        >
+                            <Text
+                                id="_IDGenText48"
+                                text="Fixed Asset"
+                            />
+                        </Column>
+                        <Column
+                            id="_IDGenColumn27"
+                            width="8em"
+                        >
+                            <Text
+                                id="_IDGenText49"
+                                text="Retirement Type"
+                            />
+                        </Column>
+                        <Column
+                            id="_IDGenColumn28"
+                            width="8em"
+                        >
+                            <Text
+                                id="_IDGenText82"
+                                text="Error Code"
+                            />
+                        </Column>
+                        <Column id="_IDGenColumn29">
+                            <Text
+                                id="_IDGenText83"
+                                text="Error Message"
+                            />
+                        </Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem id="_IDGenColumnListItem1">
+                            <cells>
+                                <Text
+                                    id="_IDGenText84"
+                                    text="{errorData>SequenceID}"
+                                />
+                                <Text
+                                    id="_IDGenText85"
+                                    text="{errorData>CompanyCode}"
+                                />
+                                <Text
+                                    id="_IDGenText86"
+                                    text="{errorData>MasterFixedAsset}"
+                                />
+                                <Text
+                                    id="_IDGenText87"
+                                    text="{errorData>FixedAsset}"
+                                />
+                                <Text
+                                    id="_IDGenText88"
+                                    text="{errorData>RetirementType}"
+                                />
+                                <Text
+                                    id="_IDGenText89"
+                                    text="{errorData>ErrorCode}"
+                                />
+                                <Text
+                                    id="_IDGenText90"
+                                    text="{errorData>ErrorMessage}"
+                                />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </content>
+        <buttons>
+            <Button
+                id="_IDGenButton8"
+                text="Export Failed Entries"
+                icon="sap-icon://excel-attachment"
+                press="onExportAllErrors"
+            />
+            <Button
+                id="_IDGenButton9"
+                text="Close"
+                press="onErrorDialogClose"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

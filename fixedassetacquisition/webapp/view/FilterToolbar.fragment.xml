@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+>
+    <Toolbar
+        id="filterToolbar"
+        design="Solid"
+        class="sapUiTinyMarginTop sapUiTinyMarginBottom"
+    >
+        <Title
+            id="filterTitle"
+            text="Filters"
+            level="H3"
+        />
+        <ToolbarSpacer id="filterToolbarSpacer" />
+    </Toolbar>
+
+    <!-- Filtering Panel -->
+    <Panel
+        id="filterPanel"
+        expandable="true"
+        expanded="true"
+        headerText="Fixed Asset Acquisition Filters"
+        class="sapUiTinyMarginBottom"
+    >
+        <f:SimpleForm
+            id="filterForm"
+            editable="true"
+            layout="ResponsiveGridLayout"
+            labelSpanXL="4"
+            labelSpanL="4"
+            labelSpanM="4"
+            labelSpanS="12"
+            columnsXL="2"
+            columnsL="2"
+            columnsM="1"
+        >
+            <f:content>
+                <!-- Status filter -->
+                <Label
+                    id="statusLabel"
+                    text="Status:"
+                />
+                <ComboBox
+                    id="statusFilterComboBox"
+                    items="{statusModel>/}"
+                    selectedKey="All"
+                    change="onStatusFilterChange"
+                >
+                    <core:Item
+                        id="statusFilterItem"
+                        key="{statusModel>key}"
+                        text="{statusModel>text}"
+                    />
+                </ComboBox>
+
+                <!-- Company Code filter -->
+                <Label
+                    id="companyCodeLabel"
+                    text="Company Code:"
+                />
+                <MultiComboBox
+                    id="companyCodeFilter"
+                    items="{companyCodeModel>/}"
+                    selectionChange="onCompanyCodeFilterChange"
+                >
+                    <core:Item
+                        id="companyCodeItem"
+                        key="{companyCodeModel>key}"
+                        text="{companyCodeModel>text}"
+                    />
+                </MultiComboBox>
+
+                <!-- Business Transaction Type filter -->
+                <Label
+                    id="businessTransactionTypeLabel"
+                    text="Business Transaction Type:"
+                />
+                <MultiComboBox
+                    id="businessTransactionTypeFilter"
+                    items="{businessTransactionTypeModel>/}"
+                    selectionChange="onBusinessTransactionTypeFilterChange"
+                >
+                    <core:Item
+                        id="businessTransactionTypeItem"
+                        key="{businessTransactionTypeModel>key}"
+                        text="{businessTransactionTypeModel>text}"
+                    />
+                </MultiComboBox>
+
+                <!-- Document Date Range filter -->
+                <Label
+                    id="documentDateLabel"
+                    text="Document Date:"
+                />
+                <DateRangeSelection
+                    id="documentDateFilter"
+                    change="onDateRangeChange"
+                    dateValue="{dateRangeModel>/from}"
+                    secondDateValue="{dateRangeModel>/to}"
+                />
+
+                <!-- Posting Date Range filter -->
+                <Label
+                    id="postingDateLabel"
+                    text="Posting Date:"
+                />
+                <DateRangeSelection
+                    id="postingDateFilter"
+                    change="onPostingDateRangeChange"
+                    dateValue="{postingDateRangeModel>/from}"
+                    secondDateValue="{postingDateRangeModel>/to}"
+                />
+
+                <!-- Asset Value Date Range filter -->
+                <Label
+                    id="assetValueDateLabel"
+                    text="Asset Value Date:"
+                />
+                <DateRangeSelection
+                    id="assetValueDateFilter"
+                    change="onAssetValueDateRangeChange"
+                    dateValue="{assetValueDateRangeModel>/from}"
+                    secondDateValue="{assetValueDateRangeModel>/to}"
+                />
+
+                <!-- Master Fixed Asset filter -->
+                <Label
+                    id="masterFixedAssetLabel"
+                    text="Master Fixed Asset:"
+                />
+                <Input
+                    id="masterFixedAssetFilter"
+                    placeholder="Enter Master Fixed Asset"
+                    liveChange="onMasterFixedAssetFilterChange"
+                />
+
+                <!-- Fixed Asset filter -->
+                <Label
+                    id="fixedAssetLabel"
+                    text="Fixed Asset:"
+                />
+                <Input
+                    id="fixedAssetFilter"
+                    placeholder="Enter Fixed Asset"
+                    liveChange="onFixedAssetFilterChange"
+                />
+
+                <!-- Amount Range filter -->
+                <Label
+                    id="acquisitionAmountLabel"
+                    text="Acquisition Amount:"
+                />
+                <HBox id="_IDGenHBox">
+                    <Input
+                        id="acquisitionAmountFromFilter"
+                        placeholder="From"
+                        type="Number"
+                        liveChange="onAcquisitionAmountFilterChange"
+                        class="sapUiTinyMarginEnd"
+                    />
+                    <Input
+                        id="acquisitionAmountToFilter"
+                        placeholder="To"
+                        type="Number"
+                        liveChange="onAcquisitionAmountFilterChange"
+                    />
+                </HBox>
+
+                <!-- Currency filter -->
+                <Label
+                    id="currencyLabel"
+                    text="Currency:"
+                />
+                <MultiComboBox
+                    id="currencyFilter"
+                    items="{currencyModel>/}"
+                    selectionChange="onCurrencyFilterChange"
+                >
+                    <core:Item
+                        id="currencyItem"
+                        key="{currencyModel>key}"
+                        text="{currencyModel>text}"
+                    />
+                </MultiComboBox>
+
+                <!-- Offsetting Account filter -->
+                <Label
+                    id="offsettingAccountLabel"
+                    text="Offsetting Account:"
+                />
+                <Input
+                    id="offsettingAccountFilter"
+                    placeholder="Enter Offsetting Account"
+                    liveChange="onOffsettingAccountFilterChange"
+                />
+
+                <!-- Search Term -->
+                <Label
+                    id="searchLabel"
+                    text="Search:"
+                />
+                <SearchField
+                    id="searchField"
+                    search="onSearchItems"
+                    liveChange="onSearchLiveChange"
+                    placeholder="Search by any field..."
+                    width="100%"
+                />
+            </f:content>
+        </f:SimpleForm>
+
+        <!-- Filter Actions -->
+        <HBox
+            id="filterActionsBox"
+            justifyContent="End"
+            class="sapUiSmallMarginTop"
+        >
+            <Button
+                id="resetFiltersButton"
+                icon="sap-icon://clear-filter"
+                text="Reset Filters"
+                press="onResetFilters"
+                class="sapUiTinyMarginEnd"
+            />
+            <Button
+                id="applyFiltersButton"
+                icon="sap-icon://filter"
+                text="Apply Filters"
+                type="Emphasized"
+                press="onApplyFilters"
+            />
+        </HBox>
+    </Panel>
+
+    <!-- Filtered entries summary -->
+    <HBox
+        id="filteredCountBox"
+        class="sapUiTinyMarginBottom"
+        alignItems="Center"
+    >
+        <ObjectStatus
+            id="filteredCountStatus"
+            title="Entries"
+            text="{= ${fixedAssetEntries>/filteredCount} || 0} of {= ${fixedAssetEntries>/totalCount} || 0}"
+            state="Information"
+            icon="sap-icon://list"
+            class="sapUiTinyMarginEnd"
+        />
+        <ObjectStatus
+            id="validEntriesStatus"
+            title="Valid"
+            text="{= ${fixedAssetEntries>/validCount} || 0}"
+            state="Success"
+            icon="sap-icon://accept"
+            class="sapUiTinyMarginEnd"
+        />
+        <ObjectStatus
+            id="invalidEntriesStatus"
+            title="Invalid"
+            text="{= ${fixedAssetEntries>/invalidCount} || 0}"
+            state="Error"
+            icon="sap-icon://error"
+            class="sapUiTinyMarginEnd"
+        />
+        <ToolbarSpacer id="filteredCountSpacer" />
+
+        <!-- View selector for quick filtering -->
+        <SegmentedButton
+            id="tableViewSelectorFilter"
+            selectedKey="All"
+            selectionChange="onTableViewChange"
+        >
+            <items>
+                <SegmentedButtonItem
+                    id="allViewButton"
+                    key="All"
+                    text="All"
+                    icon="sap-icon://show-all"
+                />
+                <SegmentedButtonItem
+                    id="validViewButton"
+                    key="Valid"
+                    text="Valid"
+                    icon="sap-icon://accept"
+                />
+                <SegmentedButtonItem
+                    id="invalidViewButton"
+                    key="Invalid"
+                    text="Invalid"
+                    icon="sap-icon://error"
+                />
+            </items>
+        </SegmentedButton>
+    </HBox>
+</core:FragmentDefinition>

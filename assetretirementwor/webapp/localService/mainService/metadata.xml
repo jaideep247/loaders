@@ -1,0 +1,853 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMUNICATION',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="com.sap.vocabularies.Communication.v1" Alias="Communication"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_PERSONALDATA',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="com.sap.vocabularies.PersonalData.v1" Alias="PersonalData"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_ANALYTICS',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="com.sap.vocabularies.Analytics.v1" Alias="Analytics"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMON',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="com.sap.vocabularies.Common.v1" Alias="SAP__common"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_MEASURES',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="Org.OData.Measures.V1" Alias="SAP__measures"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CORE',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="Org.OData.Core.V1" Alias="SAP__core"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CAPABILITIES',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="Org.OData.Capabilities.V1" Alias="SAP__capabilities"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_AGGREGATION',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="Org.OData.Aggregation.V1" Alias="SAP__aggregation"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_VALIDATION',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="Org.OData.Validation.V1" Alias="SAP__validation"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CODELIST',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="com.sap.vocabularies.CodeList.v1" Alias="SAP__CodeList"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_UI',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="com.sap.vocabularies.UI.v1" Alias="SAP__UI"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_HTML5',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="com.sap.vocabularies.HTML5.v1" Alias="SAP__HTML5"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_PDF',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="com.sap.vocabularies.PDF.v1" Alias="SAP__PDF"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_SESSION',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="com.sap.vocabularies.Session.v1" Alias="SAP__session"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_ODM',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="com.sap.vocabularies.ODM.v1" Alias="SAP__ODM"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_HIERARCHY',Version='0001',SAP__Origin='LOCAL')/$value">
+        <edmx:Include Namespace="com.sap.vocabularies.Hierarchy.v1" Alias="SAP__hierarchy"/>
+    </edmx:Reference>
+    <edmx:DataServices>
+        <Schema Namespace="com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001" Alias="SAP__self">
+            <Annotation Term="SAP__core.SchemaVersion" String="1.0.0"/>
+            <EntityType Name="FixedAssetRetirementLedger_Type">
+                <Key>
+                    <PropertyRef Name="FixedAssetPostingUUID"/>
+                    <PropertyRef Name="ReferenceDocumentItem"/>
+                    <PropertyRef Name="Ledger"/>
+                </Key>
+                <Property Name="FixedAssetPostingUUID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="ReferenceDocumentItem" Type="Edm.String" Nullable="false" MaxLength="6"/>
+                <Property Name="Ledger" Type="Edm.String" Nullable="false" MaxLength="2"/>
+                <NavigationProperty Name="_FixedAssetPosting" Type="com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001.FixedAssetRetirement_Type" Nullable="false">
+                    <ReferentialConstraint Property="FixedAssetPostingUUID" ReferencedProperty="FixedAssetPostingUUID"/>
+                    <ReferentialConstraint Property="ReferenceDocumentItem" ReferencedProperty="ReferenceDocumentItem"/>
+                </NavigationProperty>
+                <NavigationProperty Name="_FixedAssetPostingValuation" Type="Collection(com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001.FixedAssetRtrmtValuation_Type)"/>
+            </EntityType>
+            <EntityType Name="FixedAssetRetirement_Type">
+                <Key>
+                    <PropertyRef Name="FixedAssetPostingUUID"/>
+                    <PropertyRef Name="ReferenceDocumentItem"/>
+                </Key>
+                <Property Name="FixedAssetPostingUUID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="ReferenceDocumentItem" Type="Edm.String" Nullable="false" MaxLength="6"/>
+                <Property Name="ReferenceDocumentType" Type="Edm.String" Nullable="false" MaxLength="5"/>
+                <Property Name="ReferenceDocument" Type="Edm.String" Nullable="false" MaxLength="10"/>
+                <Property Name="ReferenceDocumentContext" Type="Edm.String" Nullable="false" MaxLength="10"/>
+                <Property Name="ReferenceDocumentLogicalSystem" Type="Edm.String" Nullable="false" MaxLength="10"/>
+                <Property Name="CompanyCode" Type="Edm.String" Nullable="false" MaxLength="4"/>
+                <Property Name="MasterFixedAsset" Type="Edm.String" Nullable="false" MaxLength="12"/>
+                <Property Name="FixedAsset" Type="Edm.String" Nullable="false" MaxLength="4"/>
+                <Property Name="AssetClass" Type="Edm.String" Nullable="false" MaxLength="8"/>
+                <Property Name="DocumentDate" Type="Edm.Date"/>
+                <Property Name="PostingDate" Type="Edm.Date"/>
+                <Property Name="AssetValueDate" Type="Edm.Date"/>
+                <Property Name="BusinessTransactionType" Type="Edm.String" Nullable="false" MaxLength="4"/>
+                <Property Name="DocumentReferenceID" Type="Edm.String" Nullable="false" MaxLength="16"/>
+                <Property Name="AccountingDocumentHeaderText" Type="Edm.String" Nullable="false" MaxLength="25"/>
+                <Property Name="FxdAstRetirementRevenueType" Type="Edm.String" Nullable="false" MaxLength="1"/>
+                <Property Name="AstRevenueAmountInTransCrcy" Type="Edm.Decimal" Nullable="false" Precision="23" Scale="variable"/>
+                <Property Name="FxdAstRtrmtRevnTransCrcy" Type="Edm.String" Nullable="false" MaxLength="3"/>
+                <Property Name="FxdAstRtrmtRevnCurrencyRole" Type="Edm.String" Nullable="false" MaxLength="2"/>
+                <Property Name="FxdAstRevnDetnDeprArea" Type="Edm.String" Nullable="false" MaxLength="2"/>
+                <Property Name="FixedAssetRetirementType" Type="Edm.String" Nullable="false" MaxLength="1"/>
+                <Property Name="AstRtrmtAmtInTransCrcy" Type="Edm.Decimal" Nullable="false" Precision="23" Scale="variable"/>
+                <Property Name="FxdAstRetirementTransCrcy" Type="Edm.String" Nullable="false" MaxLength="3"/>
+                <Property Name="FxdAstRetirementRatioInPercent" Type="Edm.Decimal" Nullable="false" Precision="5" Scale="2"/>
+                <Property Name="FxdAstRtrmtQuantityInBaseUnit" Type="Edm.Decimal" Nullable="false" Precision="13" Scale="3"/>
+                <Property Name="BaseUnitSAPCode" Type="Edm.String" Nullable="false" MaxLength="3"/>
+                <Property Name="BaseUnitISOCode" Type="Edm.String" Nullable="false" MaxLength="3"/>
+                <Property Name="FixedAssetYearOfAcqnCode" Type="Edm.String" Nullable="false" MaxLength="1"/>
+                <Property Name="AccountingDocumentType" Type="Edm.String" Nullable="false" MaxLength="2"/>
+                <Property Name="TradingPartner" Type="Edm.String" Nullable="false" MaxLength="6"/>
+                <Property Name="AssignmentReference" Type="Edm.String" Nullable="false" MaxLength="18"/>
+                <Property Name="DocumentItemText" Type="Edm.String" Nullable="false" MaxLength="50"/>
+                <Property Name="SAP__Messages" Type="Collection(com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001.SAP__Message)" Nullable="false"/>
+                <NavigationProperty Name="_FixedAssetPostingLedger" Type="Collection(com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001.FixedAssetRetirementLedger_Type)"/>
+                <NavigationProperty Name="_FixedAssetPostingValuation" Type="Collection(com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001.FixedAssetRtrmtValuation_Type)"/>
+            </EntityType>
+            <EntityType Name="FixedAssetRtrmtValuation_Type">
+                <Key>
+                    <PropertyRef Name="FixedAssetPostingUUID"/>
+                    <PropertyRef Name="ReferenceDocumentItem"/>
+                    <PropertyRef Name="Ledger"/>
+                    <PropertyRef Name="AssetDepreciationArea"/>
+                </Key>
+                <Property Name="FixedAssetPostingUUID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="ReferenceDocumentItem" Type="Edm.String" Nullable="false" MaxLength="6"/>
+                <Property Name="Ledger" Type="Edm.String" Nullable="false" MaxLength="2"/>
+                <Property Name="AssetDepreciationArea" Type="Edm.String" Nullable="false" MaxLength="2"/>
+                <NavigationProperty Name="_FixedAssetPosting" Type="com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001.FixedAssetRetirement_Type" Nullable="false">
+                    <ReferentialConstraint Property="FixedAssetPostingUUID" ReferencedProperty="FixedAssetPostingUUID"/>
+                    <ReferentialConstraint Property="ReferenceDocumentItem" ReferencedProperty="ReferenceDocumentItem"/>
+                </NavigationProperty>
+                <NavigationProperty Name="_FixedAssetPostingLedger" Type="com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001.FixedAssetRetirementLedger_Type" Nullable="false"/>
+            </EntityType>
+            <ComplexType Name="D_FxdAstPostRetirementLedgerP">
+                <Property Name="Ledger" Type="Edm.String" Nullable="false" MaxLength="2"/>
+                <Property Name="_Valuation" Type="Collection(com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001.D_FxdAstPostRetirementValnP)" Nullable="false"/>
+            </ComplexType>
+            <ComplexType Name="D_FxdAstPostRetirementValnP">
+                <Property Name="AssetDepreciationArea" Type="Edm.String" Nullable="false" MaxLength="2"/>
+            </ComplexType>
+            <ComplexType Name="SAP__Message">
+                <Property Name="code" Type="Edm.String" Nullable="false"/>
+                <Property Name="message" Type="Edm.String" Nullable="false"/>
+                <Property Name="target" Type="Edm.String"/>
+                <Property Name="additionalTargets" Type="Collection(Edm.String)" Nullable="false"/>
+                <Property Name="transition" Type="Edm.Boolean" Nullable="false"/>
+                <Property Name="numericSeverity" Type="Edm.Byte" Nullable="false"/>
+                <Property Name="longtextUrl" Type="Edm.String"/>
+            </ComplexType>
+            <Action Name="Post" EntitySetPath="_it" IsBound="true">
+                <Parameter Name="_it" Type="Collection(com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001.FixedAssetRetirement_Type)" Nullable="false"/>
+                <Parameter Name="ReferenceDocumentItem" Type="Edm.String" Nullable="false" MaxLength="6"/>
+                <Parameter Name="BusinessTransactionType" Type="Edm.String" Nullable="false" MaxLength="4"/>
+                <Parameter Name="CompanyCode" Type="Edm.String" Nullable="false" MaxLength="4"/>
+                <Parameter Name="MasterFixedAsset" Type="Edm.String" Nullable="false" MaxLength="12"/>
+                <Parameter Name="FixedAsset" Type="Edm.String" Nullable="false" MaxLength="4"/>
+                <Parameter Name="DocumentDate" Type="Edm.Date" Nullable="true"/>
+                <Parameter Name="PostingDate" Type="Edm.Date" Nullable="true"/>
+                <Parameter Name="AssetValueDate" Type="Edm.Date" Nullable="true"/>
+                <Parameter Name="FxdAstRetirementRevenueType" Type="Edm.String" Nullable="false" MaxLength="1"/>
+                <Parameter Name="AstRevenueAmountInTransCrcy" Type="Edm.Decimal" Nullable="false" Precision="23" Scale="variable"/>
+                <Parameter Name="FxdAstRtrmtRevnTransCrcy" Type="Edm.String" Nullable="false" MaxLength="3"/>
+                <Parameter Name="FxdAstRtrmtRevnCurrencyRole" Type="Edm.String" Nullable="false" MaxLength="2"/>
+                <Parameter Name="FxdAstRevnDetnDeprArea" Type="Edm.String" Nullable="false" MaxLength="2"/>
+                <Parameter Name="FixedAssetRetirementType" Type="Edm.String" Nullable="false" MaxLength="1"/>
+                <Parameter Name="AstRtrmtAmtInTransCrcy" Type="Edm.Decimal" Nullable="false" Precision="23" Scale="variable"/>
+                <Parameter Name="FxdAstRetirementTransCrcy" Type="Edm.String" Nullable="false" MaxLength="3"/>
+                <Parameter Name="FxdAstRetirementRatioInPercent" Type="Edm.Decimal" Nullable="false" Precision="5" Scale="2"/>
+                <Parameter Name="FixedAssetYearOfAcqnCode" Type="Edm.String" Nullable="false" MaxLength="1"/>
+                <Parameter Name="DocumentReferenceID" Type="Edm.String" Nullable="false" MaxLength="16"/>
+                <Parameter Name="AccountingDocumentHeaderText" Type="Edm.String" Nullable="false" MaxLength="25"/>
+                <Parameter Name="FxdAstRtrmtQuantityInBaseUnit" Type="Edm.Decimal" Nullable="false" Precision="13" Scale="3"/>
+                <Parameter Name="BaseUnitSAPCode" Type="Edm.String" Nullable="false" MaxLength="3"/>
+                <Parameter Name="BaseUnitISOCode" Type="Edm.String" Nullable="false" MaxLength="3"/>
+                <Parameter Name="AccountingDocumentType" Type="Edm.String" Nullable="false" MaxLength="2"/>
+                <Parameter Name="TradingPartner" Type="Edm.String" Nullable="false" MaxLength="6"/>
+                <Parameter Name="AssignmentReference" Type="Edm.String" Nullable="false" MaxLength="18"/>
+                <Parameter Name="DocumentItemText" Type="Edm.String" Nullable="false" MaxLength="50"/>
+                <Parameter Name="_Ledger" Type="Collection(com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001.D_FxdAstPostRetirementLedgerP)" Nullable="false"/>
+                <ReturnType Type="com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001.FixedAssetRetirement_Type" Nullable="false"/>
+            </Action>
+            <EntityContainer Name="Container">
+                <EntitySet Name="FixedAssetRetirement" EntityType="com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001.FixedAssetRetirement_Type">
+                    <NavigationPropertyBinding Path="_FixedAssetPostingLedger" Target="FixedAssetRetirementLedger"/>
+                    <NavigationPropertyBinding Path="_FixedAssetPostingValuation" Target="FixedAssetRtrmtValuation"/>
+                </EntitySet>
+                <EntitySet Name="FixedAssetRetirementLedger" EntityType="com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001.FixedAssetRetirementLedger_Type">
+                    <NavigationPropertyBinding Path="_FixedAssetPosting" Target="FixedAssetRetirement"/>
+                    <NavigationPropertyBinding Path="_FixedAssetPostingValuation" Target="FixedAssetRtrmtValuation"/>
+                </EntitySet>
+                <EntitySet Name="FixedAssetRtrmtValuation" EntityType="com.sap.gateway.srvd_a2x.api_fixedassetretirement.v0001.FixedAssetRtrmtValuation_Type">
+                    <NavigationPropertyBinding Path="_FixedAssetPosting" Target="FixedAssetRetirement"/>
+                    <NavigationPropertyBinding Path="_FixedAssetPostingLedger" Target="FixedAssetRetirementLedger"/>
+                </EntitySet>
+            </EntityContainer>
+            <Annotations Target="SAP__self.D_FxdAstPostRetirementLedgerP/Ledger">
+                <Annotation Term="SAP__common.FieldControl" EnumMember="SAP__common.FieldControlType/Mandatory"/>
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Ledger"/>
+                <Annotation Term="SAP__common.Heading" String="Ld"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Ledger in General Ledger Accounting"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=FINS_LEDGER"/>
+            </Annotations>
+            <Annotations Target="SAP__self.D_FxdAstPostRetirementValnP/AssetDepreciationArea">
+                <Annotation Term="SAP__common.FieldControl" EnumMember="SAP__common.FieldControlType/Mandatory"/>
+                <Annotation Term="SAP__common.Label" String="Depreciation area"/>
+                <Annotation Term="SAP__common.Heading" String="Ar."/>
+                <Annotation Term="SAP__common.QuickInfo" String="Real depreciation area"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=AFABE_D"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirementLedger_Type/ReferenceDocumentItem">
+                <Annotation Term="SAP__common.IsDigitSequence"/>
+                <Annotation Term="SAP__common.Label" String="Ref. Doc. Line Item"/>
+                <Annotation Term="SAP__common.Heading" String="Ref.It"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Reference Document Line Item"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirementLedger_Type/Ledger">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Ledger"/>
+                <Annotation Term="SAP__common.Heading" String="Ld"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Ledger in General Ledger Accounting"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=FINS_LEDGER"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirementLedger_Type">
+                <Annotation Term="SAP__common.Label" String="Ledger for Fixed Asset Rtrmt Posting"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Container/FixedAssetRetirementLedger">
+                <Annotation Term="SAP__capabilities.SearchRestrictions">
+                    <Record>
+                        <PropertyValue Property="Searchable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="SAP__capabilities.InsertRestrictions">
+                    <Record>
+                        <PropertyValue Property="Insertable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="SAP__capabilities.DeleteRestrictions">
+                    <Record>
+                        <PropertyValue Property="Deletable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="SAP__capabilities.UpdateRestrictions">
+                    <Record>
+                        <PropertyValue Property="Updatable" Bool="false"/>
+                        <PropertyValue Property="NonUpdatableNavigationProperties">
+                            <Collection>
+                                <PropertyPath>_FixedAssetPosting</PropertyPath>
+                                <PropertyPath>_FixedAssetPostingValuation</PropertyPath>
+                            </Collection>
+                        </PropertyValue>
+                        <PropertyValue Property="QueryOptions">
+                            <Record>
+                                <PropertyValue Property="SelectSupported" Bool="true"/>
+                            </Record>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/FixedAssetPostingUUID">
+                <Annotation Term="SAP__core.Computed"/>
+                <Annotation Term="SAP__common.Label" String="Posting UUID"/>
+                <Annotation Term="SAP__common.Heading" String="Fixed Asset Posting UUID"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Fixed Asset Posting: UUID"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/ReferenceDocumentItem">
+                <Annotation Term="SAP__core.Immutable"/>
+                <Annotation Term="SAP__common.IsDigitSequence"/>
+                <Annotation Term="SAP__common.Label" String="Ref. Doc. Line Item"/>
+                <Annotation Term="SAP__common.Heading" String="Ref.It"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Reference Document Line Item"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/ReferenceDocumentType">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Reference Transact."/>
+                <Annotation Term="SAP__common.Heading" String="Ref. Tran."/>
+                <Annotation Term="SAP__common.QuickInfo" String="Reference Transaction"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=AWTYP"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/ReferenceDocument">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Reference Document"/>
+                <Annotation Term="SAP__common.Heading" String="Ref. Doc."/>
+                <Annotation Term="SAP__common.QuickInfo" String="Reference Doc. Number"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=AWREF"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/ReferenceDocumentContext">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Reference Org. Unit"/>
+                <Annotation Term="SAP__common.Heading" String="Ref.Org.Un"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Reference Organizational Units"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=AWORG"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/ReferenceDocumentLogicalSystem">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Log. System Source"/>
+                <Annotation Term="SAP__common.Heading" String="Log.System"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Logical System of Source Document"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=AWSYS"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/CompanyCode">
+                <Annotation Term="SAP__common.FieldControl" EnumMember="SAP__common.FieldControlType/Mandatory"/>
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Company Code"/>
+                <Annotation Term="SAP__common.Heading" String="CoCd"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=BUKRS"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/MasterFixedAsset">
+                <Annotation Term="SAP__common.FieldControl" EnumMember="SAP__common.FieldControlType/Mandatory"/>
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Asset"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Main Asset Number"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=ANLN1"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/FixedAsset">
+                <Annotation Term="SAP__common.FieldControl" EnumMember="SAP__common.FieldControlType/Mandatory"/>
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Subnumber"/>
+                <Annotation Term="SAP__common.Heading" String="SNo."/>
+                <Annotation Term="SAP__common.QuickInfo" String="Asset Subnumber"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=ANLN2"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/AssetClass">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Asset Class"/>
+                <Annotation Term="SAP__common.Heading" String="Class"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=ANLKL"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/DocumentDate">
+                <Annotation Term="SAP__common.FieldControl" EnumMember="SAP__common.FieldControlType/Mandatory"/>
+                <Annotation Term="SAP__common.Label" String="Document Date"/>
+                <Annotation Term="SAP__common.Heading" String="Doc. Date"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Document Date in Document"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=BLDAT"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/PostingDate">
+                <Annotation Term="SAP__common.FieldControl" EnumMember="SAP__common.FieldControlType/Mandatory"/>
+                <Annotation Term="SAP__common.Label" String="Posting Date"/>
+                <Annotation Term="SAP__common.Heading" String="Pstng Date"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Posting Date in the Document"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=BUDAT"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/BusinessTransactionType">
+                <Annotation Term="SAP__common.FieldControl" EnumMember="SAP__common.FieldControlType/Mandatory"/>
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Bus. Trans. Type"/>
+                <Annotation Term="SAP__common.Heading" String="BusTranTyp"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Business Transaction Type"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=FINS_CUSTBTTYPE"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/DocumentReferenceID">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Reference"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Reference Document Number"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=XBLNR1"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/FxdAstRetirementRevenueType">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Determination of Revenue"/>
+                <Annotation Term="SAP__common.Heading" String="Determination of Retirement Revenue"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Determination Type for Retirement Revenue"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=FAA_TR_RETIREMENT_REVENUE_TYPE"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/AstRevenueAmountInTransCrcy">
+                <Annotation Term="SAP__measures.ISOCurrency" Path="FxdAstRtrmtRevnTransCrcy"/>
+                <Annotation Term="SAP__common.Label" String="Revenue Amount"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Revenue Amount for Retirement"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/FxdAstRtrmtRevnTransCrcy">
+                <Annotation Term="SAP__common.IsCurrency"/>
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Currency"/>
+                <Annotation Term="SAP__common.Heading" String="Crcy"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Currency Key"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=WAERS"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/FxdAstRevnDetnDeprArea">
+                <Annotation Term="SAP__common.IsDigitSequence"/>
+                <Annotation Term="SAP__common.Label" String="Depreciation Area for Determining NBV"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/FixedAssetRetirementType">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Retirement Type"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=FAA_TR_RETIREMENT_TYPE"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/AstRtrmtAmtInTransCrcy">
+                <Annotation Term="SAP__measures.ISOCurrency" Path="FxdAstRetirementTransCrcy"/>
+                <Annotation Term="SAP__common.Label" String="Retirement Amount"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Retirement Amount Posted"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/FxdAstRetirementTransCrcy">
+                <Annotation Term="SAP__common.IsCurrency"/>
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Currency"/>
+                <Annotation Term="SAP__common.Heading" String="Crcy"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Currency Key"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=WAERS"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/FxdAstRtrmtQuantityInBaseUnit">
+                <Annotation Term="SAP__measures.Unit" Path="BaseUnitSAPCode"/>
+                <Annotation Term="SAP__measures.UNECEUnit" Path="BaseUnitISOCode"/>
+                <Annotation Term="SAP__common.Label" String="Quantity"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=MENGE_D"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/BaseUnitSAPCode">
+                <Annotation Term="SAP__common.IsUnit"/>
+                <Annotation Term="SAP__common.Label" String="Base Unit of Measure"/>
+                <Annotation Term="SAP__common.Heading" String="BUn"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=MEINS"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/BaseUnitISOCode">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="ISO Code"/>
+                <Annotation Term="SAP__common.Heading" String="ISO"/>
+                <Annotation Term="SAP__common.QuickInfo" String="ISO Code for Unit of Measurement"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=ISOCD_UNIT"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/FixedAssetYearOfAcqnCode">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Fiscal year in which the asset was acquired"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/AccountingDocumentType">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Document Type"/>
+                <Annotation Term="SAP__common.Heading" String="Doc. Type"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=BLART"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/TradingPartner">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Trading Partner Number"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/ReferenceDocumentItem">
+                <Annotation Term="SAP__common.FieldControl" EnumMember="SAP__common.FieldControlType/Mandatory"/>
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Ref. Doc. Line Item"/>
+                <Annotation Term="SAP__common.Heading" String="Ref.It"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Reference Document Line Item"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/BusinessTransactionType">
+                <Annotation Term="SAP__common.FieldControl" EnumMember="SAP__common.FieldControlType/Mandatory"/>
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Bus. Trans. Type"/>
+                <Annotation Term="SAP__common.Heading" String="BusTranTyp"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Business Transaction Type"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=FINS_CUSTBTTYPE"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/CompanyCode">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Company Code"/>
+                <Annotation Term="SAP__common.Heading" String="CoCd"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=BUKRS"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/MasterFixedAsset">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Asset"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Main Asset Number"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=ANLN1"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/FixedAsset">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Subnumber"/>
+                <Annotation Term="SAP__common.Heading" String="SNo."/>
+                <Annotation Term="SAP__common.QuickInfo" String="Asset Subnumber"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=ANLN2"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/DocumentDate">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Document Date"/>
+                <Annotation Term="SAP__common.Heading" String="Doc. Date"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Document Date in Document"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=BLDAT"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/PostingDate">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Posting Date"/>
+                <Annotation Term="SAP__common.Heading" String="Pstng Date"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Posting Date in the Document"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=BUDAT"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/AssetValueDate">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Asset Value Date"/>
+                <Annotation Term="SAP__common.Heading" String="AssetValDate"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=BZDAT"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/FxdAstRetirementRevenueType">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Determination of Revenue"/>
+                <Annotation Term="SAP__common.Heading" String="Determination of Retirement Revenue"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Determination Type for Retirement Revenue"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=FAA_TR_RETIREMENT_REVENUE_TYPE"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/AstRevenueAmountInTransCrcy">
+                <Annotation Term="SAP__measures.ISOCurrency" Path="FxdAstRtrmtRevnTransCrcy"/>
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Revenue Amount"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Revenue Amount for Retirement"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/FxdAstRtrmtRevnTransCrcy">
+                <Annotation Term="SAP__common.IsCurrency"/>
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Currency"/>
+                <Annotation Term="SAP__common.Heading" String="Crcy"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Currency Key"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=WAERS"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/FxdAstRevnDetnDeprArea">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Depreciation Area for Determining NBV"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/FixedAssetRetirementType">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Retirement Type"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=FAA_TR_RETIREMENT_TYPE"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/AstRtrmtAmtInTransCrcy">
+                <Annotation Term="SAP__measures.ISOCurrency" Path="FxdAstRetirementTransCrcy"/>
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Retirement Amount"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Retirement Amount Posted"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/FxdAstRetirementTransCrcy">
+                <Annotation Term="SAP__common.IsCurrency"/>
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Currency"/>
+                <Annotation Term="SAP__common.Heading" String="Crcy"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Currency Key"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=WAERS"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/FxdAstRetirementRatioInPercent">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Retirement Percentage"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Asset Retirement: Percentage Rate"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/FixedAssetYearOfAcqnCode">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Fiscal year in which the asset was acquired"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/DocumentReferenceID">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Reference"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Reference Document Number"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=XBLNR1"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/FxdAstRtrmtQuantityInBaseUnit">
+                <Annotation Term="SAP__measures.Unit" Path="BaseUnitSAPCode"/>
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Quantity"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=MENGE_D"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/BaseUnitSAPCode">
+                <Annotation Term="SAP__common.IsUnit"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Base Unit of Measure"/>
+                <Annotation Term="SAP__common.Heading" String="BUn"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/BaseUnitISOCode">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="ISO Code"/>
+                <Annotation Term="SAP__common.Heading" String="ISO"/>
+                <Annotation Term="SAP__common.QuickInfo" String="ISO Code for Unit of Measurement"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=ISOCD_UNIT"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/AccountingDocumentType">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Document Type"/>
+                <Annotation Term="SAP__common.Heading" String="Doc. Type"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=BLART"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/TradingPartner">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Company ID"/>
+                <Annotation Term="SAP__common.Heading" String="Co.ID"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=VBUND"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type">
+                <Annotation Term="SAP__common.Label" String="Fixed Asset Retirement Posting"/>
+                <Annotation Term="SAP__common.Messages" Path="SAP__Messages"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Container/FixedAssetRetirement">
+                <Annotation Term="SAP__capabilities.SearchRestrictions">
+                    <Record>
+                        <PropertyValue Property="Searchable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="SAP__capabilities.InsertRestrictions">
+                    <Record>
+                        <PropertyValue Property="Insertable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="SAP__capabilities.DeleteRestrictions">
+                    <Record>
+                        <PropertyValue Property="Deletable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="SAP__capabilities.UpdateRestrictions">
+                    <Record>
+                        <PropertyValue Property="Updatable" Bool="false"/>
+                        <PropertyValue Property="NonUpdatableNavigationProperties">
+                            <Collection>
+                                <PropertyPath>_FixedAssetPostingLedger</PropertyPath>
+                                <PropertyPath>_FixedAssetPostingValuation</PropertyPath>
+                            </Collection>
+                        </PropertyValue>
+                        <PropertyValue Property="QueryOptions">
+                            <Record>
+                                <PropertyValue Property="SelectSupported" Bool="true"/>
+                            </Record>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="SAP__capabilities.FilterRestrictions">
+                    <Record>
+                        <PropertyValue Property="FilterExpressionRestrictions">
+                            <Collection>
+                                <Record>
+                                    <PropertyValue Property="Property" PropertyPath="AstRevenueAmountInTransCrcy"/>
+                                    <PropertyValue Property="AllowedExpressions" String="MultiValue"/>
+                                </Record>
+                                <Record>
+                                    <PropertyValue Property="Property" PropertyPath="AstRtrmtAmtInTransCrcy"/>
+                                    <PropertyValue Property="AllowedExpressions" String="MultiValue"/>
+                                </Record>
+                                <Record>
+                                    <PropertyValue Property="Property" PropertyPath="FxdAstRtrmtQuantityInBaseUnit"/>
+                                    <PropertyValue Property="AllowedExpressions" String="MultiValue"/>
+                                </Record>
+                                <Record>
+                                    <PropertyValue Property="Property" PropertyPath="BaseUnitSAPCode"/>
+                                    <PropertyValue Property="AllowedExpressions" String="MultiValue"/>
+                                </Record>
+                                <Record>
+                                    <PropertyValue Property="Property" PropertyPath="BaseUnitISOCode"/>
+                                    <PropertyValue Property="AllowedExpressions" String="MultiValue"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="SAP__self.Container">
+                <Annotation Term="SAP__CodeList.CurrencyCodes">
+                    <Record>
+                        <PropertyValue Property="Url" String="../../../../default/iwbep/common/0001/$metadata"/>
+                        <PropertyValue Property="CollectionPath" String="Currencies"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="SAP__CodeList.UnitsOfMeasure">
+                    <Record>
+                        <PropertyValue Property="Url" String="../../../../default/iwbep/common/0001/$metadata"/>
+                        <PropertyValue Property="CollectionPath" String="UnitsOfMeasure"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="SAP__common.ApplyMultiUnitBehaviorForSortingAndFiltering" Bool="true"/>
+                <Annotation Term="SAP__capabilities.FilterFunctions">
+                    <Collection>
+                        <String>eq</String>
+                        <String>ne</String>
+                        <String>gt</String>
+                        <String>ge</String>
+                        <String>lt</String>
+                        <String>le</String>
+                        <String>and</String>
+                        <String>or</String>
+                        <String>contains</String>
+                        <String>startswith</String>
+                        <String>endswith</String>
+                        <String>any</String>
+                        <String>all</String>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="SAP__capabilities.SupportedFormats">
+                    <Collection>
+                        <String>application/json</String>
+                        <String>application/pdf</String>
+                    </Collection>
+                </Annotation>
+                <Annotation Term="SAP__PDF.Features">
+                    <Record>
+                        <PropertyValue Property="DocumentDescriptionReference" String="../../../../default/iwbep/common/0001/$metadata"/>
+                        <PropertyValue Property="DocumentDescriptionCollection" String="MyDocumentDescriptions"/>
+                        <PropertyValue Property="ArchiveFormat" Bool="true"/>
+                        <PropertyValue Property="Border" Bool="true"/>
+                        <PropertyValue Property="CoverPage" Bool="true"/>
+                        <PropertyValue Property="FitToPage" Bool="true"/>
+                        <PropertyValue Property="FontName" Bool="true"/>
+                        <PropertyValue Property="FontSize" Bool="true"/>
+                        <PropertyValue Property="HeaderFooter" Bool="true"/>
+                        <PropertyValue Property="IANATimezoneFormat" Bool="true"/>
+                        <PropertyValue Property="Margin" Bool="true"/>
+                        <PropertyValue Property="Padding" Bool="true"/>
+                        <PropertyValue Property="ResultSizeDefault" Int="20000"/>
+                        <PropertyValue Property="ResultSizeMaximum" Int="20000"/>
+                        <PropertyValue Property="Signature" Bool="true"/>
+                        <PropertyValue Property="TextDirectionLayout" Bool="true"/>
+                        <PropertyValue Property="Treeview" Bool="true"/>
+                        <PropertyValue Property="UploadToFileShare" Bool="true"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="SAP__capabilities.KeyAsSegmentSupported"/>
+                <Annotation Term="SAP__capabilities.AsynchronousRequestsSupported"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRtrmtValuation_Type/ReferenceDocumentItem">
+                <Annotation Term="SAP__common.IsDigitSequence"/>
+                <Annotation Term="SAP__common.Label" String="Ref. Doc. Line Item"/>
+                <Annotation Term="SAP__common.Heading" String="Ref.It"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Reference Document Line Item"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRtrmtValuation_Type/Ledger">
+                <Annotation Term="SAP__common.IsUpperCase"/>
+                <Annotation Term="SAP__common.Label" String="Ledger"/>
+                <Annotation Term="SAP__common.Heading" String="Ld"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Ledger in General Ledger Accounting"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=FINS_LEDGER"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRtrmtValuation_Type/AssetDepreciationArea">
+                <Annotation Term="SAP__common.IsDigitSequence"/>
+                <Annotation Term="SAP__common.Label" String="Depreciation area"/>
+                <Annotation Term="SAP__common.Heading" String="Ar."/>
+                <Annotation Term="SAP__common.QuickInfo" String="Real depreciation area"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=AFABE_D"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRtrmtValuation_Type">
+                <Annotation Term="SAP__common.Label" String="Valuation for Fixed Asset Rtrmt Posting"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Container/FixedAssetRtrmtValuation">
+                <Annotation Term="SAP__capabilities.SearchRestrictions">
+                    <Record>
+                        <PropertyValue Property="Searchable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="SAP__capabilities.InsertRestrictions">
+                    <Record>
+                        <PropertyValue Property="Insertable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="SAP__capabilities.DeleteRestrictions">
+                    <Record>
+                        <PropertyValue Property="Deletable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="SAP__capabilities.UpdateRestrictions">
+                    <Record>
+                        <PropertyValue Property="Updatable" Bool="false"/>
+                        <PropertyValue Property="NonUpdatableNavigationProperties">
+                            <Collection>
+                                <PropertyPath>_FixedAssetPosting</PropertyPath>
+                                <PropertyPath>_FixedAssetPostingLedger</PropertyPath>
+                            </Collection>
+                        </PropertyValue>
+                        <PropertyValue Property="QueryOptions">
+                            <Record>
+                                <PropertyValue Property="SelectSupported" Bool="true"/>
+                            </Record>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirementLedger_Type/FixedAssetPostingUUID">
+                <Annotation Term="SAP__common.Label" String="Posting UUID"/>
+                <Annotation Term="SAP__common.Heading" String="Fixed Asset Posting UUID"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Fixed Asset Posting: UUID"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/AssetValueDate">
+                <Annotation Term="SAP__common.Label" String="Asset Value Date"/>
+                <Annotation Term="SAP__common.Heading" String="AssetValDate"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=BZDAT"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/AccountingDocumentHeaderText">
+                <Annotation Term="SAP__common.Label" String="Document Header Text"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=BKTXT"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/FxdAstRtrmtRevnCurrencyRole">
+                <Annotation Term="SAP__common.Label" String="Currency Type of Revenue"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Currency Type for Retirement Revenue Amount"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/FxdAstRetirementRatioInPercent">
+                <Annotation Term="SAP__common.Label" String="Retirement Percentage"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Asset Retirement: Percentage Rate"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/AssignmentReference">
+                <Annotation Term="SAP__common.Label" String="Assignment"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Additional information reference for the line item"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRetirement_Type/DocumentItemText">
+                <Annotation Term="SAP__common.Label" String="Item Text"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Explanatory text for the line item"/>
+            </Annotations>
+            <Annotations Target="SAP__self.FixedAssetRtrmtValuation_Type/FixedAssetPostingUUID">
+                <Annotation Term="SAP__common.Label" String="Posting UUID"/>
+                <Annotation Term="SAP__common.Heading" String="Fixed Asset Posting UUID"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Fixed Asset Posting: UUID"/>
+            </Annotations>
+            <Annotations Target="SAP__self.D_FxdAstPostRetirementLedgerP/_Valuation/AssetDepreciationArea">
+                <Annotation Term="SAP__common.Label" String="Depreciation area"/>
+                <Annotation Term="SAP__common.Heading" String="Ar."/>
+                <Annotation Term="SAP__common.QuickInfo" String="Real depreciation area"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=AFABE_D"/>
+            </Annotations>
+            <Annotations Target="SAP__self.SAP__VIRTUAL_CO_TY_1/_Ledger/Ledger">
+                <Annotation Term="SAP__common.Label" String="Ledger"/>
+                <Annotation Term="SAP__common.Heading" String="Ld"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Ledger in General Ledger Accounting"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=FINS_LEDGER"/>
+            </Annotations>
+            <Annotations Target="SAP__self.SAP__VIRTUAL_CO_TY_1/_Ledger/_Valuation/AssetDepreciationArea">
+                <Annotation Term="SAP__common.Label" String="Depreciation area"/>
+                <Annotation Term="SAP__common.Heading" String="Ar."/>
+                <Annotation Term="SAP__common.QuickInfo" String="Real depreciation area"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=AFABE_D"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/FxdAstRtrmtRevnCurrencyRole">
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Currency Type of Revenue"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Currency Type for Retirement Revenue Amount"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/AccountingDocumentHeaderText">
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Document Header Text"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=BKTXT"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/AssignmentReference">
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Assignment"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Assignment Number"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=DZUONR"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/DocumentItemText">
+                <Annotation Term="SAP__core.OptionalParameter"/>
+                <Annotation Term="SAP__common.Label" String="Text"/>
+                <Annotation Term="SAP__common.QuickInfo" String="Item Text"/>
+                <Annotation Term="SAP__common.DocumentationRef" String="urn:sap-com:documentation:key?=type=DE&amp;id=SGTXT"/>
+            </Annotations>
+            <Annotations Target="SAP__self.Post(Collection(SAP__self.FixedAssetRetirement_Type))/_Ledger">
+                <Annotation Term="SAP__core.OptionalParameter"/>
+            </Annotations>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

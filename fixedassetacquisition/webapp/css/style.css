@@ -1,0 +1,85 @@
+/* Main styles for the Service Entry Creation app */
+
+.sapUiFormTitle {
+    color: #0854a0 !important;
+    font-size: 1.2rem !important;
+  }
+  
+  .sapMLabel.requiredField::after {
+    content: "*";
+    color: #b00;
+    font-size: 1.25rem;
+    font-weight: bold;
+    vertical-align: middle;
+    margin-left: 0.25rem;
+  }
+  
+  .sapMText.errorText {
+    color: #b00;
+  }
+  
+  .itemPanelHeader .sapMPanelHdr {
+    color: #0854a0;
+    font-weight: bold;
+  }
+  
+  .sapMTB.customToolbar {
+    background-color: #f7f7f7;
+  }
+  
+  /* Success icon styling */
+  .successIcon {
+    color: #2b7d2b;
+    font-size: 2rem;
+  }
+  
+  /* Error icon styling */
+  .errorIcon {
+    color: #b00;
+    font-size: 2rem;
+  }
+  
+  /* Custom background for dynamic page header */
+  .sapFDynamicPageHeader {
+    background-color: #f9f9f9;
+  }
+  
+  /* Custom styling for focused input fields */
+  .sapMInputBase.sapMFocus .sapMInputBaseInner {
+    border-color: #0854a0;
+  }
+  
+  /* Wide MessageBox for export options */
+  .wideMessageBox {
+    min-width: 650px !important;
+  }
+  
+  .wideMessageBox .sapMDialog {
+    min-width: 650px !important;
+    width: auto !important;
+  }
+  
+  .wideMessageBox .sapMDialogSection {
+    width: 100% !important;
+  }
+  
+  .wideMessageBox .sapMDialogScrollCont {
+    padding-bottom: 20px !important;
+  }
+  
+  .wideMessageBox .sapMBar {
+    box-shadow: none !important;
+  }
+  
+  .wideMessageBox .sapMBarRight {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-end !important;
+    padding: 0.5rem !important;
+  }
+  
+  .wideMessageBox .sapMBarRight .sapMBtn {
+    margin: 0.25rem !important;
+    min-width: 100px !important;
+  }
+  

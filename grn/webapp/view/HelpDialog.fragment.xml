@@ -1,0 +1,276 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        id="helpDialog"
+        title="Material Document Excel Upload Help"
+        contentWidth="600px"
+    >
+        <content>
+            <IconTabBar
+                id="helpTabBar"
+                expanded="true"
+            >
+                <items>
+                    <IconTabFilter
+                        id="gettingStartedTab"
+                        icon="sap-icon://hint"
+                        text="Getting Started"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox12"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle3"
+                                        text="How to Upload Material Documents"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText38"
+                                        text="1. Download the template using the 'Download Template' button."
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText39"
+                                        text="2. Fill in the template with your material document data."
+                                    />
+                                    <Text
+                                        id="_IDGenText40"
+                                        text="3. Upload the completed file using the 'Choose File' button."
+                                    />
+                                    <Text
+                                        id="_IDGenText41"
+                                        text="4. Review validation results and fix any errors."
+                                    />
+                                    <Text
+                                        id="_IDGenText42"
+                                        text="5. Click 'Submit Material Documents' to process valid entries."
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="commonErrorsTab"
+                        icon="sap-icon://alert"
+                        text="Common Errors"
+                    >
+                        <content>
+                            <List id="_IDGenList1">
+                                <items>
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem1"
+                                        title="Missing Material"
+                                        description="Material number is required for each material document."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem3"
+                                        title="Missing Required Fields"
+                                        description="All required fields must be filled in for each entry."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem5"
+                                        title="Invalid Date Format"
+                                        description="Dates should be in YYYY-MM-DD format."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem6"
+                                        title="Invalid Goods Movement Type"
+                                        description="Goods Movement Type must be valid for the material document type."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem7"
+                                        title="Missing Storage Location"
+                                        description="Storage Location is required for most goods movements."
+                                    />
+                                </items>
+                            </List>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="fileFormatTab"
+                        icon="sap-icon://attachment-text-file"
+                        text="File Format"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox13"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Text
+                                        id="_IDGenText43"
+                                        text="The Excel file should contain the following columns:"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Panel
+                                        id="_IDGenPanel5"
+                                        headerText="Required Fields"
+                                        expandable="true"
+                                        expanded="true"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList3">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem8"
+                                                        title="Sequence Number: Line sequence number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem9"
+                                                        title="GRN Document Number: GRN document number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem10"
+                                                        title="Document Date: Document date (YYYY-MM-DD)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem11"
+                                                        title="Posting Date: Posting date (YYYY-MM-DD)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem12"
+                                                        title="Material: Material number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem13"
+                                                        title="Plant: Plant code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem14"
+                                                        title="Storage Location: Storage location code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem15"
+                                                        title="Goods Movement Type: Movement type code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem16"
+                                                        title="Quantity In Entry Unit: Quantity to be processed"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Panel
+                                        id="_IDGenPanel6"
+                                        headerText="Optional Fields"
+                                        expandable="true"
+                                        expanded="false"
+                                        class="sapUiTinyMarginTop"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList4">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem17"
+                                                        title="Material Document Header Text: Document header text"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem18"
+                                                        title="Reference Document: Reference document number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem19"
+                                                        title="Goods Movement Code: Movement code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem20"
+                                                        title="Account Assignment: Cost center, order, etc."
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem21"
+                                                        title="Purchase Order: Purchase order number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem22"
+                                                        title="Purchase Order Item: Purchase order line item"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem23"
+                                                        title="Goods Movement Ref Doc Type: Reference document type"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Link
+                                        id="_IDGenLink"
+                                        text="Download Sample Template"
+                                        press=".onDownloadTemplate"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="processingRulesTab"
+                        icon="sap-icon://process"
+                        text="Processing Rules"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox14"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle4"
+                                        text="Material Document Processing Rules"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText57"
+                                        text="Each material document must follow these rules:"
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <List id="_IDGenList5">
+                                        <items>
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem24"
+                                                title="Valid Material"
+                                                description="Material must exist in the system and be valid for the specified plant."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem25"
+                                                title="Valid Storage Location"
+                                                description="Storage location must exist for the specified plant."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem26"
+                                                title="Valid Goods Movement Type"
+                                                description="Movement type must be appropriate for the type of transaction being performed."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem27"
+                                                title="Matching Purchase Order"
+                                                description="If Purchase Order specified, the Material must match the Purchase Order item material."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem28"
+                                                title="Positive Quantity"
+                                                description="Quantity must be greater than zero."
+                                            />
+                                        </items>
+                                    </List>
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+        <beginButton>
+            <Button
+                id="_IDGenButton13"
+                text="Close"
+                press=".onHelpDialogClose"
+            />
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

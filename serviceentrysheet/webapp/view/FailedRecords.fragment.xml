@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:table="sap.ui.table">
+    <Dialog id="_IDGenDialog4"
+        title="Failed Records"
+        class="sapUiSizeCompact"
+        contentWidth="800px"
+        contentHeight="600px"
+        resizable="true"
+        draggable="true"
+        stretch="false"
+        initialFocus="closeButton">
+        <content>
+            <VBox id="_IDGenVBox3" class="sapUiSmallMargin">
+                <MessageStrip id="_IDGenMessageStrip2"
+                    text="The following records failed to process. Please review and correct the errors."
+                    type="Error"
+                    showIcon="true"
+                    class="sapUiTinyMarginBottom"/>
+
+                <table:Table id="_IDGenTable4"
+                    rows="{failedRecords>/failedRecords}"
+                    selectionMode="None"
+                    class="sapUiTinyMarginTop">
+                    <table:columns>
+                        <table:Column id="_IDGenColumn23">
+                            <Label id="_IDGenLabel8" text="Purchase Order"/>
+                            <table:template>
+                                <Text id="_IDGenText51" text="{failedRecords>PurchaseOrder}"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column id="_IDGenColumn24">
+                            <Label id="_IDGenLabel9" text="PO Item"/>
+                            <table:template>
+                                <Text id="_IDGenText52" text="{failedRecords>PurchaseOrderItem}"/>
+                            </table:template>
+                        </table:Column>
+                        <table:Column id="_IDGenColumn25">
+                            <Label id="_IDGenLabel10" text="Error Message"/>
+                            <table:template>
+                                <Text id="_IDGenText56" text="{failedRecords>errorMessage}"/>
+                            </table:template>
+                        </table:Column>
+                    </table:columns>
+                </table:Table>
+
+                <HBox id="_IDGenHBox1" class="sapUiTinyMarginTop" justifyContent="End">
+                    <Button id="_IDGenButton10"
+                        text="Export to Excel"
+                        icon="sap-icon://excel-attachment"
+                        press="onExportFailedToExcel"
+                        type="Transparent"
+                        class="sapUiTinyMarginEnd"/>
+                    <Button id="_IDGenButton15"
+                        text="Export to CSV"
+                        icon="sap-icon://excel-attachment"
+                        press="onExportFailedToCSV"
+                        type="Transparent"
+                        class="sapUiTinyMarginEnd"/>
+                    <Button id="_IDGenButton20"
+                        text="Export to PDF"
+                        icon="sap-icon://pdf-attachment"
+                        press="onExportFailedToPDF"
+                        type="Transparent"/>
+                </HBox>
+            </VBox>
+        </content>
+        <buttons>
+            <Button
+                id="closeButtonFailedRecords"
+                text="Close"
+                press="onCloseFailedRecordsDialog"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition> 

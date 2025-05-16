@@ -1,0 +1,482 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout"
+    xmlns:smartField="sap.ui.comp.smartfield"
+>
+    <Dialog
+        id="entryDetailsDialog"
+        title="{= ${entryDetails>/Status} === 'Invalid' ? 'Invalid WBS Element Details' : 'WBS Element Details'}"
+        contentWidth="950px"
+        stretch="{device>/system/phone}"
+        ariaLabelledBy="dialogTitle"
+    >
+        <content>
+            <VBox
+                id="_IDGenVBox16"
+                class="sapUiMediumMargin"
+            >
+                <!-- Status Header -->
+                <l:BlockLayout id="_IDGenBlockLayout">
+                    <l:BlockLayoutRow id="_IDGenBlockLayoutRow">
+                        <l:BlockLayoutCell
+                            id="_IDGenBlockLayoutCell"
+                            class="sapUiNoPadding"
+                            backgroundColorSet="ColorSet5"
+                            backgroundColorShade="ShadeB"
+                        >
+                            <HBox
+                                id="_IDGenHBox2"
+                                alignItems="Center"
+                                justifyContent="SpaceBetween"
+                                class="sapUiMediumMargin"
+                            >
+                                <Title
+                                    id="dialogTitle"
+                                    text="WBS Element: {entryDetails>/SequenceNumber}"
+                                    level="H2"
+                                    wrapping="true"
+                                />
+                                <HBox
+                                    id="_IDGenHBox3"
+                                    alignItems="Center"
+                                >
+                                    <ObjectStatus
+                                        id="_IDGenObjectStatus"
+                                        text="{entryDetails>/Status}"
+                                        state="{= ${entryDetails>/Status} === 'Valid' ? 'Success' : 'Error'}"
+                                        class="sapUiSmallMarginEnd"
+                                    />
+                                    <core:Icon
+                                        id="_IDGenIcon"
+                                        src="{= ${entryDetails>/Status} === 'Invalid' ? 'sap-icon://alert' : 'sap-icon://sys-enter-2'}"
+                                        color="{= ${entryDetails>/Status} === 'Invalid' ? 'Negative' : 'Positive'}"
+                                        size="1.5rem"
+                                    />
+                                </HBox>
+                            </HBox>
+                        </l:BlockLayoutCell>
+                    </l:BlockLayoutRow>
+                </l:BlockLayout>
+
+                <!-- WBS Element Summary -->
+                <Panel
+                    id="_IDGenPanel1"
+                    headerText="WBS Element Summary"
+                    expandable="true"
+                    expanded="true"
+                >
+                    <HBox
+                        id="_IDGenHBox4"
+                        justifyContent="SpaceBetween"
+                        wrap="Wrap"
+                    >
+                        <VBox
+                            id="_IDGenVBox4"
+                            class="sapUiSmallMarginEnd sapUiSmallMarginBottom"
+                        >
+                            <Label
+                                id="_IDGenLabel3"
+                                text="Project Element:"
+                                design="Bold"
+                            />
+                            <Text
+                                id="_IDGenText18"
+                                text="{entryDetails>/ProjectElement}"
+                                class="sapUiTinyMarginTop"
+                            />
+                        </VBox>
+
+                        <VBox
+                            id="_IDGenVBox5"
+                            class="sapUiSmallMarginEnd sapUiSmallMarginBottom"
+                        >
+                            <Label
+                                id="_IDGenLabel4"
+                                text="Project UUID:"
+                                design="Bold"
+                            />
+                            <Text
+                                id="_IDGenText5"
+                                text="{entryDetails>/ProjectUUID}"
+                                class="sapUiTinyMarginTop"
+                            />
+                        </VBox>
+
+                        <VBox
+                            id="_IDGenVBox8"
+                            class="sapUiSmallMarginEnd sapUiSmallMarginBottom"
+                        >
+                            <Label
+                                id="_IDGenLabel5"
+                                text="Planned Start Date:"
+                                design="Bold"
+                            />
+                            <Text
+                                id="_IDGenText6"
+                                text="{
+                                path: 'entryDetails>/PlannedStartDate'
+                            }"
+                                class="sapUiTinyMarginTop"
+                            />
+                        </VBox>
+
+                        <VBox
+                            id="_IDGenVBox9"
+                            class="sapUiSmallMarginBottom"
+                        >
+                            <Label
+                                id="_IDGenLabel6"
+                                text="Planned End Date:"
+                                design="Bold"
+                            />
+                            <Text
+                                id="_IDGenText7"
+                                text="{
+                                path: 'entryDetails>/PlannedEndDate'
+                            }"
+                                class="sapUiTinyMarginTop"
+                            />
+                        </VBox>
+                    </HBox>
+                </Panel>
+
+                <!-- Project Details -->
+                <Panel
+                    id="_IDGenPanel2"
+                    headerText="Project Details"
+                    expandable="true"
+                    expanded="true"
+                    class="sapUiSmallMarginTop"
+                >
+                    <f:SimpleForm
+                        id="_IDGenSimpleForm"
+                        layout="ResponsiveGridLayout"
+                        editable="false"
+                        labelSpanXL="3"
+                        labelSpanL="3"
+                        labelSpanM="3"
+                        labelSpanS="12"
+                        columnsXL="2"
+                        columnsL="2"
+                        columnsM="2"
+                    >
+                        <f:content>
+                            <Label
+                                id="_IDGenLabel7"
+                                text="Project Element Description"
+                            />
+                            <Text
+                                id="_IDGenText9"
+                                text="{entryDetails>/ProjectElementDescription}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel11"
+                                text="Project"
+                            />
+                            <Text
+                                id="_IDGenText10"
+                                text="{entryDetails>/Project}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel12"
+                                text="Responsible Cost Center"
+                            />
+                            <Text
+                                id="_IDGenText11"
+                                text="{entryDetails>/ResponsibleCostCenter}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel13"
+                                text="Company Code"
+                            />
+                            <Text
+                                id="_IDGenText28"
+                                text="{entryDetails>/CompanyCode}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel14"
+                                text="Profit Center"
+                            />
+                            <Text
+                                id="_IDGenText54"
+                                text="{entryDetails>/ProfitCenter}"
+                            />
+                        </f:content>
+                    </f:SimpleForm>
+                </Panel>
+
+                <!-- Controlling Information -->
+                <Panel
+                    id="_IDGenPanel3"
+                    headerText="Controlling Information"
+                    expandable="true"
+                    expanded="true"
+                    class="sapUiSmallMarginTop"
+                >
+                    <f:SimpleForm
+                        id="_IDGenSimpleForm1"
+                        layout="ResponsiveGridLayout"
+                        editable="false"
+                        labelSpanXL="3"
+                        labelSpanL="3"
+                        labelSpanM="3"
+                        labelSpanS="12"
+                        columnsXL="2"
+                        columnsL="2"
+                        columnsM="2"
+                    >
+                        <f:content>
+                            <Label
+                                id="_IDGenLabel15"
+                                text="Controlling Area"
+                            />
+                            <Text
+                                id="_IDGenText30"
+                                text="{entryDetails>/ControllingArea}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel16"
+                                text="Billing Element"
+                            />
+                            <Text
+                                id="_IDGenText31"
+                                text="{entryDetails>/WBSElementIsBillingElement}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel17"
+                                text="Old Project Site ID"
+                            />
+                            <Text
+                                id="_IDGenText32"
+                                text="{entryDetails>/YY1_OldProjectSiteID_PTD}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel18"
+                                text="Exact WBS Code"
+                            />
+                            <Text
+                                id="_IDGenText33"
+                                text="{entryDetails>/YY1_ExactWBScode_PTD}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel19"
+                                text="Categorization"
+                            />
+                            <Text
+                                id="_IDGenText34"
+                                text="{entryDetails>/YY1_Categorization_PTD}"
+                            />
+                        </f:content>
+                    </f:SimpleForm>
+                </Panel>
+
+                <!-- Additional Information -->
+                <Panel
+                    id="_IDGenPanel7"
+                    headerText="Additional Information"
+                    expandable="true"
+                    expanded="true"
+                    class="sapUiSmallMarginTop"
+                >
+                    <f:SimpleForm
+                        id="_IDGenSimpleForm2"
+                        layout="ResponsiveGridLayout"
+                        editable="false"
+                        labelSpanXL="3"
+                        labelSpanL="3"
+                        labelSpanM="3"
+                        labelSpanS="12"
+                        columnsXL="2"
+                        columnsL="2"
+                        columnsM="2"
+                    >
+                        <f:content>
+                            <Label
+                                id="_IDGenLabel22"
+                                text="ATM ID"
+                            />
+                            <Text
+                                id="_IDGenText38"
+                                text="{entryDetails>/YY1_ATMID_PTD}"
+                            />
+                            <Label
+                                id="_IDGenLabel27"
+                                text="Address"
+                            />
+                            <Text
+                                id="_IDGenText53"
+                                text="{entryDetails>/YY1_Address_PTD}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel23"
+                                text="State"
+                            />
+                            <Text
+                                id="_IDGenText39"
+                                text="{entryDetails>/YY1_State_PTD}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel24"
+                                text="Postal Code"
+                            />
+                            <Text
+                                id="_IDGenText40"
+                                text="{entryDetails>/YY1_Postalcode_PTD}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel25"
+                                text="Nature of WBS"
+                            />
+                            <Text
+                                id="_IDGenText41"
+                                text="{entryDetails>/YY1_NatureOfWBS_PTD}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel26"
+                                text="SAP Site ID Report"
+                            />
+                            <Text
+                                id="_IDGenText55"
+                                text="{entryDetails>/YY1_SAPsiteIDReport_PTD}"
+                            />
+                        </f:content>
+                    </f:SimpleForm>
+                </Panel>
+
+                <!-- Validation Errors Section -->
+                <Panel
+                    id="_IDGenPanel4"
+                    headerText="Validation Errors"
+                    expandable="true"
+                    expanded="{= ${entryDetails>/Status} === 'Invalid'}"
+                    visible="{= ${entryDetails>/Status} === 'Invalid'}"
+                    class="sapUiSmallMarginTop"
+                >
+                    <headerToolbar>
+                        <OverflowToolbar id="_IDGenOverflowToolbar">
+                            <Title
+                                id="_IDGenTitle2"
+                                text="Validation Errors"
+                                level="H3"
+                            />
+                            <ToolbarSpacer id="_IDGenToolbarSpacer2" />
+                            <ObjectStatus
+                                id="_IDGenObjectStatus2"
+                                text="{= ${entryDetails>/ValidationErrors}.length + ' Error(s)'}"
+                                state="Error"
+                                icon="sap-icon://alert"
+                            />
+                        </OverflowToolbar>
+                    </headerToolbar>
+
+                    <List
+                        id="_IDGenList8"
+                        items="{entryDetails>/ValidationErrors}"
+                        mode="None"
+                        showSeparators="Inner"
+                    >
+                        <CustomListItem id="_IDGenCustomListItem">
+                            <VBox
+                                id="_IDGenVBox10"
+                                class="sapUiSmallMargin"
+                            >
+                                <HBox
+                                    id="_IDGenHBox5"
+                                    alignItems="Center"
+                                >
+                                    <core:Icon
+                                        id="_IDGenIcon1"
+                                        src="sap-icon://message-error"
+                                        color="Negative"
+                                        size="1.5rem"
+                                        class="sapUiTinyMarginEnd"
+                                    />
+                                    <Text
+                                        id="_IDGenText57"
+                                        text="{entryDetails>message}"
+                                        class="sapMTextBold"
+                                        wrapping="true"
+                                    />
+                                </HBox>
+                                <HBox
+                                    id="_IDGenHBox6"
+                                    class="sapUiSmallMarginTop"
+                                >
+                                    <Label
+                                        id="_IDGenLabel20"
+                                        text="Field:"
+                                        design="Bold"
+                                        class="sapUiTinyMarginEnd"
+                                    />
+                                    <Text
+                                        id="_IDGenText35"
+                                        text="{entryDetails>field}"
+                                    />
+                                </HBox>
+                                <HBox
+                                    id="_IDGenHBox7"
+                                    visible="{= !!${entryDetails>sheet}}"
+                                    class="sapUiTinyMarginTop"
+                                >
+                                    <Label
+                                        id="_IDGenLabel21"
+                                        text="Sheet:"
+                                        design="Bold"
+                                        class="sapUiTinyMarginEnd"
+                                    />
+                                    <Text
+                                        id="_IDGenText36"
+                                        text="{entryDetails>sheet}"
+                                    />
+                                </HBox>
+                            </VBox>
+                        </CustomListItem>
+                    </List>
+
+                    <VBox
+                        id="_IDGenVBox11"
+                        visible="{= !${entryDetails>/ValidationErrors} || ${entryDetails>/ValidationErrors}.length === 0}"
+                        alignItems="Center"
+                        justifyContent="Center"
+                        class="sapUiMediumMargin"
+                    >
+                        <core:Icon
+                            id="_IDGenIcon2"
+                            src="sap-icon://sys-help"
+                            size="2rem"
+                            class="sapUiSmallMarginBottom"
+                        />
+                        <Text
+                            id="_IDGenText37"
+                            text="No specific validation errors available"
+                            class="sapMText sapUiSmallMarginBottom"
+                        />
+                    </VBox>
+                </Panel>
+            </VBox>
+        </content>
+
+        <buttons>
+            <Button
+                id="_IDGenButton11"
+                text="Close"
+                press="onEntryDetailsDialogClose"
+                type="Emphasized"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

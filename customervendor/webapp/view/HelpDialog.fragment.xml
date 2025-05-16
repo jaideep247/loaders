@@ -1,0 +1,358 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        id="helpDialog"
+        title="Customer to Customer Journal Entry Upload Help"
+        contentWidth="600px"
+    >
+        <content>
+            <IconTabBar
+                id="helpTabBar"
+                expanded="true"
+            >
+                <items>
+                    <IconTabFilter
+                        id="gettingStartedTab"
+                        icon="sap-icon://hint"
+                        text="Getting Started"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox2"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle7"
+                                        text="How to Upload Journal Entries"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText51"
+                                        text="1. Download the template using the 'Download Template' button."
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText52"
+                                        text="2. Fill out the template with your customer-vendor journal entries."
+                                    />
+                                    <Text
+                                        id="_IDGenText53"
+                                        text="3. Upload the completed file using the 'Choose File' button."
+                                    />
+                                    <Text
+                                        id="_IDGenText54"
+                                        text="4. Review validation results and fix any errors."
+                                    />
+                                    <Text
+                                        id="_IDGenText55"
+                                        text="5. Click 'Submit Entries' to process valid entries."
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="commonErrorsTab"
+                        icon="sap-icon://alert"
+                        text="Common Errors"
+                    >
+                        <content>
+                            <List id="_IDGenList">
+                                <items>
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem"
+                                        title="Unbalanced Transaction"
+                                        description="Ensure debits equal credits within each transaction group."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem1"
+                                        title="Missing Required Fields"
+                                        description="All required fields must be filled in for each entry."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem2"
+                                        title="Invalid Date Format"
+                                        description="Dates should be in YYYY-MM-DD format."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem5"
+                                        title="Business Place Length"
+                                        description="Business Place must be no more than 4 characters long."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem6"
+                                        title="Missing Customer or Vendor Entry"
+                                        description="Each transaction must have at least one customer and one vendor entry."
+                                    />
+                                </items>
+                            </List>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="fileFormatTab"
+                        icon="sap-icon://attachment-text-file"
+                        text="File Format"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox3"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Text
+                                        id="_IDGenText56"
+                                        text="The Excel file must contain three worksheets:"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <List id="_IDGenList3">
+                                        <items>
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem7"
+                                                title="Header: Contains document header information"
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem8"
+                                                title="Vendor Lines: Contains Vendor entries (Indicator S)"
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem9"
+                                                title="Customer Lines: Contains Customer entries (Indicator H)"
+                                            />
+                                        </items>
+                                    </List>
+                                    <Title
+                                        id="_IDGenTitle8"
+                                        text="Required Fields"
+                                        class="sapUiSmallMarginTop sapUiTinyMarginBottom"
+                                    />
+                                    <Panel
+                                        id="_IDGenPanel1"
+                                        headerText="Header Sheet"
+                                        expandable="true"
+                                        expanded="false"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList4">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem11"
+                                                        title="Sequence ID"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem12"
+                                                        title="Accounting Document Type"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem13"
+                                                        title="Document Reference ID"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem14"
+                                                        title="Document Header Text"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem15"
+                                                        title="Company Code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem16"
+                                                        title="Document Date"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem17"
+                                                        title="Posting Date"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Panel
+                                        id="_IDGenPanel2"
+                                        headerText="Vendor Lines Sheet"
+                                        expandable="true"
+                                        expanded="false"
+                                        class="sapUiTinyMarginTop"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList6">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem18"
+                                                        title="Sequence ID"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem19"
+                                                        title="Reference Document Item"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem20"
+                                                        title="Credit/Debit"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem21"
+                                                        title="Customer Code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem22"
+                                                        title="Currency"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem23"
+                                                        title="Amount"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem24"
+                                                        title="Assignment"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem25"
+                                                        title="Reference Key 1"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem26"
+                                                        title="Reference Key 3"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem27"
+                                                        title="Item Text"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem28"
+                                                        title="Business Place"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Panel
+                                        id="_IDGenPanel3"
+                                        headerText="Customer Lines Sheet"
+                                        expandable="true"
+                                        expanded="false"
+                                        class="sapUiTinyMarginTop"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList7">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem29"
+                                                        title="Sequence ID"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem30"
+                                                        title="Reference Document Item"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem31"
+                                                        title="Indicator (S-Dr, H-Cr)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem32"
+                                                        title="Customer Code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem33"
+                                                        title="Currency"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem34"
+                                                        title="Amount"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem35"
+                                                        title="Assignment"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem36"
+                                                        title="Reference Key 1"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem37"
+                                                        title="Reference Key 3"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem38"
+                                                        title="Item Text"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem39"
+                                                        title="Business Place"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Link
+                                        id="_IDGenLink"
+                                        text="Download Sample Template"
+                                        press=".onDownloadTemplate"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="balancingRulesTab"
+                        icon="sap-icon://collaborate"
+                        text="Balancing Rules"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox8"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle9"
+                                        text="Transaction Balancing Rules"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText57"
+                                        text="Each transaction must follow these rules:"
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <List id="_IDGenList8">
+                                        <items>
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem40"
+                                                title="Total Debits = Total Credits"
+                                                description="The sum of all debits must equal the sum of all credits for each sequence ID."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem41"
+                                                title="Customer and Vendor Lines Balance"
+                                                description="Each sequence ID must have at least one Vendor line entry and one Customer credit line entry."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem42"
+                                                title="Indicator Usage"
+                                                description="Vendor Lines should use indicator 'S' (Debit) and Customer Lines should use indicator 'H' (Credit) or vice versa."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem43"
+                                                title="Matching Currency"
+                                                description="All entries for a sequence ID must use the same currency."
+                                            />
+                                        </items>
+                                    </List>
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+        <beginButton>
+            <Button
+                id="_IDGenButton3"
+                text="Close"
+                press=".onHelpDialogClose"
+            />
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

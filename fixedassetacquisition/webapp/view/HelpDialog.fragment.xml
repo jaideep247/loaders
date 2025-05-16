@@ -1,0 +1,305 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        id="helpDialog"
+        title="Fixed Asset Acquisition Excel Upload Help"
+        contentWidth="600px"
+    >
+        <content>
+            <IconTabBar
+                id="helpTabBar"
+                expanded="true"
+            >
+                <items>
+                    <IconTabFilter
+                        id="gettingStartedTab"
+                        icon="sap-icon://hint"
+                        text="Getting Started"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox12"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle3"
+                                        text="How to Upload Fixed Asset Acquisitions"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText7"
+                                        text="1. Download the template using the 'Download Sample Template' button."
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText8"
+                                        text="2. Fill in the template with your fixed asset acquisition data."
+                                    />
+                                    <Text
+                                        id="_IDGenText9"
+                                        text="3. Upload the completed file using the 'Browse Files' button."
+                                    />
+                                    <Text
+                                        id="_IDGenText10"
+                                        text="4. Review validation results and fix any errors."
+                                    />
+                                    <Text
+                                        id="_IDGenText11"
+                                        text="5. Click 'Submit Fixed Asset Acquisitions' to process valid entries."
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="commonErrorsTab"
+                        icon="sap-icon://alert"
+                        text="Common Errors"
+                    >
+                        <content>
+                            <List id="_IDGenList6">
+                                <items>
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem37"
+                                        title="Missing Company Code"
+                                        description="Company Code is required for each fixed asset acquisition."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem38"
+                                        title="Invalid Master Fixed Asset"
+                                        description="Master Fixed Asset must exist in the system."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem5"
+                                        title="Invalid Date Format"
+                                        description="Dates should be in YYYY-MM-DD format."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem6"
+                                        title="Missing Transaction Type"
+                                        description="Business Transaction Type is required for acquisitions."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem7"
+                                        title="Invalid Amount"
+                                        description="Acquisition amount must be greater than zero and properly formatted."
+                                    />
+                                </items>
+                            </List>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="fileFormatTab"
+                        icon="sap-icon://attachment-text-file"
+                        text="File Format"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox13"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Text
+                                        id="_IDGenText3"
+                                        text="The Excel file should contain the following columns:"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Panel
+                                        id="_IDGenPanel7"
+                                        headerText="Required Fields"
+                                        expandable="true"
+                                        expanded="true"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList7">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem8"
+                                                        title="SequenceID: Line sequence number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem9"
+                                                        title="CompanyCode: Company code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem10"
+                                                        title="MasterFixedAsset: Master asset number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem11"
+                                                        title="FixedAsset: Fixed asset sub-number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem12"
+                                                        title="BusinessTransactionType: Transaction type code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem13"
+                                                        title="PostingDate: Posting date (YYYY-MM-DD)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem14"
+                                                        title="DocumentDate: Document date (YYYY-MM-DD)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem15"
+                                                        title="AssetValueDate: Asset value date (YYYY-MM-DD)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem16"
+                                                        title="AcqnAmtInTransactionCurrency: Acquisition amount"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem17"
+                                                        title="TransactionCurrency: Currency code"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Panel
+                                        id="_IDGenPanel6"
+                                        headerText="Optional Fields"
+                                        expandable="true"
+                                        expanded="false"
+                                        class="sapUiTinyMarginTop"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList4">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem18"
+                                                        title="ReferenceDocumentItem: Reference document item"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem19"
+                                                        title="DebitCreditCode: Debit/Credit indicator"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem20"
+                                                        title="FixedAssetYearOfAcqnCode: Year of acquisition code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem21"
+                                                        title="DocumentReferenceID: Document reference ID"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem22"
+                                                        title="AccountingDocumentHeaderText: Header text"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem23"
+                                                        title="AccountingDocumentType: Document type"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem24"
+                                                        title="AssignmentReference: Assignment reference"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem25"
+                                                        title="DocumentItemText: Item text"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem26"
+                                                        title="OffsettingAccount: Offsetting account"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem27"
+                                                        title="QuantityInBaseUnit: Quantity in base unit"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem28"
+                                                        title="BaseUnitSAPCode: SAP unit code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem29"
+                                                        title="BaseUnitISOCode: ISO unit code"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Link
+                                        id="_IDGenLink"
+                                        text="Download Sample Template"
+                                        press=".onDownloadTemplateLinkPress"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="processingRulesTab"
+                        icon="sap-icon://process"
+                        text="Processing Rules"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox14"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle6"
+                                        text="Fixed Asset Processing Rules"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText6"
+                                        text="Each fixed asset acquisition must follow these rules:"
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <List id="_IDGenList5">
+                                        <items>
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem30"
+                                                title="Valid Company Code"
+                                                description="Company code must exist in the system."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem31"
+                                                title="Valid Master Fixed Asset"
+                                                description="Master Fixed Asset must exist in the specified company code."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem32"
+                                                title="Valid Transaction Type"
+                                                description="Business Transaction Type must be valid for acquisitions."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem33"
+                                                title="Positive Amount"
+                                                description="Acquisition amount must be greater than zero."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem34"
+                                                title="Valid Currency"
+                                                description="Transaction currency must be valid for the company code."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem35"
+                                                title="Date Consistency"
+                                                description="Document Date, Posting Date, and Asset Value Date must be logical and in the correct periods."
+                                            />
+                                        </items>
+                                    </List>
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+        <beginButton>
+            <Button
+                id="_IDGenButton"
+                text="Close"
+                press=".onHelpDialogClose"
+            />
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

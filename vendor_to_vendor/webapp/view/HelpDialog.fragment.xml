@@ -1,0 +1,199 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Dialog
+        id="helpDialog"
+        title="Vendor to Vendor Journal Entry Upload Help"
+        contentWidth="600px">
+        <content>
+            <IconTabBar
+                id="helpTabBar"
+                expanded="true">
+                <items>
+                    <IconTabFilter
+                        id="gettingStartedTab"
+                        icon="sap-icon://hint"
+                        text="Getting Started">
+                        <content>
+                            <VBox id="_IDGenVBox" class="sapUiSmallMarginBegin sapUiSmallMarginEnd">
+                                <items>
+                                    <Title id="_IDGenTitle"
+                                        text="How to Upload Journal Entries"
+                                        class="sapUiSmallMarginTop" />
+                                    <Text id="_IDGenText4"
+                                        text="1. Download the template using the 'Download Template' button."
+                                        class="sapUiTinyMarginTop" />
+                                    <Text id="_IDGenText20"
+                                        text="2. Fill out the template with your vendor-to-vendor journal entries." />
+                                    <Text id="_IDGenText21"
+                                        text="3. Upload the completed file using the 'Choose File' button." />
+                                    <Text id="_IDGenText24"
+                                        text="4. Review validation results and fix any errors." />
+                                    <Text id="_IDGenText25"
+                                        text="5. Click 'Submit Entries' to process valid entries." />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="commonErrorsTab"
+                        icon="sap-icon://alert"
+                        text="Common Errors">
+                        <content>
+                            <List id="_IDGenList2">
+                                <items>
+                                    <StandardListItem id="_IDGenStandardListItem"
+                                        title="Unbalanced Transaction"
+                                        description="Ensure debits equal credits within each transaction group." />
+                                    <StandardListItem id="_IDGenStandardListItem2"
+                                        title="Missing Required Fields"
+                                        description="All required fields must be filled in for each entry." />
+                                    <StandardListItem id="_IDGenStandardListItem4"
+                                        title="Invalid Date Format"
+                                        description="Dates should be in YYYY-MM-DD format." />
+                                    <StandardListItem id="_IDGenStandardListItem5"
+                                        title="Business Place Length"
+                                        description="Business Place must be no more than 4 characters long." />
+                                    <StandardListItem id="_IDGenStandardListItem6"
+                                        title="Missing Vendor Debit or Credit Entry"
+                                        description="Each transaction must have at least one vendor debit and one vendor credit entry." />
+                                </items>
+                            </List>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="fileFormatTab"
+                        icon="sap-icon://attachment-text-file"
+                        text="File Format">
+                        <content>
+                            <VBox id="_IDGenVBox3" class="sapUiSmallMarginBegin sapUiSmallMarginEnd">
+                                <items>
+                                    <Text id="_IDGenText26"
+                                        text="The Excel file must contain three worksheets:"
+                                        class="sapUiSmallMarginTop" />
+                                    <List id="_IDGenList3">
+                                        <items>
+                                            <StandardListItem id="_IDGenStandardListItem7"
+                                                title="Header: Contains document header information" />
+                                            <StandardListItem id="_IDGenStandardListItem8"
+                                                title="Vendor Debit Lines: Contains Vendor Debit entries (Indicator S)" />
+                                            <StandardListItem id="_IDGenStandardListItem9"
+                                                title="Vendor Credit Lines: Contains Vendor Credit entries (Indicator H)" />
+                                        </items>
+                                    </List>
+                                    <Title id="_IDGenTitle8"
+                                        text="Required Fields"
+                                        class="sapUiSmallMarginTop sapUiTinyMarginBottom" />
+                                    <Panel id="_IDGenPanel1"
+                                        headerText="Header Sheet"
+                                        expandable="true"
+                                        expanded="false">
+                                        <content>
+                                            <List id="_IDGenList4">
+                                                <items>
+                                                    <StandardListItem id="_IDGenStandardListItem11" title="Sequence ID" />
+                                                    <StandardListItem id="_IDGenStandardListItem12" title="Accounting Document Type" />
+                                                    <StandardListItem id="_IDGenStandardListItem13" title="Document Reference ID" />
+                                                    <StandardListItem id="_IDGenStandardListItem14" title="Document Header Text" />
+                                                    <StandardListItem id="_IDGenStandardListItem15" title="Company Code" />
+                                                    <StandardListItem id="_IDGenStandardListItem16" title="Document Date" />
+                                                    <StandardListItem id="_IDGenStandardListItem17" title="Posting Date" />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Panel id="_IDGenPanel2"
+                                        headerText="Vendor Debit Lines Sheet"
+                                        expandable="true"
+                                        expanded="false"
+                                        class="sapUiTinyMarginTop">
+                                        <content>
+                                            <List id="_IDGenList6">
+                                                <items>
+                                                    <StandardListItem id="_IDGenStandardListItem18" title="Sequence ID" />
+                                                    <StandardListItem id="_IDGenStandardListItem19" title="Reference Document Item" />
+                                                    <StandardListItem id="_IDGenStandardListItem20" title="Indicator (S-Dr, H-Cr)" />
+                                                    <StandardListItem id="_IDGenStandardListItem21" title="Vendor Code" />
+                                                    <StandardListItem id="_IDGenStandardListItem22" title="Currency" />
+                                                    <StandardListItem id="_IDGenStandardListItem23" title="Amount" />
+                                                    <StandardListItem id="_IDGenStandardListItem24" title="Assignment" />
+                                                    <StandardListItem id="_IDGenStandardListItem25" title="Reference Key 1" />
+                                                    <StandardListItem id="_IDGenStandardListItem26" title="Item Text" />
+                                                    <StandardListItem id="_IDGenStandardListItem27" title="Business Place" />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Panel id="_IDGenPanel3"
+                                        headerText="Vendor Credit Lines Sheet"
+                                        expandable="true"
+                                        expanded="false"
+                                        class="sapUiTinyMarginTop">
+                                        <content>
+                                            <List id="_IDGenList7">
+                                                <items>
+                                                    <StandardListItem id="_IDGenStandardListItem28" title="Sequence ID" />
+                                                    <StandardListItem id="_IDGenStandardListItem29" title="Reference Document Item" />
+                                                    <StandardListItem id="_IDGenStandardListItem30" title="Indicator (S-Dr, H-Cr)" />
+                                                    <StandardListItem id="_IDGenStandardListItem31" title="Vendor Code" />
+                                                    <StandardListItem id="_IDGenStandardListItem32" title="Currency" />
+                                                    <StandardListItem id="_IDGenStandardListItem33" title="Amount" />
+                                                    <StandardListItem id="_IDGenStandardListItem34" title="Assignment" />
+                                                    <StandardListItem id="_IDGenStandardListItem35" title="Reference Key 1" />
+                                                    <StandardListItem id="_IDGenStandardListItem36" title="Item Text" />
+                                                    <StandardListItem id="_IDGenStandardListItem37" title="Business Place" />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Link id="_IDGenLink"
+                                        text="Download Sample Template"
+                                        press=".onDownloadTemplate"
+                                        class="sapUiSmallMarginTop" />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="balancingRulesTab"
+                        icon="sap-icon://collaborate"
+                        text="Balancing Rules">
+                        <content>
+                            <VBox id="_IDGenVBox6" class="sapUiSmallMarginBegin sapUiSmallMarginEnd">
+                                <items>
+                                    <Title id="_IDGenTitle9" 
+                                        text="Transaction Balancing Rules"
+                                        class="sapUiSmallMarginTop" />
+                                    <Text id="_IDGenText27" 
+                                        text="Each transaction must follow these rules:"
+                                        class="sapUiTinyMarginTop" />
+                                    <List id="_IDGenList8">
+                                        <items>
+                                            <StandardListItem id="_IDGenStandardListItem38" 
+                                                title="Total Debits = Total Credits" 
+                                                description="The sum of all debits must equal the sum of all credits for each sequence ID." />
+                                            <StandardListItem id="_IDGenStandardListItem39" 
+                                                title="Vendor Debit and Credit Lines Balance" 
+                                                description="Each sequence ID must have at least one vendor debit line entry and one vendor credit line entry." />
+                                            <StandardListItem id="_IDGenStandardListItem40" 
+                                                title="Indicator Usage" 
+                                                description="Vendor Debit Lines should use indicator 'S' (Debit) and Vendor Credit Lines should use indicator 'H' (Credit)." />
+                                            <StandardListItem id="_IDGenStandardListItem41" 
+                                                title="Matching Currency" 
+                                                description="All entries for a sequence ID must use the same currency." />
+                                        </items>
+                                    </List>
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+        <beginButton>
+            <Button id="_IDGenButton4"
+                text="Close"
+                press=".onHelpDialogClose" />
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

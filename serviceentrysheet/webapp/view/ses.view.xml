@@ -1,0 +1,664 @@
+<mvc:View
+    controllerName="serviceentrysheet.controller.ses"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:l="sap.ui.layout"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:unified="sap.ui.unified"
+    displayBlock="true"
+    height="100%"
+>
+    <Page
+        id="page"
+        title="{i18n>title}"
+        showFooter="true"
+    >
+        <!-- User Information Display - Read Only -->
+        <Label
+            id="userInfoLabel"
+            text="Current User:"
+            class="sapUiTinyMarginEnd"
+        />
+        <ObjectStatus
+            id="userNameStatus"
+            text="{userInfo>/displayName}"
+            state="Information"
+            icon="sap-icon://person-placeholder"
+            class="sapUiMediumMarginEnd"
+        />
+        <headerContent>
+            <Text
+                id="infoText"
+                text="Click for instructions on uploading service entry sheets from Excel to SAP."
+            />
+            <Button
+                id="headerHelpButton"
+                icon="sap-icon://sys-help"
+                tooltip="Help"
+                press="onShowHelp"
+            />
+        </headerContent>
+
+        <content>
+            <f:DynamicPage
+                id="dynamicPageId"
+                headerExpanded="true"
+                toggleHeaderOnTitleClick="true"
+            >
+                <f:title>
+                    <f:DynamicPageTitle id="dynamicPageTitleId">
+                        <f:heading>
+                            <Title
+                                id="pageTitle"
+                                text="Service Entry Sheet Bulk Loader"
+                            />
+                        </f:heading>
+                        <f:snappedContent>
+                            <Text
+                                id="snappedSubtitleText"
+                                text="Upload multiple service entry sheets from Excel to SAP"
+                            />
+                        </f:snappedContent>
+                        <f:expandedContent>
+                            <Text
+                                id="expandedSubtitleText"
+                                text="Upload multiple service entry sheets from Excel to SAP"
+                            />
+                        </f:expandedContent>
+                    </f:DynamicPageTitle>
+                </f:title>
+
+                <f:content>
+                    <VBox id="mainContentVBox">
+                        <!-- Excel Upload Panel -->
+                        <Panel
+                            id="uploadPanel"
+                            headerText="Excel File Upload"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <VBox id="uploadPanelContentBox">
+                                    <HBox
+                                        id="uploadControlsBox"
+                                        alignItems="Center"
+                                        justifyContent="SpaceBetween"
+                                        class="sapUiSmallMarginBottom sapUiSmallMarginTop"
+                                    >
+                                        <VBox
+                                            id="uploaderBox"
+                                            width="60%"
+                                        >
+                                            <unified:FileUploader
+                                                id="fileUploader"
+                                                width="100%"
+                                                placeholder="Select Excel File (.xlsx) containing service entry sheets"
+                                                change="onFileChange"
+                                                buttonText="Browse Files"
+                                                fileType="xlsx"
+                                                style="Emphasized"
+                                                icon="sap-icon://upload"
+                                                name="serviceEntrySheetUpload"
+                                            />
+                                            <Text
+                                                id="fileFormatHelper"
+                                                text="Please upload Excel file containing service entry sheets with required fields (Service Entry Sheet Name, Purchase Order, Supplier, etc.)"
+                                                class="sapUiTinyMarginTop"
+                                            />
+                                        </VBox>
+                                        <Button
+                                            id="downloadTemplateBtn"
+                                            text="Download Sample Template"
+                                            press="onDownloadTemplate"
+                                            type="Emphasized"
+                                            icon="sap-icon://download"
+                                        />
+                                    </HBox>
+                                </VBox>
+                            </content>
+                        </Panel>
+
+                        <!-- Filters Panel -->
+                        <Panel
+                            id="filtersPanel"
+                            headerText="Filters"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <!-- First row of filters with consistent widths and alignment -->
+                                <FlexBox
+                                    id="filterControlsBox"
+                                    wrap="Wrap"
+                                    alignItems="Start"
+                                    class="sapUiSmallMarginBottom"
+                                >
+                                    <FlexBox
+                                        id="_IDGenFlexBox2"
+                                        alignItems="Start"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <ComboBox
+                                            id="statusFilterComboBox"
+                                            width="100%"
+                                            items="{
+                        path: 'statusModel>/',
+                        templateShareable: false
+                    }"
+                                            selectionChange="onStatusFilterChange"
+                                            placeholder="Filter by Status"
+                                        >
+                                            <core:Item
+                                                id="_IDGenItem1"
+                                                text="{statusModel>text}"
+                                                key="{statusModel>key}"
+                                            />
+                                        </ComboBox>
+                                    </FlexBox>
+
+                                    <FlexBox
+                                        id="_IDGenFlexBox4"
+                                        alignItems="Start"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <Input
+                                            id="sequenceFilter"
+                                            width="100%"
+                                            placeholder="Sequence ID"
+                                            liveChange="onFilterChange"
+                                        />
+                                    </FlexBox>
+
+                                    <FlexBox
+                                        id="_IDGenFlexBox5"
+                                        alignItems="Start"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <Input
+                                            id="purchaseOrderFilter"
+                                            width="100%"
+                                            placeholder="Purchase Order"
+                                            liveChange="onFilterChange"
+                                        />
+                                    </FlexBox>
+
+                                    <FlexBox
+                                        id="_IDGenFlexBox7"
+                                        alignItems="Start"
+                                        class="sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <Input
+                                            id="supplierFilter"
+                                            width="100%"
+                                            placeholder="Supplier"
+                                            liveChange="onFilterChange"
+                                        />
+                                    </FlexBox>
+                                    <FlexBox
+                                        id="_IDGenFlexBox8"
+                                        alignItems="Start"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <Input
+                                            id="plantFilter"
+                                            width="100%"
+                                            placeholder="Plant"
+                                            liveChange="onFilterChange"
+                                        />
+                                    </FlexBox>
+
+                                    <FlexBox
+                                        id="_IDGenFlexBox10"
+                                        alignItems="Start"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <Input
+                                            id="costCenterFilter"
+                                            width="100%"
+                                            placeholder="Cost Center"
+                                            liveChange="onFilterChange"
+                                        />
+                                    </FlexBox>
+
+                                    <FlexBox
+                                        id="_IDGenFlexBox11"
+                                        alignItems="Start"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <Input
+                                            id="wbsElementFilter"
+                                            width="100%"
+                                            placeholder="WBS Element"
+                                            liveChange="onFilterChange"
+                                        />
+                                    </FlexBox>
+                                </FlexBox>
+
+                                <!-- Second row of filters with consistent widths matching first row positions -->
+                                <FlexBox
+                                    id="extraFiltersBox"
+                                    wrap="Wrap"
+                                    alignItems="Start"
+                                >
+                                    <FlexBox
+                                        id="_IDGenFlexBox12"
+                                        alignItems="Start"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <ComboBox
+                                            id="accountAssignmentCategoryFilter"
+                                            width="100%"
+                                            placeholder="Account Assignment Category"
+                                            selectionChange="onAccountAssignmentCategoryFilterChange"
+                                            items="{
+                                                        path: 'accountAssignmentCategories>/categories',
+                                                        templateShareable: false
+                                                    }"
+                                        >
+                                            <core:Item
+                                                id="_IDGenItem2"
+                                                text="{accountAssignmentCategories>text}"
+                                                key="{accountAssignmentCategories>key}"
+                                            />
+                                        </ComboBox>
+                                    </FlexBox>
+                                    <FlexBox
+                                        id="_IDGenFlexBox14"
+                                        alignItems="Start"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <Input
+                                            id="glAccountFilter"
+                                            width="100%"
+                                            placeholder="GL Account"
+                                            liveChange="onFilterChange"
+                                        />
+                                    </FlexBox>
+
+                                    <FlexBox
+                                        id="_IDGenFlexBox17"
+                                        alignItems="Start"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <Input
+                                            id="purchasingGroupFilter"
+                                            width="100%"
+                                            placeholder="Purchasing Group"
+                                            liveChange="onFilterChange"
+                                        />
+                                    </FlexBox>
+
+                                    <FlexBox
+                                        id="_IDGenFlexBox13"
+                                        alignItems="Start"
+                                        class="sapUiSmallMarginBottom"
+                                        width="15rem"
+                                    >
+                                        <Button
+                                            id="resetFiltersBtn"
+                                            text="Reset Filters"
+                                            width="100%"
+                                            type="Emphasized"
+                                            icon="sap-icon://clear-filter"
+                                            press="onResetFilters"
+                                        />
+                                    </FlexBox>
+                                </FlexBox>
+                            </content>
+                        </Panel>
+                        <!-- Service Entry Sheet Items Panel -->
+                        <Panel
+                            id="itemsPanel"
+                            headerText="Service Entry Sheet Items"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <VBox id="itemsPanelContentBox">
+                                    <Toolbar id="itemsToolbar">
+                                        <Title
+                                            id="itemsTableTitle"
+                                            text="Uploaded Service Entry Sheet Items"
+                                        />
+                                        <ToolbarSpacer
+                                            id="itemsToolbarSpacer"
+                                        />
+                                        <SegmentedButton
+                                            id="tableViewSelector"
+                                            selectionChange="onTableViewChange"
+                                            selectedKey="All"
+                                        >
+                                            <items>
+                                                <SegmentedButtonItem
+                                                    id="allItemsBtn"
+                                                    text="All"
+                                                    key="All"
+                                                    press="onStatusFilterChange"
+                                                />
+                                                <SegmentedButtonItem
+                                                    id="validItemsBtn"
+                                                    text="Valid"
+                                                    key="Valid"
+                                                    press="onStatusFilterChange"
+                                                />
+                                                <SegmentedButtonItem
+                                                    id="invalidItemsBtn"
+                                                    text="Invalid"
+                                                    key="Invalid"
+                                                    press="onStatusFilterChange"
+                                                />
+                                            </items>
+                                        </SegmentedButton>
+                                        <SearchField
+                                            id="itemSearchField"
+                                            width="30%"
+                                            search="onSearchItems"
+                                            placeholder="Search by Service Sheet, Supplier, PO..."
+                                            showRefreshButton="false"
+                                        />
+                                        <Button
+                                            id="refreshTableBtn"
+                                            icon="sap-icon://refresh"
+                                            tooltip="Refresh Table"
+                                            press="onRefreshTable"
+                                            type="Transparent"
+                                        />
+                                    </Toolbar>
+
+                                    <Table
+                                        id="itemsTable"
+                                        items="{serviceEntrySheets>/entries}"
+                                        mode="None"
+                                        noDataText="No items available. Please upload an Excel file with service entry sheet items."
+                                        growing="true"
+                                        growingThreshold="15"
+                                        alternateRowColors="true"
+                                        sticky="ColumnHeaders,HeaderToolbar"
+                                    >
+                                        <columns>
+                                            <Column
+                                                id="sequenceIdColumn"
+                                                width="7%"
+                                                minScreenWidth="Tablet"
+                                                demandPopin="true"
+                                            >
+                                                <Text
+                                                    id="sequenceIdText"
+                                                    text="Sequence"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="serviceEntrySheetColumn"
+                                                width="12%"
+                                                minScreenWidth="Tablet"
+                                                demandPopin="true"
+                                            >
+                                                <Text
+                                                    id="serviceEntrySheetText"
+                                                    text="SES Name"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="supplierColumn"
+                                                width="12%"
+                                                minScreenWidth="Tablet"
+                                                demandPopin="true"
+                                            >
+                                                <Text
+                                                    id="supplierText"
+                                                    text="Supplier"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="purchaseOrderColumn"
+                                                width="9%"
+                                                minScreenWidth="Tablet"
+                                                demandPopin="true"
+                                            >
+                                                <Text
+                                                    id="purchaseOrderText"
+                                                    text="PO"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="poItemColumn"
+                                                width="6%"
+                                                minScreenWidth="Desktop"
+                                                demandPopin="true"
+                                            >
+                                                <Text
+                                                    id="poItemText"
+                                                    text="PO Item"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="plantColumn"
+                                                width="7%"
+                                                minScreenWidth="Desktop"
+                                                demandPopin="true"
+                                            >
+                                                <Text
+                                                    id="plantText"
+                                                    text="Plant"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="postingDateColumn"
+                                                width="8%"
+                                                minScreenWidth="Desktop"
+                                                demandPopin="true"
+                                            >
+                                                <Text
+                                                    id="postingDateText"
+                                                    text="Posting Date"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="accountCategoryColumn"
+                                                width="8%"
+                                                minScreenWidth="Desktop"
+                                                demandPopin="true"
+                                            >
+                                                <Text
+                                                    id="accountCategoryText"
+                                                    text="Account Assignment"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="amountColumn"
+                                                width="9%"
+                                                minScreenWidth="Tablet"
+                                                demandPopin="true"
+                                            >
+                                                <Text
+                                                    id="amountText"
+                                                    text="Net Amount"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="currencyColumn"
+                                                width="6%"
+                                                minScreenWidth="Desktop"
+                                                demandPopin="true"
+                                            >
+                                                <Text
+                                                    id="currencyText"
+                                                    text="Currency"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="statusColumn"
+                                                width="8%"
+                                                minScreenWidth="Tablet"
+                                                demandPopin="true"
+                                            >
+                                                <Text
+                                                    id="statusText"
+                                                    text="Status"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="actionsColumn"
+                                                width="8%"
+                                            >
+                                                <Text
+                                                    id="actionsText"
+                                                    text="Actions"
+                                                />
+                                            </Column>
+                                        </columns>
+
+                                        <items>
+                                            <ColumnListItem
+                                                id="tableItem"
+                                                type="Active"
+                                                press="onItemPress"
+                                            >
+                                                <cells>
+                                                    <Text
+                                                        id="_IDGenText19"
+                                                        text="{serviceEntrySheets>SequenceNumber}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText29"
+                                                        text="{serviceEntrySheets>ServiceEntrySheetName}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText42"
+                                                        text="{serviceEntrySheets>Supplier}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText43"
+                                                        text="{serviceEntrySheets>PurchaseOrder}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenTextPoItem"
+                                                        text="{serviceEntrySheets>PurchaseOrderItem}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenTextPlant"
+                                                        text="{serviceEntrySheets>Plant}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenTextPostingDate"
+                                                        text="{path: 'serviceEntrySheets>PostingDate'}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenTextAccCat"
+                                                        text="{serviceEntrySheets>AccountAssignmentCategory}"
+                                                    />
+                                                    <ObjectNumber
+                                                        id="_IDGenObjectNumber7"
+                                                        number="{serviceEntrySheets>NetAmount}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenTextCurrency"
+                                                        text="{serviceEntrySheets>Currency}"
+                                                    />
+                                                    <ObjectStatus
+                                                        id="_IDGenObjectStatus1"
+                                                        text="{serviceEntrySheets>Status}"
+                                                        state="{= ${serviceEntrySheets>Status} === 'Valid' ? 'Success' : 'Error'}"
+                                                        icon="{= ${serviceEntrySheets>Status} === 'Valid' ? 'sap-icon://accept' : 'sap-icon://error'}"
+                                                    />
+                                                    <HBox id="_IDGenHBox8">
+                                                        <Button
+                                                            id="_IDGenButtonAction"
+                                                            text="Details"
+                                                            type="Transparent"
+                                                            icon="sap-icon://detail-view"
+                                                            press="onViewEntryDetails"
+                                                        />
+                                                    </HBox>
+                                                </cells>
+                                            </ColumnListItem>
+                                        </items>
+
+                                        <noData>
+                                            <MessageStrip
+                                                id="noItemsMessageStrip"
+                                                text="No Service Entry Sheet items available. Please upload an Excel file containing Service Entry Sheet records with required fields."
+                                                type="Information"
+                                                showIcon="true"
+                                                class="sapUiMediumMargin"
+                                            />
+                                        </noData>
+                                    </Table>
+                                </VBox>
+                            </content>
+                        </Panel>
+                    </VBox>
+                </f:content>
+            </f:DynamicPage>
+        </content>
+
+        <footer>
+            <!-- Action Buttons -->
+            <Toolbar id="actionToolbar">
+                <ToolbarSpacer id="actionToolbarSpacer" />
+                <Button
+                    id="resetButton"
+                    text="{= ${uploadSummary>/ProcessingComplete} ? 'Upload New File' : 'Clear Data'}"
+                    type="{= ${uploadSummary>/ProcessingComplete} ? 'Default' : 'Transparent'}"
+                    press="onReset"
+                    enabled="{= ${uploadSummary>/TotalEntries} > 0}"
+                    icon="{= ${uploadSummary>/ProcessingComplete} ? 'sap-icon://create-form' : 'sap-icon://clear-all'}"
+                />
+                <Button
+                    id="createButton"
+                    type="Emphasized"
+                    text="Submit Service Entry Sheets"
+                    enabled="{= ${uploadSummary>/IsSubmitEnabled} === true &amp;&amp; ${uploadSummary>/HasBeenSubmitted} !== true }"
+                    press="onCreateServiceEntrySheet"
+                    icon="sap-icon://accept"
+                />
+                <HBox
+                    id="downloadButtonsContainer"
+                    visible="{= ${uploadSummary>/ProcessingComplete} === true}"
+                    class="sapUiSmallMarginStart"
+                    justifyContent="End"
+                >
+                    <Button
+                        id="downloadResultsExcelButton"
+                        text="Download Excel"
+                        press="onExportPress"
+                        visible="false"
+                        type="Emphasized"
+                        icon="sap-icon://excel-attachment"
+                        class="sapUiSmallMarginEnd"
+                    />
+                    <Button
+                        id="downloadResultsCSVButton"
+                        text="Download CSV"
+                        press="onExportPress"
+                        visible="false"
+                        type="Emphasized"
+                        icon="sap-icon://document-text"
+                        class="sapUiSmallMarginEnd"
+                    />
+                    <Button
+                        id="downloadResultsPDFButton"
+                        text="Download PDF"
+                        press="onExportPress"
+                        visible="false"
+                        type="Emphasized"
+                        icon="sap-icon://pdf-attachment"
+                        class="sapUiSmallMarginEnd"
+                    />
+                </HBox>
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

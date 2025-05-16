@@ -1,0 +1,346 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        id="helpDialog"
+        title="SES Bulk Loader Help"
+        contentWidth="600px"
+    >
+        <content>
+            <IconTabBar
+                id="helpTabBar"
+                expanded="true"
+            >
+                <items>
+                    <IconTabFilter
+                        id="gettingStartedTab"
+                        icon="sap-icon://hint"
+                        text="Getting Started"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox12"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle3"
+                                        text="How to Upload SES Documents"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText3"
+                                        text="1. Download the template using the 'Download Sample Template' button."
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText8"
+                                        text="2. Fill in the template with your SES document data."
+                                    />
+                                    <Text
+                                        id="_IDGenText12"
+                                        text="3. Upload the completed file using the 'Choose File' button."
+                                    />
+                                    <Text
+                                        id="_IDGenText13"
+                                        text="4. Review validation results and fix any errors."
+                                    />
+                                    <Text
+                                        id="_IDGenText14"
+                                        text="5. Click 'Submit SES Documents' to process valid entries."
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="commonErrorsTab"
+                        icon="sap-icon://alert"
+                        text="Common Errors"
+                    >
+                        <content>
+                            <List id="_IDGenList1">
+                                <items>
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem1"
+                                        title="Missing Purchase Order"
+                                        description="Purchase order number is required for each SES document."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem3"
+                                        title="Missing Required Fields"
+                                        description="All required fields must be filled in for each entry."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem5"
+                                        title="Invalid Date Format"
+                                        description="Dates should be in YYYY-MM-DD format."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem6"
+                                        title="Invalid Currency"
+                                        description="Currency code must be valid."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem7"
+                                        title="Missing Plant"
+                                        description="Plant code is required for all material documents."
+                                    />
+                                </items>
+                            </List>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="fileFormatTab"
+                        icon="sap-icon://attachment-text-file"
+                        text="File Format"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox13"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Text
+                                        id="_IDGenText15"
+                                        text="The Excel file should contain the following columns:"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Panel
+                                        id="_IDGenPanel5"
+                                        headerText="Required Fields"
+                                        expandable="true"
+                                        expanded="true"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList3">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem8"
+                                                        title="Sequence Number: Line sequence number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem9"
+                                                        title="Supplier: Supplier code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem10"
+                                                        title="Plant: Plant code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem11"
+                                                        title="Purchase Order: Purchase order number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem12"
+                                                        title="Purchase Order Item: Purchase order line item"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem13"
+                                                        title="Service Entry Sheet Name: Name of service entry sheet"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem14"
+                                                        title="Service Entry Sheet Item: Service entry sheet line item"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem15"
+                                                        title="Confirmed Quantity: Quantity to be processed"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem16"
+                                                        title="Net Amount: Net amount of the service"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem17"
+                                                        title="Currency: Currency code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem18"
+                                                        title="Posting Date: Posting date (YYYY-MM-DD)"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Panel
+                                        id="_IDGenPanel6"
+                                        headerText="Optional Fields"
+                                        expandable="true"
+                                        expanded="false"
+                                        class="sapUiTinyMarginTop"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList4">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem19"
+                                                        title="Purchasing Organization: Purchasing organization code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem20"
+                                                        title="Purchasing Group: Purchasing group code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem21"
+                                                        title="Account Assignment Category: Account assignment category code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem22"
+                                                        title="Net Price Amount: Net price amount"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem23"
+                                                        title="Service Performance Date: Service start date (YYYY-MM-DD)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem24"
+                                                        title="Service Performance End Date: Service end date (YYYY-MM-DD)"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem25"
+                                                        title="Cost Center: Cost center code"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem26"
+                                                        title="GL Account: GL account number"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem27"
+                                                        title="WBS Element: WBS element code"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Link
+                                        id="_IDGenLink"
+                                        text="Download Sample Template"
+                                        press=".onDownloadTemplate"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="processingRulesTab"
+                        icon="sap-icon://process"
+                        text="Processing Rules"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox14"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle4"
+                                        text="SES Processing Rules"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText16"
+                                        text="Each SES document must follow these rules:"
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <List id="_IDGenList5">
+                                        <items>
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem28"
+                                                title="Valid Purchase Order"
+                                                description="Purchase order must exist in the system and be valid for the specified supplier."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem29"
+                                                title="Valid Service Entry Sheet"
+                                                description="Service entry sheet must be valid for the specified purchase order."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem30"
+                                                title="Valid Plant"
+                                                description="Plant code must be valid for the purchase order."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem31"
+                                                title="Valid Account Assignment"
+                                                description="If account assignment elements are provided, they must be valid and consistent."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem32"
+                                                title="Positive Quantity"
+                                                description="Confirmed quantity must be greater than zero."
+                                            />
+                                        </items>
+                                    </List>
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="fieldDescriptionsTab"
+                        icon="sap-icon://list"
+                        text="Field Descriptions"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox15"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle6"
+                                        text="Field Descriptions"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText17"
+                                        text="Detailed explanation of key fields:"
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <List id="_IDGenList6">
+                                        <items>
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem33"
+                                                title="Service Entry Sheet"
+                                                description="Document used to record the services performed by suppliers against a service purchase order."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem34"
+                                                title="Account Assignment Category"
+                                                description="Determines how costs are allocated (K: Cost Center, A: Asset, P: Project, etc.)."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem35"
+                                                title="WBS Element"
+                                                description="Work Breakdown Structure element for project accounting."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem36"
+                                                title="Purchasing Group"
+                                                description="Organizational unit responsible for procurement from specific suppliers."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem37"
+                                                title="GL Account"
+                                                description="General Ledger account to which costs are posted."
+                                            />
+                                        </items>
+                                    </List>
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+        <beginButton>
+            <Button
+                id="_IDGenButton13"
+                text="Close"
+                press=".onHelpDialogClose"
+            />
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

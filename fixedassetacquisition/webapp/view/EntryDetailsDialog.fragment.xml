@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout"
+>
+    <Dialog
+        id="entryDetailsDialog"
+        title="{= ${entryDetails>/Status} === 'Invalid' ? 'Invalid Fixed Asset Acquisition Details' : 'Fixed Asset Acquisition Details'}"
+        contentWidth="950px"
+        stretch="{device>/system/phone}"
+    >
+        <content>
+            <VBox
+                id="_IDGenVBox"
+                class="sapUiMediumMargin"
+            >
+                <!-- Status Header -->
+                <l:BlockLayout id="_IDGenBlockLayout">
+                    <l:BlockLayoutRow id="_IDGenBlockLayoutRow">
+                        <l:BlockLayoutCell
+                            id="_IDGenBlockLayoutCell"
+                            class="sapUiNoPadding"
+                            backgroundColorSet="ColorSet5"
+                            backgroundColorShade="ShadeB"
+                        >
+                            <HBox
+                                id="_IDGenHBox4"
+                                alignItems="Center"
+                                justifyContent="SpaceBetween"
+                                class="sapUiMediumMargin"
+                            >
+                                <Title
+                                    id="_IDGenTitle"
+                                    text="Fixed Asset Entry: {entryDetails>/SequenceID}"
+                                    level="H2"
+                                    wrapping="true"
+                                />
+                                <HBox
+                                    id="_IDGenHBox5"
+                                    alignItems="Center"
+                                >
+                                    <ObjectStatus
+                                        id="_IDGenObjectStatus2"
+                                        text="{entryDetails>/Status}"
+                                        state="{= ${entryDetails>/Status} === 'Valid' ? 'Success' : 'Error'}"
+                                        class="sapUiSmallMarginEnd"
+                                    />
+                                    <core:Icon
+                                        id="_IDGenIcon"
+                                        src="{= ${entryDetails>/Status} === 'Invalid' ? 'sap-icon://alert' : 'sap-icon://sys-enter-2'}"
+                                        color="{= ${entryDetails>/Status} === 'Invalid' ? 'Negative' : 'Positive'}"
+                                        size="1.5rem"
+                                    />
+                                </HBox>
+                            </HBox>
+                        </l:BlockLayoutCell>
+                    </l:BlockLayoutRow>
+                </l:BlockLayout>
+
+                <!-- Asset Information -->
+                <Panel
+                    id="_IDGenPanel1"
+                    headerText="Asset Information"
+                    expandable="true"
+                    expanded="true"
+                >
+                    <f:SimpleForm
+                        id="_IDGenSimpleForm"
+                        layout="ResponsiveGridLayout"
+                        editable="false"
+                        columnsL="2"
+                        columnsM="1"
+                    >
+                        <f:content>
+                            <Label
+                                id="_IDGenLabel"
+                                text="Company Code"
+                            />
+                            <Text
+                                id="_IDGenText14"
+                                text="{entryDetails>/CompanyCode}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel1"
+                                text="Master Fixed Asset"
+                            />
+                            <Text
+                                id="_IDGenText17"
+                                text="{entryDetails>/MasterFixedAsset}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel13"
+                                text="Fixed Asset"
+                            />
+                            <Text
+                                id="_IDGenText18"
+                                text="{entryDetails>/FixedAsset}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel14"
+                                text="Business Transaction Type"
+                            />
+                            <Text
+                                id="_IDGenText19"
+                                text="{entryDetails>/BusinessTransactionType}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel28"
+                                text="Sequence ID"
+                            />
+                            <Text
+                                id="_IDGenText66"
+                                text="{entryDetails>/SequenceID}"
+                            />
+                        </f:content>
+                    </f:SimpleForm>
+                </Panel>
+
+                <!-- Financial Information -->
+                <Panel
+                    id="_IDGenPanel5"
+                    headerText="Financial Information"
+                    expandable="true"
+                    expanded="true"
+                    class="sapUiSmallMarginTop"
+                >
+                    <f:SimpleForm
+                        id="_IDGenSimpleForm3"
+                        layout="ResponsiveGridLayout"
+                        editable="false"
+                        columnsL="2"
+                        columnsM="1"
+                    >
+                        <f:content>
+                            <Label
+                                id="_IDGenLabel15"
+                                text="Acquisition Amount"
+                            />
+                            <ObjectNumber
+                                id="_IDGenObjectNumber5"
+                                number="{entryDetails>/AcqnAmtInTransactionCurrency}"
+                                unit="{entryDetails>/TransactionCurrency}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel29"
+                                text="Transaction Currency"
+                            />
+                            <Text
+                                id="_IDGenText67"
+                                text="{entryDetails>/TransactionCurrency}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel30"
+                                text="Quantity in Base Unit"
+                            />
+                            <Text
+                                id="_IDGenText68"
+                                text="{entryDetails>/QuantityInBaseUnit}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel31"
+                                text="Base Unit SAP Code"
+                            />
+                            <Text
+                                id="_IDGenText69"
+                                text="{entryDetails>/BaseUnitSAPCode}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel32"
+                                text="Base Unit ISO Code"
+                            />
+                            <Text
+                                id="_IDGenText70"
+                                text="{entryDetails>/BaseUnitISOCode}"
+                            />
+                        </f:content>
+                    </f:SimpleForm>
+                </Panel>
+
+                <!-- Document Dates -->
+                <Panel
+                    id="_IDGenPanel2"
+                    headerText="Document Dates"
+                    expandable="true"
+                    expanded="true"
+                    class="sapUiSmallMarginTop"
+                >
+                    <f:SimpleForm
+                        id="_IDGenSimpleForm1"
+                        layout="ResponsiveGridLayout"
+                        editable="false"
+                        columnsL="3"
+                        columnsM="2"
+                    >
+                        <f:content>
+                            <Label
+                                id="_IDGenLabel16"
+                                text="Document Date"
+                            />
+                            <Text
+                                id="_IDGenText53"
+                                text="{entryDetails>/DocumentDate}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel17"
+                                text="Posting Date"
+                            />
+                            <Text
+                                id="_IDGenText54"
+                                text="{entryDetails>/PostingDate}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel18"
+                                text="Asset Value Date"
+                            />
+                            <Text
+                                id="_IDGenText55"
+                                text="{entryDetails>/AssetValueDate}"
+                            />
+                        </f:content>
+                    </f:SimpleForm>
+                </Panel>
+
+                <!-- Document Details -->
+                <Panel
+                    id="_IDGenPanel3"
+                    headerText="Document Details"
+                    expandable="true"
+                    expanded="true"
+                    class="sapUiSmallMarginTop"
+                >
+                    <f:SimpleForm
+                        id="_IDGenSimpleForm2"
+                        layout="ResponsiveGridLayout"
+                        editable="false"
+                        columnsL="2"
+                        columnsM="1"
+                    >
+                        <f:content>
+                            <Label
+                                id="_IDGenLabel19"
+                                text="Reference Document Item"
+                            />
+                            <Text
+                                id="_IDGenText57"
+                                text="{entryDetails>/ReferenceDocumentItem}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel20"
+                                text="Debit/Credit Code"
+                            />
+                            <Text
+                                id="_IDGenText58"
+                                text="{entryDetails>/DebitCreditCode}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel21"
+                                text="Year of Acquisition Code"
+                            />
+                            <Text
+                                id="_IDGenText59"
+                                text="{entryDetails>/FixedAssetYearOfAcqnCode}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel22"
+                                text="Document Reference ID"
+                            />
+                            <Text
+                                id="_IDGenText60"
+                                text="{entryDetails>/DocumentReferenceID}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel23"
+                                text="Document Header Text"
+                            />
+                            <Text
+                                id="_IDGenText61"
+                                text="{entryDetails>/AccountingDocumentHeaderText}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel24"
+                                text="Accounting Document Type"
+                            />
+                            <Text
+                                id="_IDGenText62"
+                                text="{entryDetails>/AccountingDocumentType}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel25"
+                                text="Assignment Reference"
+                            />
+                            <Text
+                                id="_IDGenText63"
+                                text="{entryDetails>/AssignmentReference}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel26"
+                                text="Document Item Text"
+                            />
+                            <Text
+                                id="_IDGenText64"
+                                text="{entryDetails>/DocumentItemText}"
+                            />
+
+                            <Label
+                                id="_IDGenLabel27"
+                                text="Offsetting Account"
+                            />
+                            <Text
+                                id="_IDGenText65"
+                                text="{entryDetails>/OffsettingAccount}"
+                            />
+                        </f:content>
+                    </f:SimpleForm>
+                </Panel>
+
+                <!-- Validation Errors Section -->
+                <Panel
+                    id="_IDGenPanel4"
+                    headerText="Validation Errors"
+                    expandable="true"
+                    expanded="{= ${entryDetails>/Status} === 'Invalid'}"
+                    visible="{= ${entryDetails>/Status} === 'Invalid'}"
+                    class="sapUiSmallMarginTop"
+                >
+                    <headerToolbar>
+                        <OverflowToolbar id="_IDGenOverflowToolbar">
+                            <Title
+                                id="_IDGenTitle1"
+                                text="Validation Errors"
+                                level="H3"
+                            />
+                            <ToolbarSpacer id="_IDGenToolbarSpacer" />
+                            <ObjectStatus
+                                id="_IDGenObjectStatus3"
+                                text="{= ${entryDetails>/ValidationErrors}.length + ' Error(s)'}"
+                                state="Error"
+                                icon="sap-icon://alert"
+                            />
+                        </OverflowToolbar>
+                    </headerToolbar>
+
+                    <List
+                        id="_IDGenList3"
+                        items="{entryDetails>/ValidationErrors}"
+                        mode="None"
+                        showSeparators="Inner"
+                        noDataText="No validation errors available"
+                    >
+                        <StandardListItem
+                            id="_IDGenStandardListItem1"
+                            icon="sap-icon://message-error"
+                            iconDensityAware="false"
+                            iconInset="false"
+                            title="{= typeof ${entryDetails>} === 'string' ? ${entryDetails>} : ${entryDetails>message} || 'Validation error'}"
+                        />
+                    </List>
+                </Panel>
+            </VBox>
+        </content>
+        <buttons>
+            <Button
+                id="_IDGenButton22"
+                text="Close"
+                press="onEntryDetailsDialogClose"
+                type="Emphasized"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

@@ -1,0 +1,515 @@
+<mvc:View xmlns:unified="sap.ui.unified"
+          xmlns:mvc="sap.ui.core.mvc"
+          xmlns="sap.m"
+          xmlns:f="sap.f"
+          xmlns:form="sap.ui.layout.form"
+          xmlns:core="sap.ui.core"
+          xmlns:layout="sap.ui.layout"
+          controllerName="wbsupload.controller.Fileupload">
+    <Page id="page" title="Create/Change WBS Element using Excel" showHeader="true" showNavButton="false" class="sapUiContentPadding">
+        <headerContent>
+            <Button id="helpButton"
+                    icon="sap-icon://sys-help"
+                    tooltip="Show help information"
+                    press="onShowHelp" />
+        </headerContent>
+        <content>
+            <!-- Main content container with flexible layout -->
+            <f:DynamicPage id="dynamicPage" headerExpanded="true" toggleHeaderOnTitleClick="true">
+                <f:title>
+                    <f:DynamicPageTitle id="dynamicPageTitle">
+                        <f:heading>
+                            <Title id="pageTitle" text="This utility allows users to Create/Change WBS Elements from Excel file" level="H1" />
+                        </f:heading>
+                        <f:actions>
+                            <Button id="downloadTemplateButton"
+                                    text="Download Template"
+                                    icon="sap-icon://excel-attachment"
+                                    press="onDownloadTemplate"
+                                    tooltip="Download an Excel template file"
+                                    type="Transparent" />
+                        </f:actions>
+                    </f:DynamicPageTitle>
+                </f:title>
+                <f:header>
+                    <f:DynamicPageHeader id="dynamicPageHeader" pinnable="true">
+                        <layout:HorizontalLayout id="uploadLayout" allowWrapping="true" class="sapUiSmallMarginTop">
+                            <!-- File Upload Section -->
+                            <form:SimpleForm id="uploadForm"
+                                             layout="ResponsiveGridLayout"
+                                             editable="true"
+                                             labelSpanXL="4"
+                                             labelSpanL="4"
+                                             labelSpanM="4"
+                                             emptySpanXL="0"
+                                             emptySpanL="0"
+                                             emptySpanM="0"
+                                             columnsXL="1"
+                                             columnsL="1"
+                                             columnsM="1">
+                                <form:content>
+                                    <Label id="fileUploaderLabel" text="Select File" labelFor="fileUploader" />
+                                    <unified:FileUploader id="fileUploader"
+                                                          name="uploadFile"
+                                                          fileType="xlsx"
+                                                          change="onFileChange"
+                                                          tooltip="Select an Excel file to upload"
+                                                          placeholder="Choose file"
+                                                          style="Emphasized"
+                                                          buttonText="Browse..." />
+                                    <Text id="filePathText" text="No file selected" visible="true" />
+                                </form:content>
+                            </form:SimpleForm>
+                            <!-- Action Buttons -->
+                            <HBox id="hboxButtons"
+                                  justifyContent="End"
+                                  alignItems="Center"
+                                  class="sapUiSmallMargin">
+                                <Button id="uploadButton"
+                                        text="Upload File"
+                                        press="onUpload"
+                                        enabled="{= ${fileData>/isFileUploaded} === false }"
+                                        icon="sap-icon://upload"
+                                        type="Emphasized"
+                                        class="sapUiSmallMarginEnd"
+                                        tooltip="Click to upload the selected file" />
+                                <Button id="updateWBSButton"
+                                        text="Create/Change WBS Elements"
+                                        press="onUpdateWbsElements"
+                                        enabled="{= ${fileData>/isFileUploaded} === true }"
+                                        icon="sap-icon://save"
+                                        type="Emphasized"
+                                        tooltip="Click to Create/Change WBS Elements based on the uploaded file" />
+                            </HBox>
+                        </layout:HorizontalLayout>
+                    </f:DynamicPageHeader>
+                </f:header>
+                <f:content>
+                    <IconTabBar id="idIconTabBar"
+                                expanded="true"
+                                expandable="false"
+                                class="sapUiResponsiveContentPadding">
+                        <items>
+                            <!-- Excel Data Tab -->
+                            <IconTabFilter id="excelDataTab"
+                                           icon="sap-icon://table-view"
+                                           text="Excel Data"
+                                           key="excelData"
+                                           count="{excelData>/rows/length}">
+                                <Panel id="excelDataPanel"
+                                       headerText="Uploaded Excel Data"
+                                       expandable="true"
+                                       expanded="true"
+                                       class="sapUiResponsiveMargin">
+                                    <content>
+                                        <!-- Excel Data Table Toolbar -->
+                                        <Toolbar id="excelDataToolbar" visible="{= ${excelData>/rows}.length > 0 }">
+                                            <Title id="excelDataTitle" text="Excel Data" level="H2" />
+                                            <ToolbarSpacer id="excelDataToolbarSpacer" />
+                                            <SearchField id="excelDataSearchField"
+                                                         placeholder="Search..."
+                                                         search="onExcelDataSearch"
+                                                         width="20%" />
+                                            <Button id="excelDataExportButton"
+                                                    icon="sap-icon://excel-attachment"
+                                                    tooltip="Export to Excel"
+                                                    press="onExportExcelData"
+                                                    enabled="{= ${excelData>/rows}.length > 0 }" />                                                    
+                                        </Toolbar>
+                                        <!-- Excel Data Table with Updated Columns -->
+                                        <Table id="excelTable"
+                                               visible="{= ${excelData>/rows}.length > 0 }"
+                                               items="{path: 'excelData>/rows'}"
+                                               growing="true"
+                                               growingThreshold="20"
+                                               growingScrollToLoad="true"
+                                               sticky="ColumnHeaders,HeaderToolbar"
+                                               alternateRowColors="true"
+                                               mode="None">
+                                            <columns>
+                                                <!-- Basic WBS Information -->
+                                                <Column id="column_ProjectElement" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Project Element" id="text_ProjectElement"/>
+                                                </Column>
+                                                <Column id="column_ProjectUUID" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Project UUID" id="text_ProjectUUID"/>
+                                                </Column>
+                                                <Column id="column_ProjectElementDescription" width="auto" minScreenWidth="Tablet" demandPopin="true">
+                                                    <Text text="Project Element Description" id="text_ProjectElementDescription"/>
+                                                </Column>
+                                                <Column id="column_PlannedStartDate" width="auto" minScreenWidth="Tablet" demandPopin="true">
+                                                    <Text text="Planned Start Date" id="text_PlannedStartDate"/>
+                                                </Column>
+                                                <Column id="column_PlannedEndDate" width="auto" minScreenWidth="Tablet" demandPopin="true">
+                                                    <Text text="Planned End Date" id="text_PlannedEndDate"/>
+                                                </Column>
+                                                <!-- Organizational Information -->
+                                                <Column id="column_ResponsibleCostCenter" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Responsible Cost Center" id="text_ResponsibleCostCenter"/>
+                                                </Column>
+                                                <Column id="column_CompanyCode" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Company Code" id="text_CompanyCode"/>
+                                                </Column>
+                                                <Column id="column_ProfitCenter" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Profit Center" id="text_ProfitCenter"/>
+                                                </Column>
+                                                <Column id="column_ControllingArea" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Controlling Area" id="text_ControllingArea"/>
+                                                </Column>
+                                                <Column id="column_WBSElementIsBillingElement" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Is Billing Element" id="text_WBSElementIsBillingElement"/>
+                                                </Column>
+                                                <!-- Information Group - Expandable/Collapsible -->
+                                                <Column id="column_ATMGroup"
+                                                        width="auto"
+                                                        demandPopin="true"
+                                                        minScreenWidth="Tablet">
+                                                    <ObjectIdentifier id="Details" title="Additional Fields" text="Click to view" />
+                                                </Column>
+                                           
+                                            </columns>
+                                            <items>
+                                                <ColumnListItem id="fileDatarow"
+                                                                type="Active"
+                                                                press="onItemPress">
+                                                    <cells>
+                                                        <!-- Basic WBS Information -->
+                                                        <ObjectIdentifier id="cell_ProjectElement"
+                                                                          title="{excelData>ProjectElement}"
+                                                                          text="" />
+                                                        <Text id="cell_ProjectUUID" text="{excelData>ProjectUUID}" />
+                                                        <Text id="cell_ProjectElementDescription" text="{excelData>ProjectElementDescription}" />
+                                                        <Text id="cell_PlannedStartDate" text="{excelData>PlannedStartDate}" />
+                                                        <Text id="cell_PlannedEndDate" text="{excelData>PlannedEndDate}" />
+                                                        <!-- Organizational Information -->
+                                                        <Text id="cell_ResponsibleCostCenter" text="{excelData>ResponsibleCostCenter}" />
+                                                        <Text id="cell_CompanyCode" text="{excelData>CompanyCode}" />
+                                                        <Text id="cell_ProfitCenter" text="{excelData>ProfitCenter}" />
+                                                        <Text id="cell_ControllingArea" text="{excelData>ControllingArea}" />
+                                                        <CheckBox id="cell_WBSElementIsBillingElement"
+                                                                  selected="{= ${excelData>WBSElementIsBillingElement} === 'X' ? true : false }"
+                                                                  editable="false" />
+                                                        <!-- Details as Link -->
+                                                        <Link id="cell_ATMDetails"
+                                                              text="View Details"
+                                                              press="onViewATMDetails"
+                                                              tooltip="Click to view detailed information"/>                                                     
+                                                    </cells>
+                                                </ColumnListItem>
+                                            </items>
+                                        </Table>
+                                    </content>
+                                </Panel>
+                            </IconTabFilter>
+                            <!-- Failed Records Tab -->
+                            <IconTabFilter id="failedRecordsTab"
+                                           icon="sap-icon://message-error"
+                                           text="Failed Records"
+                                           key="failedRecords"
+                                           count="{failedRecords>/rows/length}">
+                                <Panel id="failedRecordsPanel"
+                                       headerText="Failed Records"
+                                       expandable="true"
+                                       expanded="true"
+                                       class="sapUiResponsiveMargin">
+                                    <content>
+                                        <!-- Failed Records Table Toolbar -->
+                                        <Toolbar id="failedRecordsToolbar" visible="{= ${failedRecords>/rows}.length > 0 }">
+                                            <Title id="failedRecordsTitle" text="Failed Records" level="H2" />
+                                            <ToolbarSpacer id="failedRecordsToolbarSpacer" />
+                                            <SearchField id="failedRecordsSearchField"
+                                                         placeholder="Search..."
+                                                         search="onFailedRecordsSearch"
+                                                         width="20%" />
+                                            <Button id="failedRecordsExportButton"
+                                                    icon="sap-icon://excel-attachment" 
+                                                    tooltip="Export to Excel"
+                                                    press=".onExportFailedRecords" 
+                                                    enabled="{= ${/failedRecords}.length > 0 }" />
+                                        </Toolbar>
+                                        <!-- Failed Records Table -->
+                                        <Table id="failedRecordsTable"
+                                               visible="{= ${failedRecords>/rows}.length > 0 }"
+                                               items="{path: 'failedRecords>/rows'}"
+                                               alternateRowColors="true"
+                                               growing="true"
+                                               growingThreshold="20"
+                                               growingScrollToLoad="true"
+                                               sticky="ColumnHeaders,HeaderToolbar"
+                                               mode="None">
+                                            <columns>
+                                                <Column id="failed_Column_RowNumber" width="auto">
+                                                    <Text text="Excel Row Number" id="failed_Text_RowNumber"/>
+                                                </Column>
+                                                <Column id="failed_Column_ProjectElement" width="auto">
+                                                    <Text text="Failed Project Element" id="failed_Text_ProjectElement"/>
+                                                </Column>
+                                                <Column id="failed_Column_ErrorDetails" width="auto">
+                                                    <Text text="Error Details" id="failed_Text_ErrorDetails"/>
+                                                </Column>
+                                            </columns>
+                                            <items>
+                                                <ColumnListItem id="failedDataRow" type="Active" press="onFailedItemPress">
+                                                    <cells>
+                                                        <Text id="failed_cell_RowNumber" text="{failedRecords>rowNumber}" />
+                                                        <ObjectIdentifier id="failed_cell_ProjectElement"
+                                                                          title="{failedRecords>projectElement}"
+                                                                          text="" />
+                                                        <ObjectStatus id="failed_cell_ErrorDetails"
+                                                                      text="{failedRecords>errorMessage}"
+                                                                      state="Error"
+                                                                      icon="sap-icon://message-error" />
+                                                    </cells>
+                                                </ColumnListItem>
+                                            </items>
+                                        </Table>
+                                        
+                                    </content>
+                                </Panel>
+                            </IconTabFilter>
+                            <!-- Details Tab -->
+                            <IconTabFilter id="atmDetailsTab"
+                                           icon="sap-icon://detail-view"
+                                           text="Additional Details"
+                                           key="atmDetails">
+                                <Panel id="atmDetailsPanel"
+                                       headerText="Additional Details"
+                                       expandable="true"
+                                       expanded="true"
+                                       class="sapUiResponsiveMargin">
+                                    <content>
+                                        <!-- Details Table Toolbar -->
+                                        <Toolbar id="atmDetailsToolbar" visible="{= ${excelData>/rows}.length > 0 }">
+                                            <Title id="atmDetailsTitle" text="Additional Details" level="H2" />
+                                            <ToolbarSpacer id="atmDetailsToolbarSpacer" />
+                                            <SearchField id="atmDetailsSearchField"
+                                                         placeholder="Search..."
+                                                         search="onATMDetailsSearch"
+                                                         width="20%" />
+                                            <Button id="atmDetailsExportButton"
+                                                    icon="sap-icon://excel"
+                                                    tooltip="Export to Excel"
+                                                    press="onExportATMDetails" />
+                                        </Toolbar>
+                                        <!-- Details Table -->
+                                        <Table id="atmDetailsTable"
+                                               visible="{= ${excelData>/rows}.length > 0 }"
+                                               items="{path: 'excelData>/rows'}"
+                                               growing="true"
+                                               growingThreshold="20"
+                                               growingScrollToLoad="true"
+                                               sticky="ColumnHeaders,HeaderToolbar"
+                                               alternateRowColors="true"
+                                               mode="None">
+                                            <columns>
+                                                <!-- Project Identifier for reference -->
+                                                <Column id="col_ATM_ProjectElement" width="auto" minScreenWidth="Tablet" demandPopin="true">
+                                                    <Text text="Project Element" id="text_ATM_ProjectElement"/>
+                                                </Column>
+                                                <!-- Basic Information -->
+                                                <Column id="col_YY1_OldProjectSiteID" width="auto" minScreenWidth="Tablet" demandPopin="true">
+                                                    <Text text="Old Project Site ID" id="text_YY1_OldProjectSiteID"/>
+                                                </Column>
+                                                <Column id="col_YY1_ExactWBScode" width="auto" minScreenWidth="Tablet" demandPopin="true">
+                                                    <Text text="Exact WBS Code" id="text_YY1_ExactWBScode"/>
+                                                </Column>
+                                                <Column id="col_YY1_Categorization1" width="auto" minScreenWidth="Tablet" demandPopin="true">
+                                                    <Text text="Categorization 1" id="text_YY1_Categorization1"/>
+                                                </Column>
+                                                <Column id="col_YY1_ATMID" width="auto" minScreenWidth="Tablet" demandPopin="true">
+                                                    <Text text="ATM ID" id="text_YY1_ATMID"/>
+                                                </Column>
+                                                <!-- Location Information -->
+                                                <Column id="col_YY1_Address" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Address" id="text_YY1_Address"/>
+                                                </Column>
+                                                <Column id="col_YY1_State" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="State" id="text_YY1_State"/>
+                                                </Column>
+                                                <Column id="col_YY1_Postalcode" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Postal Code" id="text_YY1_Postalcode"/>
+                                                </Column>
+                                                <Column id="col_YY1_Addressandpostalco" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Address Postal Code" id="text_YY1_Addressandpostalco"/>
+                                                </Column>
+                                                <!-- Project Information -->
+                                                <Column id="col_YY1_Project" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Project" id="text_YY1_Project"/>
+                                                </Column>
+                                                <Column id="col_YY1_ATMCount" width="auto" minScreenWidth="Tablet" demandPopin="true">
+                                                    <Text text="ATM Count" id="text_YY1_ATMCount"/>
+                                                </Column>
+                                                <Column id="col_YY1_NatureOfWBS" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Nature Of WBS" id="text_YY1_NatureOfWBS"/>
+                                                </Column>
+                                                <!-- Site Information -->
+                                                <Column id="col_YY1_SAPsiteIDReport" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="SAP Site ID Report" id="text_YY1_SAPsiteIDReport"/>
+                                                </Column>
+                                                <Column id="col_YY1_Deployment" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Deployment" id="text_YY1_Deployment"/>
+                                                </Column>
+                                                <!-- Financial Information -->
+                                                <Column id="col_YY1_BankLoadATMDiscoun" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Bank Load ATM Discount" id="text_YY1_BankLoadATMDiscoun"/>
+                                                </Column>
+                                                <!-- Relocation Information -->
+                                                <Column id="col_YY1_ERPRelocationRefAT" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="ERP Relocation Ref ATM" id="text_YY1_ERPRelocationRefAT"/>
+                                                </Column>
+                                                <Column id="col_YY1_ERPsiteIDReport" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="ERP Site ID Report" id="text_YY1_ERPsiteIDReport"/>
+                                                </Column>
+                                                <Column id="col_YY1_ERPRelocationRefer" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="ERP Relocation Reference" id="text_YY1_ERPRelocationRefer"/>
+                                                </Column>
+                                                <!-- Additional Information -->
+                                                <Column id="col_YY1_Categorization" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Categorization" id="text_YY1_Categorization"/>
+                                                </Column>
+                                                <Column id="col_YY1_UDF1" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Actual Start Date" id="text_YY1_UDF1"/>
+                                                </Column>
+                                                <Column id="col_YY1_UDF2" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="Actual End Date" id="text_YY1_UDF2"/>
+                                                </Column>
+                                                <Column id="col_YY1_UDF3" width="auto" minScreenWidth="Desktop" demandPopin="true">
+                                                    <Text text="UDF3" id="text_YY1_UDF3"/>
+                                                </Column>
+                                            </columns>
+                                            <items>
+                                                <ColumnListItem id="atmDataRow" type="Active">
+                                                    <cells>
+                                                        <!-- Project Identifier -->
+                                                        <ObjectIdentifier id="cell_ATM_ProjectElement"
+                                                                          title="{excelData>ProjectElement}"
+                                                                          text="" />
+                                                        <!-- Basic Information -->
+                                                        <Text id="cell_YY1_OldProjectSiteID" text="{excelData>YY1_OldProjectSiteID_PTD}" />
+                                                        <Text id="cell_YY1_ExactWBScode" text="{excelData>YY1_ExactWBScode_PTD}" />
+                                                        <Text id="cell_YY1_Categorization1" text="{excelData>YY1_Categorization1_PTD}" />
+                                                        <Text id="cell_YY1_ATMID" text="{excelData>YY1_ATMID_PTD}" />
+                                                        <!--  Location Information -->
+                                                        <Text id="cell_YY1_Address" text="{excelData>YY1_Address_PTD}" />
+                                                        <Text id="cell_YY1_State" text="{excelData>YY1_State_PTD}" />
+                                                        <Text id="cell_YY1_Postalcode" text="{excelData>YY1_Postalcode_PTD}" />
+                                                        <Text id="cell_YY1_Addressandpostalco" text="{excelData>YY1_Addressandpostalco_PTD}" />
+                                                        <!-- Project Information -->
+                                                        <Text id="cell_YY1_Project" text="{excelData>YY1_Project_PTD}" />
+                                                        <Text id="cell_YY1_ATMCount" text="{excelData>YY1_ATMCount_PTD}" />
+                                                        <Text id="cell_YY1_NatureOfWBS" text="{excelData>YY1_NatureOfWBS_PTD}" />
+                                                        <!-- Site Information -->
+                                                        <Text id="cell_YY1_SAPsiteIDReport" text="{excelData>YY1_SAPsiteIDReport_PTD}" />
+                                                        <Text id="cell_YY1_Deployment" text="{excelData>YY1_Deployment_PTD}" />
+                                                        <!-- Financial Information -->
+                                                        <Text id="cell_YY1_BankLoadATMDiscoun" text="{excelData>YY1_BankLoadATMDiscoun_PTD}" />
+                                                        <!-- Relocation Information -->
+                                                        <Text id="cell_YY1_ERPRelocationRefAT" text="{excelData>YY1_ERPRelocationRefAT_PTD}" />
+                                                        <Text id="cell_YY1_ERPsiteIDReport" text="{excelData>YY1_ERPsiteIDReport_PTD}" />
+                                                        <Text id="cell_YY1_ERPRelocationRefer" text="{excelData>YY1_ERPRelocationRefer_PTD}" />
+                                                        <!-- Additional Information -->
+                                                        <Text id="cell_YY1_Categorization" text="{excelData>YY1_Categorization_PTD}" />
+                                                        <Text id="cell_YY1_UDF1" text="{excelData>YY1_UDF1_PTD}" />
+                                                        <Text id="cell_YY1_UDF2" text="{excelData>YY1_UDF2_PTD}" />
+                                                        <Text id="cell_YY1_UDF3" text="{excelData>YY1_UDF3_PTD}" />
+                                                    </cells>
+                                                </ColumnListItem>
+                                            </items>
+                                        </Table>
+                                    </content>
+                                </Panel>
+                            </IconTabFilter>
+                        </items>
+                    </IconTabBar>
+                </f:content>
+                <f:footer>
+                    <OverflowToolbar id="footerToolbar">
+                        <ToolbarSpacer id="footerToolbarSpacer" />
+                        <Text id="statusText" text="{fileData>/statusMessage}" />
+                        <Button id="closeButton"
+                                text="Close"
+                                press="onNavBack"
+                                type="Emphasized" />
+                    </OverflowToolbar>
+                </f:footer>
+            </f:DynamicPage>
+        </content>
+        <!-- Busy Indicator Dialog -->
+        <dependents>
+            <Dialog id="busyDialog"
+                    title="Processing"
+                    showHeader="true"
+                    contentWidth="300px"
+                    contentHeight="100px"
+                    verticalScrolling="false"
+                    horizontalScrolling="false">
+                <content>
+                    <VBox id="VBoxBusy" width="100%" height="100%" justifyContent="Center" alignItems="Center">
+                        <BusyIndicator id="BusyIndicator" busyIndicatorSize="Medium" />
+                        <Text id = "BusyIndicatorText" text="Processing your request..." class="sapUiSmallMarginTop" />
+                    </VBox>
+                </content>
+            </Dialog>
+            <!-- Further Details Dialog -->
+            <Dialog id="atmDetailsDialog"
+                    title="ATM Details"
+                    contentWidth="90%"
+                    contentHeight="80%"
+                    resizable="true"
+                    draggable="true">
+                <content>
+                    <VBox id="atmDetailsVBox" width="100%" class="sapUiSmallMargin">
+                        <form:SimpleForm id="atmDetailsForm"
+                                         editable="false"
+                                         layout="ResponsiveGridLayout"
+                                         labelSpanXL="4"
+                                         labelSpanL="4"
+                                         labelSpanM="4"
+                                         columnsM="1"
+                                         columnsL="2"
+                                         columnsXL="2">
+                            <form:content>
+                                <!-- Basic Info -->
+                                <core:Title id="basicInfoTitle" text="Basic Information" />
+                                <Label id="label_OldProjectSiteID" text="Old Project Site ID" />
+                                <Text id="dialog_OldProjectSiteID" text="{atmDetails>/YY1_OldProjectSiteID_PTD}" />
+                                <Label id="label_ExactWBScode" text="Exact WBS Code" />
+                                <Text id="dialog_ExactWBScode" text="{atmDetails>/YY1_ExactWBScode_PTD}" />
+                                <Label id="label_ProjectDescription" text="Project Description" />
+                                <Text id="dialog_ProjectDescription" text="{atmDetails>/YY1_ProjectDescription_PTD}" />
+                                <Label id="label_ControllingArea" text="Controlling Area" />
+                                <Text id="dialog_ControllingArea" text="{atmDetails>/YY1_ControllingArea_PTD}" />
+                                <Label id="label_ProfitCenter" text="Profit Center" />
+                                <Text id="dialog_ProfitCenter" text="{atmDetails>/YY1_ProfitCenter_PTD}" />
+                                <Label id="label_CostCenter" text="Cost Center" />
+                                <Text id="dialog_CostCenter" text="{atmDetails>/YY1_CostCenter_PTD}" />
+                                <!-- Dates Section -->
+                                <core:Title id="datesTitle" text="Dates" />
+                                <Label id="label_StartDate" text="Start Date" />
+                                <Text id="dialog_StartDate" text="{atmDetails>/YY1_StartDate_PTD}" />
+                                <Label id="label_EndDate" text="End Date" />
+                                <Text id="dialog_EndDate" text="{atmDetails>/YY1_EndDate_PTD}" />
+                                <!-- Status Section -->
+                                <core:Title id="atmStatusTitle" text="ATM Status" />
+                                <Label id="label_ATMStatus" text="ATM Status" />
+                                <Text id="dialog_ATMStatus" text="{atmDetails>/YY1_ATMStatus_PTD}" />
+                                <Label id="label_ATMStatusDate" text="ATM Status Date" />
+                                <Text id="dialog_ATMStatusDate" text="{atmDetails>/YY1_ATMStatusDate_PTD}" />
+                                <!-- Responsible Person -->
+                                <core:Title id="responsiblePersonTitle" text="Responsible Person" />
+                                <Label id="label_ResponsiblePerson" text="Responsible Person" />
+                                <Text id="dialog_ResponsiblePerson" text="{atmDetails>/YY1_ResponsiblePerson_PTD}" />
+                                <!-- Additional Details Section -->
+                                <core:Title id="additionalDetailsTitle" text="Additional Details" />
+                                <Label id="label_AdditionalInfo" text="Additional Information" />
+                                <Text id="dialog_AdditionalInfo" text="{atmDetails>/YY1_AdditionalInfo_PTD}" />
+                            </form:content>
+                        </form:SimpleForm>
+                        <!-- Actions: Close Button -->
+                        <Button id="close" text="Close" press="onCloseATMDetailsDialog" />
+                    </VBox>
+                </content>
+            </Dialog>
+        </dependents>
+    </Page>
+</mvc:View>
