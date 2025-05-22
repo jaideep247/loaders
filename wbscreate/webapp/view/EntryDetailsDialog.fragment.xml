@@ -247,7 +247,7 @@
                             />
                             <Text
                                 id="_IDGenText31"
-                                text="{entryDetails>/Is Billing Element (X=Yes)}"
+                                text="${entryDetails>/WBSElementIsBillingElement} ? 'Yes' : 'No'}"
                             />
 
                             <Label

@@ -39,7 +39,8 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
       'Company Code': 'CompanyCode',
       'Profit Center': 'ProfitCenter',
       'Controlling Area': 'ControllingArea',
-      'Is Billing Element (X=Yes)': 'WBSElementIsBillingElement',
+      'Billing Element': 'WBSElementIsBillingElement',
+      //'Is Billing Element (X=Yes)': 'WBSElementIsBillingElement',
       'Old Project Site ID': 'YY1_OldProjectSiteID_PTD',
       'Exact WBS Code': 'YY1_ExactWBScode_PTD',
       'Site Type': 'YY1_Categorization1_PTD',
@@ -552,7 +553,7 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
         if (value === false || value === 'false' || value === '') return false;
         return false;
       };
-
+      debugger
       // Detailed transformation with extensive fallback and mapping
       const transformedData = {
         // Core fields with multiple fallback options
@@ -963,7 +964,7 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
    * @returns {Array<object>} Records with reordered columns.
    * @private
    */
-  DataTransformer.prototype._reorderColumns = function (records, columnOrder) { 
+  DataTransformer.prototype._reorderColumns = function (records, columnOrder) {
     if (!records || !Array.isArray(records) || records.length === 0) {
       return records;
     }

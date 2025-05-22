@@ -352,7 +352,125 @@ sap.ui.define([], function () {
 
         return widthMap[fieldName] || 15; // Default width
     };
+    // Add these methods to your XlsxFormatter class
 
+    /**
+     * Creates a workbook for template generation with headers and example data
+     * @param {Array} headers - Array of column headers (display names)
+     * @param {Object} exampleRow - Example row data object
+     * @returns {Promise<Object>} Promise resolving with XLSX workbook object
+     */
+    XlsxFormatter.prototype.createWorkbookForTemplate = function (headers, exampleRow) {
+        return new Promise((resolve, reject) => {
+            try {
+                // Basic validation
+                if (!window.XLSX) {
+                    throw new Error("XLSX library not loaded. Cannot create template workbook.");
+                }
+
+                if (!headers || !Array.isArray(headers) || headers.length === 0) {
+                    throw new Error("Headers array is required for template creation");
+                }
+
+                console.log(`XlsxFormatter: Creating template workbook with ${headers.length} columns`);
+
+                // Create worksheet data with headers and example row
+                const worksheetData = [headers];
+
+                // Add example row if provided
+                if (exampleRow && typeof exampleRow === 'object') {
+                    const exampleRowArray = headers.map(header => exampleRow[header] || '');
+                    worksheetData.push(exampleRowArray);
+                }
+
+                // Create worksheet from array of arrays
+                const ws = window.XLSX.utils.aoa_to_sheet(worksheetData);
+
+                // Set column widths based on header names
+                ws['!cols'] = headers.map(header => {
+                    // Try to match header to field name for width calculation
+                    const fieldName = this._getFieldNameFromHeader(header);
+                    const width = this._getColumnWidth(fieldName);
+                    return { wch: width };
+                });
+
+                // Create workbook and add the worksheet
+                const wb = window.XLSX.utils.book_new();
+                window.XLSX.utils.book_append_sheet(wb, ws, "Template");
+
+                // Set workbook properties
+                wb.Props = {
+                    Title: "WBS Element Upload Template",
+                    Subject: "Template for uploading WBS Element data",
+                    Author: "WBS Creation Application",
+                    CreatedDate: new Date()
+                };
+
+                console.log("XlsxFormatter: Template workbook created successfully");
+                resolve(wb);
+
+            } catch (error) {
+                console.error("XlsxFormatter: Error creating template workbook:", error);
+                reject(error);
+            }
+        });
+    };
+
+    /**
+     * Converts a workbook object to a Blob
+     * @param {Object} workbook - XLSX workbook object
+     * @returns {Promise<Blob>} Promise resolving with Excel file Blob
+     */
+    XlsxFormatter.prototype.workbookToBlob = function (workbook) {
+        return new Promise((resolve, reject) => {
+            try {
+                if (!window.XLSX) {
+                    throw new Error("XLSX library not loaded. Cannot convert workbook to blob.");
+                }
+
+                if (!workbook) {
+                    throw new Error("Workbook object is required");
+                }
+
+                console.log("XlsxFormatter: Converting workbook to blob");
+
+                // Convert workbook to array buffer
+                const wbOut = window.XLSX.write(workbook, {
+                    bookType: 'xlsx',
+                    type: 'array'
+                });
+
+                // Create blob from array buffer
+                const blob = new Blob([wbOut], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+
+                console.log("XlsxFormatter: Workbook converted to blob successfully");
+                resolve(blob);
+
+            } catch (error) {
+                console.error("XlsxFormatter: Error converting workbook to blob:", error);
+                reject(error);
+            }
+        });
+    };
+
+    /**
+     * Helper method to get field name from display header
+     * @param {string} header - Display header name
+     * @returns {string} Field name
+     * @private
+     */
+    XlsxFormatter.prototype._getFieldNameFromHeader = function (header) {
+        // Try to find the field name that matches this display header
+        for (const [fieldName, displayName] of Object.entries(this.fieldDisplayNames)) {
+            if (displayName === header) {
+                return fieldName;
+            }
+        }
+        // If not found, return the header itself
+        return header;
+    };
     /**
      * Get file extension
      * @returns {string} File extension

@@ -24,7 +24,7 @@ sap.ui.define(["wbscreate/utils/DataTransformer"], function (DataTransformer) {
       "Profit Center": "ProfitCenter",
       "Controlling Area": "ControllingArea",
       "Billing Element": "WBSElementIsBillingElement",
-      "Is Billing Element (X=Yes)": "WBSElementIsBillingElement",
+   //   "Is Billing Element (X=Yes)": "WBSElementIsBillingElement",
 
       // Custom field mappings
       "Old Project ID": "YY1_OldProjectSiteID_PTD",

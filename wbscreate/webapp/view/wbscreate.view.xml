@@ -15,19 +15,19 @@
         title="{i18n>title}"
         showFooter="true"
     >
+        <Label
+            id="userInfoLabel"
+            text="Current User:"
+            class="sapUiTinyMarginEnd"
+        />
+        <ObjectStatus
+            id="userNameStatus"
+            text="{userInfo>/displayName}"
+            state="Information"
+            icon="sap-icon://person-placeholder"
+            class="sapUiMediumMarginEnd"
+        />
         <headerContent>
-            <Label
-                id="userInfoLabel"
-                text="Current User:"
-                class="sapUiTinyMarginEnd"
-            />
-            <ObjectStatus
-                id="userNameStatus"
-                text="{userInfo>/displayName}"
-                state="Information"
-                icon="sap-icon://person-placeholder"
-                class="sapUiMediumMarginEnd"
-            />
             <Text
                 id="infoText"
                 text="Click for instructions on Creating WBS elements from Excel to SAP."
@@ -527,10 +527,10 @@
                                                     id="_IDGenText63"
                                                     text="Status"
                                                 />
-                                            </Column>                                 
+                                            </Column>
                                             <Column
                                                 id="actionsColumn"
-                                                width="8%"                                                
+                                                width="8%"
                                             >
                                                 <Text
                                                     id="_IDGenText68"
