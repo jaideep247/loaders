@@ -40,7 +40,6 @@ sap.ui.define([
                 const statusModel = this._createStatusFilterModel();
                 this._view.setModel(statusModel, "statusModel");
 
-
                 // Initialize field metadata model
                 const fieldMetadataModel = this._createFieldMetadataModel();
                 this._view.setModel(fieldMetadataModel, "fieldMetadata");
@@ -271,6 +270,114 @@ sap.ui.define([
                     valueStateText: ""
                 },
 
+                // Service and Quantity fields metadata
+                Service: {
+                    type: EdmType.String,
+                    maxLength: 18,
+                    required: true,
+                    valuePath: "Service",
+                    label: "Service Number",
+                    description: "Service master number/code",
+                    valueState: ValueState.None,
+                    valueStateText: ""
+                },
+                ServiceDescription: {
+                    type: EdmType.String,
+                    maxLength: 40,
+                    required: false,
+                    valuePath: "ServiceDescription",
+                    label: "Service Description",
+                    description: "Description of the service performed",
+                    valueState: ValueState.None,
+                    valueStateText: ""
+                },
+                Quantity: {
+                    type: EdmType.Number,
+                    precision: 13,
+                    scale: 3,
+                    required: true,
+                    valuePath: "Quantity",
+                    label: "Quantity",
+                    description: "Service quantity performed",
+                    valueState: ValueState.None,
+                    valueStateText: "",
+                    minimum: 0.001
+                },
+                BaseUnitOfMeasure: {
+                    type: EdmType.String,
+                    maxLength: 3,
+                    required: true,
+                    valuePath: "BaseUnitOfMeasure",
+                    label: "Unit of Measure",
+                    description: "Base unit of measure for the service quantity",
+                    valueState: ValueState.None,
+                    valueStateText: ""
+                },
+                ServiceUnitPrice: {
+                    type: EdmType.Number,
+                    precision: 14,
+                    scale: 3,
+                    required: true,
+                    valuePath: "ServiceUnitPrice",
+                    label: "Service Unit Price",
+                    description: "Price per unit of service",
+                    valueState: ValueState.None,
+                    valueStateText: "",
+                    minimum: 0
+                },
+                ServiceLineTotal: {
+                    type: EdmType.Number,
+                    precision: 14,
+                    scale: 3,
+                    required: false,
+                    valuePath: "ServiceLineTotal",
+                    label: "Service Line Total",
+                    description: "Total amount for service line (calculated field)",
+                    valueState: ValueState.None,
+                    valueStateText: "",
+                    calculated: true
+                },
+                ServiceCategory: {
+                    type: EdmType.String,
+                    maxLength: 2,
+                    required: false,
+                    valuePath: "ServiceCategory",
+                    label: "Service Category",
+                    description: "Category of service (e.g., labor, materials, etc.)",
+                    valueState: ValueState.None,
+                    valueStateText: ""
+                },
+                ServiceGroup: {
+                    type: EdmType.String,
+                    maxLength: 5,
+                    required: false,
+                    valuePath: "ServiceGroup",
+                    label: "Service Group",
+                    description: "Service group classification",
+                    valueState: ValueState.None,
+                    valueStateText: ""
+                },
+                PersonnelNumber: {
+                    type: EdmType.String,
+                    maxLength: 8,
+                    required: false,
+                    valuePath: "PersonnelNumber",
+                    label: "Personnel Number",
+                    description: "Employee/contractor personnel number",
+                    valueState: ValueState.None,
+                    valueStateText: ""
+                },
+                LineOfService: {
+                    type: EdmType.String,
+                    maxLength: 5,
+                    required: false,
+                    valuePath: "LineOfService",
+                    label: "Line of Service",
+                    description: "Service line identifier within purchase order",
+                    valueState: ValueState.None,
+                    valueStateText: ""
+                },
+
                 // Account Assignment fields metadata
                 AccountAssignment: {
                     type: EdmType.String,
@@ -477,6 +584,58 @@ sap.ui.define([
                     type: EdmType.Date
                 },
 
+                // Service and Quantity fields
+                {
+                    label: 'Service Number',
+                    property: 'Service',
+                    type: EdmType.String
+                },
+                {
+                    label: 'Service Description',
+                    property: 'ServiceDescription',
+                    type: EdmType.String
+                },
+                {
+                    label: 'Quantity',
+                    property: 'Quantity',
+                    type: EdmType.Number
+                },
+                {
+                    label: 'Unit of Measure',
+                    property: 'BaseUnitOfMeasure',
+                    type: EdmType.String
+                },
+                {
+                    label: 'Service Unit Price',
+                    property: 'ServiceUnitPrice',
+                    type: EdmType.Number
+                },
+                {
+                    label: 'Service Line Total',
+                    property: 'ServiceLineTotal',
+                    type: EdmType.Number
+                },
+                {
+                    label: 'Service Category',
+                    property: 'ServiceCategory',
+                    type: EdmType.String
+                },
+                {
+                    label: 'Service Group',
+                    property: 'ServiceGroup',
+                    type: EdmType.String
+                },
+                {
+                    label: 'Personnel Number',
+                    property: 'PersonnelNumber',
+                    type: EdmType.String
+                },
+                {
+                    label: 'Line of Service',
+                    property: 'LineOfService',
+                    type: EdmType.String
+                },
+
                 // Account Assignment fields
                 {
                     label: 'Account Assignment Number',
@@ -533,6 +692,85 @@ sap.ui.define([
                     uploadSummaryModel.setProperty("/HasBeenSubmitted", true);
                 }
             }
+        },
+
+        /**
+         * Validate service quantity calculations
+         * @param {Object} entry - Service entry data
+         * @returns {Object} Validation result with calculated values
+         */
+        validateServiceCalculations: function (entry) {
+            const result = {
+                isValid: true,
+                errors: [],
+                calculatedValues: {}
+            };
+
+            try {
+                // Validate and calculate service line total
+                if (entry.Quantity && entry.ServiceUnitPrice) {
+                    const quantity = parseFloat(entry.Quantity);
+                    const unitPrice = parseFloat(entry.ServiceUnitPrice);
+
+                    if (!isNaN(quantity) && !isNaN(unitPrice)) {
+                        const calculatedTotal = quantity * unitPrice;
+                        result.calculatedValues.ServiceLineTotal = calculatedTotal;
+
+                        // Check if provided total matches calculated total (within tolerance)
+                        if (entry.ServiceLineTotal) {
+                            const providedTotal = parseFloat(entry.ServiceLineTotal);
+                            const tolerance = 0.01; // 1 cent tolerance
+
+                            if (Math.abs(calculatedTotal - providedTotal) > tolerance) {
+                                result.isValid = false;
+                                result.errors.push({
+                                    field: 'ServiceLineTotal',
+                                    message: `Service line total mismatch. Expected: ${calculatedTotal.toFixed(2)}, Got: ${providedTotal.toFixed(2)}`
+                                });
+                            }
+                        }
+                    } else {
+                        result.isValid = false;
+                        result.errors.push({
+                            field: 'ServiceCalculation',
+                            message: 'Invalid quantity or unit price for service calculation'
+                        });
+                    }
+                }
+
+                // Validate minimum quantity
+                if (entry.Quantity) {
+                    const quantity = parseFloat(entry.Quantity);
+                    if (quantity <= 0) {
+                        result.isValid = false;
+                        result.errors.push({
+                            field: 'Quantity',
+                            message: 'Service quantity must be greater than zero'
+                        });
+                    }
+                }
+
+                // Validate unit price
+                if (entry.ServiceUnitPrice) {
+                    const unitPrice = parseFloat(entry.ServiceUnitPrice);
+                    if (unitPrice < 0) {
+                        result.isValid = false;
+                        result.errors.push({
+                            field: 'ServiceUnitPrice',
+                            message: 'Service unit price cannot be negative'
+                        });
+                    }
+                }
+
+            } catch (error) {
+                result.isValid = false;
+                result.errors.push({
+                    field: 'ServiceCalculation',
+                    message: `Error in service calculation: ${error.message}`
+                });
+            }
+
+            return result;
         }
     });
 });

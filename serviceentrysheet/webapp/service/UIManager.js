@@ -272,10 +272,9 @@ sap.ui.define(
           this.errorHandler.showWarning("Cannot show details: No entry data provided.");
           return;
         }
-
+ 
         const dialogId = "entryDetailsDialog";
-        const fragmentName = "serviceentrysheet.view.EntryDetailsDialog"; // ADJUST NAMESPACE if needed
-
+        const fragmentName = "serviceentrysheet.view.EntryDetailsDialog"; // ADJUST NAMESPACE if needed   
         try {
           // Deep clone to avoid reference issues
           const oEntryData = JSON.parse(JSON.stringify(oEntry));

@@ -326,14 +326,6 @@ sap.ui.define([
      * @param {string} sequenceId - Sequence identifier
      * @param {Array} errors - Error collection array
      */
-    /**
-  * Validate a single field against its constraints
-  * @param {*} value - Field value to validate
-  * @param {Object} constraint - Field constraints
-  * @param {string} fieldName - Field name
-  * @param {string} sequenceId - Sequence identifier
-  * @param {Array} errors - Error collection array
-  */
     this._validateField = function (value, constraint, fieldName, sequenceId, errors) {
       // Skip validation if value is empty and not required
       if ((value === undefined || value === null || value === "") && !constraint.required) {

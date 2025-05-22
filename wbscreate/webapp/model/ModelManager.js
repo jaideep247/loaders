@@ -6,8 +6,10 @@ sap.ui.define([
 ], function (BaseObject, JSONModel, exportLibrary, coreLibrary) {
     "use strict";
 
-    const EdmType = exportLibrary.EdmType;
-    const ValueState = coreLibrary.ValueState;
+    // EdmType and ValueState are now assigned to 'this' in the constructor
+    // to ensure they are accessible within instance methods.
+    // const EdmType = exportLibrary.EdmType; // Removed as it will be 'this.EdmType'
+    // const ValueState = coreLibrary.ValueState; // Removed as it will be 'this.ValueState'
 
     return BaseObject.extend("wbscreate.model.ModelManager", {
         /**
@@ -18,6 +20,9 @@ sap.ui.define([
             BaseObject.call(this);
             this._controller = oController;
             this._view = oController.getView();
+            // Make EdmType and ValueState accessible via 'this'
+            this.EdmType = exportLibrary.EdmType;
+            this.ValueState = coreLibrary.ValueState;
         },
 
         /**
@@ -29,7 +34,7 @@ sap.ui.define([
             this._initWbsElementsModel();
             this._initFieldMetadataModel();
             this._initBatchDisplayModel();
-
+            this._initUserModel();
             console.log("Models initialized successfully");
         },
 
@@ -42,7 +47,19 @@ sap.ui.define([
             this._resetBatchDisplayModel();
             this._initStatusFilterModel();
         },
-
+        /**
+             * Initialize user model
+             * @private
+             */
+        _initUserModel: function () {
+            const oUserModel = new JSONModel({
+                id: "",
+                email: "",
+                fullName: "",
+                displayName: ""
+            });
+            this._view.setModel(oUserModel, "userInfo");
+        },
         /**
          * Initialize upload summary model
          * @private
@@ -100,134 +117,134 @@ sap.ui.define([
             const fieldMetadataModel = new JSONModel({
                 // Core Project Element Fields
                 ProjectElement: {
-                    type: EdmType.String,
+                    type: this.EdmType.String, // Changed to this.EdmType.String
                     maxLength: 24,
                     required: true,
                     valuePath: "ProjectElement",
                     label: "Project Element ID",
-                    valueState: ValueState.None,
+                    valueState: this.ValueState.None, // Changed to this.ValueState.None
                     valueStateText: ""
                 },
                 ProjectUUID: {
-                    type: EdmType.String,
+                    type: this.EdmType.String, // Changed to this.EdmType.String
                     maxLength: 36,
                     required: false,
                     valuePath: "ProjectUUID",
                     label: "Project UUID",
-                    valueState: ValueState.None,
+                    valueState: this.ValueState.None, // Changed to this.ValueState.None
                     valueStateText: ""
                 },
                 ProjectElementDescription: {
-                    type: EdmType.String,
+                    type: this.EdmType.String, // Changed to this.EdmType.String
                     maxLength: 60,
                     required: false,
                     valuePath: "ProjectElementDescription",
                     label: "Project Element Description",
-                    valueState: ValueState.None,
+                    valueState: this.ValueState.None, // Changed to this.ValueState.None
                     valueStateText: ""
                 },
 
                 // Date Fields
                 PlannedStartDate: {
-                    type: EdmType.Date,
+                    type: this.EdmType.Date, // Changed to this.EdmType.Date
                     required: false,
                     valuePath: "PlannedStartDate",
                     label: "Planned Start Date",
-                    valueState: ValueState.None,
+                    valueState: this.ValueState.None, // Changed to this.ValueState.None
                     valueStateText: ""
                 },
                 PlannedEndDate: {
-                    type: EdmType.Date,
+                    type: this.EdmType.Date, // Changed to this.EdmType.Date
                     required: false,
                     valuePath: "PlannedEndDate",
                     label: "Planned End Date",
-                    valueState: ValueState.None,
+                    valueState: this.ValueState.None, // Changed to this.ValueState.None
                     valueStateText: ""
                 },
 
                 // Organization Fields
                 ResponsibleCostCenter: {
-                    type: EdmType.String,
+                    type: this.EdmType.String, // Changed to this.EdmType.String
                     maxLength: 10,
                     required: false,
                     valuePath: "ResponsibleCostCenter",
                     label: "Responsible Cost Center",
-                    valueState: ValueState.None,
+                    valueState: this.ValueState.None, // Changed to this.ValueState.None
                     valueStateText: ""
                 },
                 CompanyCode: {
-                    type: EdmType.String,
+                    type: this.EdmType.String, // Changed to this.EdmType.String
                     maxLength: 4,
                     required: false,
                     valuePath: "CompanyCode",
                     label: "Company Code",
-                    valueState: ValueState.None,
+                    valueState: this.ValueState.None, // Changed to this.ValueState.None
                     valueStateText: ""
                 },
                 ProfitCenter: {
-                    type: EdmType.String,
+                    type: this.EdmType.String, // Changed to this.EdmType.String
                     maxLength: 10,
                     required: false,
                     valuePath: "ProfitCenter",
                     label: "Profit Center",
-                    valueState: ValueState.None,
+                    valueState: this.ValueState.None, // Changed to this.ValueState.None
                     valueStateText: ""
                 },
                 ControllingArea: {
-                    type: EdmType.String,
+                    type: this.EdmType.String, // Changed to this.EdmType.String
                     maxLength: 4,
                     required: false,
                     valuePath: "ControllingArea",
                     label: "Controlling Area",
-                    valueState: ValueState.None,
+                    valueState: this.ValueState.None, // Changed to this.ValueState.None
                     valueStateText: ""
                 },
 
                 // Boolean Fields
                 WBSElementIsBillingElement: {
-                    type: EdmType.Boolean,
+                    type: this.EdmType.Boolean, // Changed to this.EdmType.Boolean
                     required: false,
                     valuePath: "WBSElementIsBillingElement",
                     label: "WBS Element is Billing Element",
-                    valueState: ValueState.None,
+                    valueState: this.ValueState.None, // Changed to this.ValueState.None
                     valueStateText: ""
                 },
 
                 // Custom Extension Fields
                 YY1_OldProjectSiteID_PTD: {
-                    type: EdmType.String,
+                    type: this.EdmType.String, // Changed to this.EdmType.String
                     maxLength: 24,
                     required: false,
                     valuePath: "YY1_OldProjectSiteID_PTD",
                     label: "Old Project Site ID",
-                    valueState: ValueState.None,
+                    valueState: this.ValueState.None, // Changed to this.ValueState.None
                     valueStateText: ""
                 },
                 YY1_ExactWBScode_PTD: {
-                    type: EdmType.String,
+                    type: this.EdmType.String, // Changed to this.EdmType.String
                     maxLength: 24,
                     required: false,
                     valuePath: "YY1_ExactWBScode_PTD",
                     label: "Exact WBS Code",
-                    valueState: ValueState.None,
+                    valueState: this.ValueState.None, // Changed to this.ValueState.None
                     valueStateText: ""
                 },
                 YY1_Categorization1_PTD: {
-                    type: EdmType.String,
+                    type: this.EdmType.String, // Changed to this.EdmType.String
                     maxLength: 20,
                     required: false,
                     valuePath: "YY1_Categorization1_PTD",
                     label: "Site Type",
-                    valueState: ValueState.None,
+                    valueState: this.ValueState.None, // Changed to this.ValueState.None
                     valueStateText: ""
                 },
                 YY1_ATMID_PTD: {
-                    type: EdmType.String,
+                    type: this.EdmType.String, // Changed to this.EdmType.String
                     maxLength: 20,
                     required: false,
                     valuePath: "YY1_ATMID_PTD",
                     label: "ATM ID",
-                    valueState: ValueState.None,
+                    valueState: this.ValueState.None, // Changed to this.ValueState.None
                     valueStateText: ""
                 }
             });
@@ -371,78 +388,106 @@ sap.ui.define([
                 {
                     label: 'Project Element ID',
                     property: 'ProjectElement',
-                    type: EdmType.String
+                    type: this.EdmType.String // Changed to this.EdmType.String
                 },
                 {
                     label: 'Project UUID',
                     property: 'ProjectUUID',
-                    type: EdmType.String
+                    type: this.EdmType.String // Changed to this.EdmType.String
                 },
                 {
                     label: 'Project Element Description',
                     property: 'ProjectElementDescription',
-                    type: EdmType.String
+                    type: this.EdmType.String // Changed to this.EdmType.String
                 },
                 {
                     label: 'Planned Start Date',
                     property: 'PlannedStartDate',
-                    type: EdmType.Date
+                    type: this.EdmType.Date // Changed to this.EdmType.Date
                 },
                 {
                     label: 'Planned End Date',
                     property: 'PlannedEndDate',
-                    type: EdmType.Date
+                    type: this.EdmType.Date // Changed to this.EdmType.Date
                 },
                 {
                     label: 'Responsible Cost Center',
                     property: 'ResponsibleCostCenter',
-                    type: EdmType.String
+                    type: this.EdmType.String // Changed to this.EdmType.String
                 },
                 {
                     label: 'Company Code',
                     property: 'CompanyCode',
-                    type: EdmType.String
+                    type: this.EdmType.String // Changed to this.EdmType.String
                 },
                 {
                     label: 'Profit Center',
                     property: 'ProfitCenter',
-                    type: EdmType.String
+                    type: this.EdmType.String // Changed to this.EdmType.String
                 },
                 {
                     label: 'Controlling Area',
                     property: 'ControllingArea',
-                    type: EdmType.String
+                    type: this.EdmType.String // Changed to this.EdmType.String
                 },
                 {
                     label: 'WBS Element is Billing Element',
                     property: 'WBSElementIsBillingElement',
-                    type: EdmType.Boolean
+                    type: this.EdmType.Boolean // Changed to this.EdmType.Boolean
                 },
 
                 // Custom Extension Fields
                 {
                     label: 'Old Project Site ID',
                     property: 'YY1_OldProjectSiteID_PTD',
-                    type: EdmType.String
+                    type: this.EdmType.String // Changed to this.EdmType.String
                 },
                 {
                     label: 'Exact WBS Code',
                     property: 'YY1_ExactWBScode_PTD',
-                    type: EdmType.String
+                    type: this.EdmType.String // Changed to this.EdmType.String
                 },
                 {
                     label: 'Site Type',
                     property: 'YY1_Categorization1_PTD',
-                    type: EdmType.String
+                    type: this.EdmType.String // Changed to this.EdmType.String
                 },
                 {
                     label: 'ATM ID',
                     property: 'YY1_ATMID_PTD',
-                    type: EdmType.String
+                    type: this.EdmType.String // Changed to this.EdmType.String
                 }
             ];
         },
 
+        /**
+         * Load user information from API
+         * @param {string} baseUrl - Base URL for API calls
+         */
+        loadUserInfo: function (baseUrl) {
+            const url = baseUrl + "/user-api/currentUser";
+            const oModel = new JSONModel();
+            const mockData = {
+                firstname: "Dummy",
+                lastname: "User",
+                email: "dummy.user@com",
+                name: "dummy.user@com",
+                displayName: "Dummy User (dummy.user@com)"
+            };
+
+            oModel.loadData(url);
+            oModel.dataLoaded()
+                .then(() => {
+                    if (!oModel.getData().email) {
+                        oModel.setData(mockData);
+                    }
+                    this._view.setModel(oModel, "userInfo");
+                })
+                .catch(() => {
+                    oModel.setData(mockData);
+                    this._view.setModel(oModel, "userInfo");
+                });
+        },
         /**
          * Get the validation field metadata
          * @returns {Object} Validation field metadata

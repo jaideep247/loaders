@@ -58,7 +58,6 @@ sap.ui.define([
      */
     _initializeModels: function () {
 
-
       // IMPORTANT: Store reference to this controller 
       const controller = this;
 
@@ -175,7 +174,7 @@ sap.ui.define([
         MessageToast.show("No valid entries to submit.");
         return;
       }
-
+     
       // Confirm submission
       MessageBox.confirm(
         `Are you sure you want to submit ${validEntries.length} assets to SAP?`,

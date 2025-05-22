@@ -99,7 +99,7 @@
                             />
                             <Text
                                 id="_IDGenText5"
-                                text="{entryDetails>/ProjectUUID}"
+                                text="{entryDetails>/Project UUID}"
                                 class="sapUiTinyMarginTop"
                             />
                         </VBox>
@@ -247,7 +247,7 @@
                             />
                             <Text
                                 id="_IDGenText31"
-                                text="{entryDetails>/WBSElementIsBillingElement}"
+                                text="{entryDetails>/Is Billing Element (X=Yes)}"
                             />
 
                             <Label
@@ -256,7 +256,7 @@
                             />
                             <Text
                                 id="_IDGenText32"
-                                text="{entryDetails>/YY1_OldProjectSiteID_PTD}"
+                                text="{entryDetails>/Old Project Site ID}"
                             />
 
                             <Label
@@ -265,7 +265,7 @@
                             />
                             <Text
                                 id="_IDGenText33"
-                                text="{entryDetails>/YY1_ExactWBScode_PTD}"
+                                text="{entryDetails>/Exact WBS Code}"
                             />
 
                             <Label
@@ -333,7 +333,7 @@
                             />
                             <Text
                                 id="_IDGenText40"
-                                text="{entryDetails>/YY1_Postalcode_PTD}"
+                                text="{entryDetails>/Postal Code}"
                             />
 
                             <Label
@@ -351,7 +351,7 @@
                             />
                             <Text
                                 id="_IDGenText55"
-                                text="{entryDetails>/YY1_SAPsiteIDReport_PTD}"
+                                text="{entryDetails>/SAP Site ID Report}"
                             />
                         </f:content>
                     </f:SimpleForm>

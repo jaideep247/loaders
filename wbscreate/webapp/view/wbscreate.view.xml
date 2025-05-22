@@ -30,7 +30,7 @@
             />
             <Text
                 id="infoText"
-                text="Click for instructions on uploading WBS elements from Excel to SAP."
+                text="Click for instructions on Creating WBS elements from Excel to SAP."
             />
             <Button
                 id="headerHelpButton"
@@ -71,7 +71,6 @@
 
                 <f:content>
                     <VBox id="mainContentVBox">
-                        <!-- Excel Upload Panel -->
                         <Panel
                             id="uploadPanel"
                             headerText="Excel File Upload"
@@ -119,98 +118,287 @@
                             </content>
                         </Panel>
 
-                        <!-- Filters Panel -->
                         <Panel
                             id="filtersPanel"
                             headerText="Filters"
                             expandable="true"
                             expanded="true"
+                            class="sapUiSmallMarginTop"
                         >
                             <content>
                                 <FlexBox
                                     id="filterControlsBox"
                                     wrap="Wrap"
                                     alignItems="Start"
-                                    class="sapUiSmallMarginBottom"
+                                    class="sapUiSmallMarginBottom sapUiSmallMarginBegin sapUiSmallMarginEnd"
                                 >
-                                    <FlexBox
-                                        id="statusFilterBox"
-                                        alignItems="Start"
-                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                    <VBox
+                                        id="_IDGenVBox19"
                                         width="15rem"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
                                     >
+                                        <Label
+                                            id="_IDGenLabel28"
+                                            text="Status"
+                                            labelFor="statusFilterComboBox"
+                                        />
                                         <ComboBox
                                             id="statusFilterComboBox"
                                             width="100%"
-                                            selectionChange="onStatusFilterChange"
+                                            selectionChange="onApplyFilters"
                                             placeholder="Filter by Status"
+                                            items="{filterData>/StatusSet}"
                                         >
                                             <core:Item
                                                 id="_IDGenItem1"
-                                                text="Valid"
-                                                key="Valid"
-                                            />
-                                            <core:Item
-                                                id="_IDGenItem2"
-                                                text="Invalid"
-                                                key="Invalid"
+                                                key="{filterData>key}"
+                                                text="{filterData>text}"
                                             />
                                         </ComboBox>
-                                    </FlexBox>
+                                    </VBox>
 
-                                    <FlexBox
-                                        id="projectElementFilterBox"
-                                        alignItems="Start"
-                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                    <VBox
+                                        id="_IDGenVBox20"
                                         width="15rem"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
                                     >
+                                        <Label
+                                            id="_IDGenLabel29"
+                                            text="Project Element"
+                                            labelFor="projectElementFilter"
+                                        />
                                         <Input
                                             id="projectElementFilter"
                                             width="100%"
                                             placeholder="Project Element"
-                                            liveChange="onFilterChange"
+                                            liveChange="onApplyFilters"
                                         />
-                                    </FlexBox>
+                                    </VBox>
 
-                                    <FlexBox
-                                        id="companyCodeFilterBox"
-                                        alignItems="Start"
-                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                    <VBox
+                                        id="_IDGenVBox21"
                                         width="15rem"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
                                     >
+                                        <Label
+                                            id="_IDGenLabel30"
+                                            text="Company Code"
+                                            labelFor="companyCodeFilter"
+                                        />
                                         <Input
                                             id="companyCodeFilter"
                                             width="100%"
                                             placeholder="Company Code"
-                                            liveChange="onFilterChange"
+                                            liveChange="onApplyFilters"
                                         />
-                                    </FlexBox>
+                                    </VBox>
 
-                                    <FlexBox
-                                        id="resetFiltersBox"
-                                        alignItems="Start"
-                                        class="sapUiSmallMarginBottom"
+                                    <VBox
+                                        id="_IDGenVBox24"
                                         width="15rem"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
                                     >
+                                        <Label
+                                            id="_IDGenLabel33"
+                                            text="Creation Date"
+                                            labelFor="creationDateFilter"
+                                        />
+                                        <DatePicker
+                                            id="creationDateFilter"
+                                            width="100%"
+                                            displayFormat="long"
+                                            valueFormat="yyyy-MM-dd"
+                                            change="onApplyFilters"
+                                        />
+                                    </VBox>
+
+                                    <VBox
+                                        id="_IDGenVBox26"
+                                        width="15rem"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                    >
+                                        <Label
+                                            id="_IDGenLabel35"
+                                            text="Planned Start Date"
+                                            labelFor="startDateFilter"
+                                        />
+                                        <DatePicker
+                                            id="startDateFilter"
+                                            width="100%"
+                                            displayFormat="long"
+                                            valueFormat="yyyy-MM-dd"
+                                            change="onApplyFilters"
+                                        />
+                                    </VBox>
+                                    <VBox
+                                        id="_IDGenVBox27"
+                                        width="15rem"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                    >
+                                        <Label
+                                            id="_IDGenLabel36"
+                                            text="Planned End Date"
+                                            labelFor="endDateFilter"
+                                        />
+                                        <DatePicker
+                                            id="endDateFilter"
+                                            width="100%"
+                                            displayFormat="long"
+                                            valueFormat="yyyy-MM-dd"
+                                            change="onApplyFilters"
+                                        />
+                                    </VBox>
+
+                                    <VBox
+                                        id="_IDGenVBox28"
+                                        width="15rem"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                    >
+                                        <Label
+                                            id="_IDGenLabel37"
+                                            text="Resp. Cost Center"
+                                            labelFor="responsibleCostCenterFilter"
+                                        />
+                                        <Input
+                                            id="responsibleCostCenterFilter"
+                                            width="100%"
+                                            placeholder="Resp. Cost Center"
+                                            liveChange="onApplyFilters"
+                                        />
+                                    </VBox>
+                                    <VBox
+                                        id="_IDGenVBox29"
+                                        width="15rem"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                    >
+                                        <Label
+                                            id="_IDGenLabel38"
+                                            text="Profit Center"
+                                            labelFor="profitCenterFilter"
+                                        />
+                                        <Input
+                                            id="profitCenterFilter"
+                                            width="100%"
+                                            placeholder="Profit Center"
+                                            liveChange="onApplyFilters"
+                                        />
+                                    </VBox>
+                                    <VBox
+                                        id="_IDGenVBox30"
+                                        width="15rem"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                    >
+                                        <Label
+                                            id="_IDGenLabel39"
+                                            text="Controlling Area"
+                                            labelFor="controllingAreaFilter"
+                                        />
+                                        <Input
+                                            id="controllingAreaFilter"
+                                            width="100%"
+                                            placeholder="Controlling Area"
+                                            liveChange="onApplyFilters"
+                                        />
+                                    </VBox>
+
+                                    <VBox
+                                        id="_IDGenVBox31"
+                                        width="15rem"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                    >
+                                        <Label
+                                            id="_IDGenLabel40"
+                                            text="Site Type"
+                                            labelFor="siteTypeFilter"
+                                        />
+                                        <Input
+                                            id="siteTypeFilter"
+                                            width="100%"
+                                            placeholder="Site Type"
+                                            liveChange="onApplyFilters"
+                                        />
+                                    </VBox>
+                                    <VBox
+                                        id="_IDGenVBox32"
+                                        width="15rem"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                    >
+                                        <Label
+                                            id="_IDGenLabel41"
+                                            text="ATM ID"
+                                            labelFor="atmIdFilter"
+                                        />
+                                        <Input
+                                            id="atmIdFilter"
+                                            width="100%"
+                                            placeholder="ATM ID"
+                                            liveChange="onApplyFilters"
+                                        />
+                                    </VBox>
+                                    <VBox
+                                        id="_IDGenVBox33"
+                                        width="15rem"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                    >
+                                        <Label
+                                            id="_IDGenLabel42"
+                                            text="Old Project Site ID"
+                                            labelFor="projectSiteIdFilter"
+                                        />
+                                        <Input
+                                            id="projectSiteIdFilter"
+                                            width="100%"
+                                            placeholder="Old Project Site ID"
+                                            liveChange="onApplyFilters"
+                                        />
+                                    </VBox>
+
+                                    <VBox
+                                        id="_IDGenVBox34"
+                                        width="15rem"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                    >
+                                        <Label
+                                            id="_IDGenLabel43"
+                                            text=" "
+                                        />
+                                        <Button
+                                            id="applyFiltersBtn"
+                                            text="Apply Filters"
+                                            width="100%"
+                                            type="Emphasized"
+                                            icon="sap-icon://filter"
+                                            press="onApplyFilters"
+                                        />
+                                    </VBox>
+                                    <VBox
+                                        id="_IDGenVBox35"
+                                        width="15rem"
+                                        class="sapUiTinyMarginEnd sapUiSmallMarginBottom"
+                                    >
+                                        <Label
+                                            id="_IDGenLabel44"
+                                            text=" "
+                                        />
                                         <Button
                                             id="resetFiltersBtn"
                                             text="Reset Filters"
                                             width="100%"
-                                            type="Emphasized"
+                                            type="Default"
                                             icon="sap-icon://clear-filter"
                                             press="onResetFilters"
                                         />
-                                    </FlexBox>
+                                    </VBox>
                                 </FlexBox>
                             </content>
                         </Panel>
 
-                        <!-- WBS Element Items Panel -->
                         <Panel
                             id="itemsPanel"
                             headerText="WBS Element Items"
                             expandable="true"
                             expanded="true"
+                            class="sapUiSmallMarginTop"
                         >
                             <content>
                                 <VBox id="itemsPanelContentBox">
@@ -229,20 +417,12 @@
                                             placeholder="Search WBS Elements"
                                             showRefreshButton="false"
                                         />
-                                        <Button
-                                            id="refreshTableBtn"
-                                            icon="sap-icon://refresh"
-                                            tooltip="Refresh Table"
-                                            press="onRefreshTable"
-                                            type="Transparent"
-                                        />
                                     </Toolbar>
 
                                     <Table
                                         id="itemsTable"
                                         items="{wbsElements>/entries}"
-                                        mode="MultiSelect"
-                                        noDataText="No items available. Please upload an Excel file."
+                                        noDataText="No WBS Elements available. Please upload an Excel file."
                                         growing="true"
                                         growingThreshold="15"
                                         alternateRowColors="true"
@@ -254,16 +434,16 @@
                                                 width="10%"
                                             >
                                                 <Text
-                                                    id="_IDGenText29"
+                                                    id="_IDGenText3"
                                                     text="Project Element"
                                                 />
                                             </Column>
                                             <Column
                                                 id="projectUUIDColumn"
-                                                width="10%"
+                                                width="20%"
                                             >
                                                 <Text
-                                                    id="_IDGenText42"
+                                                    id="_IDGenText29"
                                                     text="Project UUID"
                                                 />
                                             </Column>
@@ -272,7 +452,7 @@
                                                 width="15%"
                                             >
                                                 <Text
-                                                    id="_IDGenText43"
+                                                    id="_IDGenText42"
                                                     text="Description"
                                                 />
                                             </Column>
@@ -281,7 +461,7 @@
                                                 width="8%"
                                             >
                                                 <Text
-                                                    id="_IDGenText50"
+                                                    id="_IDGenText43"
                                                     text="Planned Start"
                                                 />
                                             </Column>
@@ -290,7 +470,7 @@
                                                 width="8%"
                                             >
                                                 <Text
-                                                    id="_IDGenText58"
+                                                    id="_IDGenText50"
                                                     text="Planned End"
                                                 />
                                             </Column>
@@ -299,7 +479,7 @@
                                                 width="10%"
                                             >
                                                 <Text
-                                                    id="_IDGenText59"
+                                                    id="_IDGenText58"
                                                     text="Resp. Cost Center"
                                                 />
                                             </Column>
@@ -308,7 +488,7 @@
                                                 width="8%"
                                             >
                                                 <Text
-                                                    id="_IDGenText60"
+                                                    id="_IDGenText59"
                                                     text="Company Code"
                                                 />
                                             </Column>
@@ -317,7 +497,7 @@
                                                 width="8%"
                                             >
                                                 <Text
-                                                    id="_IDGenText61"
+                                                    id="_IDGenText60"
                                                     text="Profit Center"
                                                 />
                                             </Column>
@@ -326,7 +506,7 @@
                                                 width="10%"
                                             >
                                                 <Text
-                                                    id="_IDGenText62"
+                                                    id="_IDGenText61"
                                                     text="Controlling Area"
                                                 />
                                             </Column>
@@ -335,7 +515,7 @@
                                                 width="8%"
                                             >
                                                 <Text
-                                                    id="_IDGenText63"
+                                                    id="_IDGenText62"
                                                     text="Billing Element"
                                                 />
                                             </Column>
@@ -344,16 +524,16 @@
                                                 width="7%"
                                             >
                                                 <Text
-                                                    id="_IDGenText64"
+                                                    id="_IDGenText63"
                                                     text="Status"
                                                 />
-                                            </Column>
+                                            </Column>                                 
                                             <Column
                                                 id="actionsColumn"
-                                                width="8%"
+                                                width="8%"                                                
                                             >
                                                 <Text
-                                                    id="_IDGenText65"
+                                                    id="_IDGenText68"
                                                     text="Actions"
                                                 />
                                             </Column>
@@ -363,47 +543,47 @@
                                             <ColumnListItem
                                                 id="tableItem"
                                                 type="Active"
-                                                press="onItemPress"
+                                                press="onViewEntryDetails"
                                             >
                                                 <cells>
                                                     <Text
-                                                        id="_IDGenText66"
+                                                        id="_IDGenText69"
                                                         text="{wbsElements>ProjectElement}"
                                                     />
                                                     <Text
-                                                        id="_IDGenText67"
-                                                        text="{wbsElements>ProjectUUID}"
-                                                    />
-                                                    <Text
-                                                        id="_IDGenText68"
-                                                        text="{wbsElements>ProjectElementDescription}"
-                                                    />
-                                                    <Text
-                                                        id="_IDGenText69"
-                                                        text="{path: 'wbsElements>PlannedStartDate'}"
-                                                    />
-                                                    <Text
                                                         id="_IDGenText70"
-                                                        text="{path: 'wbsElements>PlannedEndDate'}"
+                                                        text="{wbsElements>Project UUID}"
                                                     />
                                                     <Text
                                                         id="_IDGenText71"
-                                                        text="{wbsElements>ResponsibleCostCenter}"
+                                                        text="{wbsElements>Description}"
                                                     />
                                                     <Text
                                                         id="_IDGenText72"
-                                                        text="{wbsElements>CompanyCode}"
+                                                        text="{path: 'wbsElements>PlannedStartDate'}"
                                                     />
                                                     <Text
                                                         id="_IDGenText73"
-                                                        text="{wbsElements>ProfitCenter}"
+                                                        text="{path: 'wbsElements>PlannedEndDate'}"
                                                     />
                                                     <Text
                                                         id="_IDGenText74"
-                                                        text="{wbsElements>ControllingArea}"
+                                                        text="{wbsElements>ResponsibleCostCenter}"
                                                     />
                                                     <Text
                                                         id="_IDGenText75"
+                                                        text="{wbsElements>CompanyCode}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText76"
+                                                        text="{wbsElements>ProfitCenter}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText77"
+                                                        text="{wbsElements>ControllingArea}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText78"
                                                         text="{= ${wbsElements>WBSElementIsBillingElement} === true ? 'Yes' : 'No'}"
                                                     />
                                                     <ObjectStatus
@@ -414,7 +594,7 @@
                                                     />
                                                     <HBox id="_IDGenHBox8">
                                                         <Button
-                                                            id="_IDGenButton"
+                                                            id="_IDGenButton14"
                                                             text="Details"
                                                             type="Transparent"
                                                             icon="sap-icon://detail-view"
@@ -441,7 +621,7 @@
                     text="{= ${uploadSummary>/ProcessingComplete} ? 'Upload New File' : 'Clear Data'}"
                     type="{= ${uploadSummary>/ProcessingComplete} ? 'Default' : 'Transparent'}"
                     press="onReset"
-                    enabled="{= ${uploadSummary>/TotalEntries} > 0}"
+                    enabled="{= ${uploadSummary>/ProcessingComplete} || ${uploadSummary>/TotalEntries} > 0}"
                     icon="{= ${uploadSummary>/ProcessingComplete} ? 'sap-icon://create-form' : 'sap-icon://clear-all'}"
                 />
                 <Button

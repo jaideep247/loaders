@@ -208,6 +208,23 @@
                                 number="{entryDetails>/NetAmount}"
                                 unit="{entryDetails>/Currency}"
                             />
+
+                            <Label
+                                id="_IDGenLabel28"
+                                text="Service"
+                            />
+                            <ObjectNumber
+                                id="_IDGenObjectNumber8"
+                                number="{entryDetails>/Service}"
+                            />
+                            <Label
+                                id="_IDGenLabel30"
+                                text="Quantity Unit"
+                            />
+                            <ObjectNumber
+                                id="_IDGenObjectNumber5"
+                                number="{entryDetails>/QuantityUnit}"
+                            />
                         </f:content>
                     </f:SimpleForm>
                 </Panel>

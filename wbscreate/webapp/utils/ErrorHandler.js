@@ -18,12 +18,172 @@ sap.ui.define([
      * @param {sap.m.MessageToast} [options.messageToast=sap.m.MessageToast] - MessageToast implementation (for testing).
      */
     constructor(options = {}) {
-      /** @protected */
       this.messageBox = options.messageBox || MessageBox;
-      /** @protected */
       this.messageToast = options.messageToast || MessageToast;
+
+      // Enhanced logging configuration with more granular options
+      this.logConfig = {
+        consoleLogging: options.consoleLogging !== undefined ? options.consoleLogging : true,
+        logLevel: options.logLevel || 'info', // 'debug', 'info', 'warn', 'error'
+        remoteLogging: options.remoteLogging || null,
+        errorReporting: options.errorReporting || null
+      };
     }
 
+    /**
+      * Log messages with configurable levels and optional remote logging
+      * @param {string} level - Log level ('debug', 'info', 'warn', 'error')
+      * @param {string} message - Message to log
+      * @param {Object} [details] - Additional details
+      */
+    log(level, message, details = {}) {
+      const logLevels = ['debug', 'info', 'warn', 'error'];
+      const currentLevelIndex = logLevels.indexOf(this.logConfig.logLevel);
+      const messageLevelIndex = logLevels.indexOf(level);
+
+      // Console logging based on configured log level
+      if (this.logConfig.consoleLogging && messageLevelIndex >= currentLevelIndex) {
+        console[level](`[${level.toUpperCase()}] ${message}`, details);
+      }
+
+      // Remote logging (if configured)
+      if (this.logConfig.remoteLogging && this.logConfig.remoteLogging.log) {
+        this.logConfig.remoteLogging.log({
+          level,
+          message,
+          details,
+          timestamp: new Date().toISOString()
+        });
+      }
+    }
+
+    /**
+    * Enhanced error handling with more structured error information
+    * @param {*} error - Error object or message
+    * @param {Object} [options] - Additional error handling options
+    */
+    handleError(error, options = {}) {
+      const {
+        title = "Error",
+        context = "Application",
+        severity = "medium",
+        reportable = true
+      } = options;
+
+      // Normalize error information
+      const errorInfo = this.extractErrorDetails(error);
+
+      // Log the error
+      this.log('error', errorInfo.message, {
+        code: errorInfo.code,
+        context,
+        severity,
+        details: errorInfo.details
+      });
+
+      // Display error
+      this.showError(errorInfo.message, title);
+
+      // Optional error reporting
+      if (reportable) {
+        this.reportError(errorInfo, context);
+      }
+
+      return errorInfo;
+    }
+    /**
+       * Comprehensive error extraction with enhanced details
+       * @param {*} error - Error to extract details from
+       * @returns {Object} Normalized error information
+       */
+    extractErrorDetails(error) {
+      // Comprehensive error information extraction
+      const baseErrorInfo = this.extractODataError(error);
+
+      // Enhanced error type detection
+      return {
+        ...baseErrorInfo,
+        type: this.detectErrorType(error),
+        timestamp: new Date().toISOString(),
+        stackTrace: error instanceof Error ? error.stack : null,
+
+        // Additional metadata extraction
+        originalError: error,
+        context: this._extractErrorContext(error)
+      };
+    }
+
+    /**
+    * Extract additional context from error
+    * @param {*} error - Error object to extract context from
+    * @returns {Object} Extracted context information
+    * @private
+    */
+    _extractErrorContext(error) {
+      const context = {};
+
+      try {
+        // Extract URL if available
+        if (error.response && error.response.url) {
+          context.url = error.response.url;
+        }
+
+        // Extract HTTP status if available
+        if (error.response && error.response.statusCode) {
+          context.statusCode = error.response.statusCode;
+        }
+
+        // Extract additional metadata
+        if (error.response && error.response.headers) {
+          context.headers = error.response.headers;
+        }
+
+        // Extract request method
+        if (error.response && error.response.method) {
+          context.method = error.response.method;
+        }
+      } catch (extractionError) {
+        console.warn("Error extracting additional context:", extractionError);
+      }
+
+      return context;
+    }
+    /**
+     * Detect error type based on characteristics
+     * @param {*} error - Error to classify
+     * @returns {string} Error type
+     */
+    detectErrorType(error) {
+      if (error instanceof TypeError) return 'TypeError';
+      if (error instanceof RangeError) return 'RangeError';
+      if (error instanceof SyntaxError) return 'SyntaxError';
+      if (error instanceof NetworkError) return 'NetworkError';
+
+      // OData specific error type detection
+      if (error && error.response && error.response.statusCode) {
+        const statusCode = error.response.statusCode;
+        if (statusCode >= 400 && statusCode < 500) return 'ClientError';
+        if (statusCode >= 500) return 'ServerError';
+      }
+
+      return 'UnknownError';
+    }
+
+    /**
+     * Optional method to report errors to a central error tracking service
+     * @param {Object} errorInfo - Normalized error information
+     * @param {string} context - Error context
+     */
+    reportError(errorInfo, context) {
+      // Placeholder for error reporting logic
+      // Could integrate with services like Sentry, LogRocket, etc.
+      if (window.ErrorReportingService) {
+        window.ErrorReportingService.report({
+          ...errorInfo,
+          context
+        });
+      }
+    }
     /**
      * Shows an error message dialog using MessageBox.
      * Automatically attempts to parse OData errors and format details.
@@ -131,19 +291,33 @@ sap.ui.define([
     }
 
     /**
-     * Shows a short success message using MessageToast.
+     * Shows a short success message using MessageToast or MessageBox.
+     *
      * @param {string} message - The success message text.
+     * @param {object} [options] - Options for display.
+     * @param {string} [options.title="Success"] - The title for MessageBox.
+     * @param {string} [options.displayType="toast"] - "toast" for MessageToast, "dialog" for MessageBox.
      * @public
      */
-    showSuccess(message) {
-      if (message && typeof message === 'string') {
-        // Use the instance property `this.messageToast`
-        this.messageToast.show(message);
-        console.log(`ErrorHandler: Success - ${message}`);
-      } else {
+    showSuccess(message, options = {}) {
+      const { title = "Success", displayType = "toast" } = options;
+
+      if (!message || typeof message !== 'string') {
         console.warn("ErrorHandler: showSuccess called with invalid message:", message);
+        return;
       }
+
+      if (displayType === "dialog") {
+        this.messageBox.success(message, {
+          title: title,
+          onClose: this.onClose // Assuming onClose is a relevant callback if needed
+        });
+      } else { // Default to toast
+        this.messageToast.show(message);
+      }
+      console.log(`ErrorHandler: Success - ${message}`);
     }
+
     /**
      * Shows a short informational message using MessageToast.
      * @param {string} message - The informational message text.
@@ -302,12 +476,15 @@ sap.ui.define([
         let responseBody = null;
 
         // --- 1. Find Error Source ---
-        if (error && error.response) {
-          responseBody = error.response.body || error.response.responseText || error.responseText;
-        } else if (error && error.responseText) {
+        // Prioritize responseText if available on the error object itself (common for individual OData errors)
+        if (error && typeof error.responseText === 'string') {
           responseBody = error.responseText;
+        } else if (error && error.response) {
+          // This path handles cases where error.response is an object with a body/responseText
+          responseBody = error.response.body || error.response.responseText;
         } else if (error && error.error) {
-          errorData = error; // Already structured
+          // This path handles pre-parsed error objects (e.g., from ODataMessageParser or direct error structure)
+          errorData = error;
         } else if (error && error.message) { // Generic Error or simple object
           errorInfo.message = error.message;
           errorInfo.code = error.code || error.name || "GENERIC_ERROR";
@@ -320,6 +497,7 @@ sap.ui.define([
           return errorInfo;
         } else {
           // Cannot determine error source
+          console.warn("extractODataError: Could not determine error source from input:", error);
           return errorInfo;
         }
 
@@ -329,7 +507,6 @@ sap.ui.define([
           if (responseBody.trim().startsWith('<?xml') || responseBody.includes('<error')) {
             try {
               // Extract XML error information using regex
-              // This is a simplified XML parser - for production, consider using proper XML parsing
               const codeMatch = responseBody.match(/<code[^>]*>(.*?)<\/code>/);
               const messageMatch = responseBody.match(/<message[^>]*>(.*?)<\/message>/);
 
@@ -357,29 +534,29 @@ sap.ui.define([
             }
           }
 
-          // Continue with JSON parsing for non-XML responses
+          // Attempt to parse as JSON. This is the primary path for most OData errors.
           try {
-            if (responseBody.includes("Content-Type: application/http") && responseBody.includes('{"error":')) {
-              const jsonStartIndex = responseBody.indexOf('{"error":');
-              // Be more careful finding the end - look for balanced braces or line endings
-              // This simple approach might still fail on complex nested errors
-              const potentialEndIndex = responseBody.indexOf('\r\n--', jsonStartIndex); // End boundary in batch?
-              const jsonString = responseBody.substring(jsonStartIndex, potentialEndIndex > jsonStartIndex ? potentialEndIndex : undefined);
-              try {
-                errorData = JSON.parse(jsonString);
-              } catch (batchParseError) {
-                console.warn("ErrorHandler: Failed to parse extracted JSON from batch response.", batchParseError, jsonString);
-                errorInfo.message = "Error processing batch response (details unavailable).";
+            // Handle cases where the responseText might be a JSON array (like the CJ/020 example)
+            if (responseBody.trim().startsWith('[') && responseBody.trim().endsWith(']')) {
+              const parsedArray = JSON.parse(responseBody);
+              if (Array.isArray(parsedArray) && parsedArray.length > 0 && parsedArray[0].code) {
+                // Assume it's an array of errors, take the first one for main message
+                errorData = { error: { ...parsedArray[0], details: parsedArray } };
+              } else {
+                // It's an array, but not in the expected error format, treat as generic JSON
+                errorData = parsedArray;
               }
-            } else { 
+            } else {
+              // Regular JSON object
               errorData = JSON.parse(responseBody);
             }
           } catch (parseError) {
-            console.warn("ErrorHandler: Failed to parse error response body:", parseError, responseBody);
+            console.warn("ErrorHandler: Failed to parse error response body as JSON:", parseError, responseBody);
             errorInfo.message = "Failed to parse error response from server.";
             errorInfo.details = [{ message: `Raw response snippet: ${responseBody.substring(0, 200)}...` }];
           }
         } else if (responseBody && typeof responseBody === 'object') {
+          // If responseBody is already a parsed object (e.g., from a direct JSON response)
           errorData = responseBody;
         }
 
@@ -445,6 +622,60 @@ sap.ui.define([
         entityId: entityId,
         batchIndex: batchIndex
       };
+    }    
+
+    /**
+     * Enhanced error logging method
+     * @param {string} level - Log level
+     * @param {string} message - Message to log
+     * @param {Object} [details] - Additional details
+     */
+    log(level, message, details = {}) {
+      const logLevels = ['debug', 'info', 'warn', 'error'];
+      const currentLevelIndex = logLevels.indexOf(this.logConfig.logLevel);
+      const messageLevelIndex = logLevels.indexOf(level);
+
+      // Console logging
+      if (this.logConfig.consoleLogging && messageLevelIndex >= currentLevelIndex) {
+        console[level](`[${level.toUpperCase()}] ${message}`, details);
+      }
+
+      // Remote logging
+      if (this.logConfig.remoteLogging && this.logConfig.remoteLogging.log) {
+        this.logConfig.remoteLogging.log({
+          level,
+          message,
+          details,
+          timestamp: new Date().toISOString()
+        });
+      }
+
+      // Error reporting
+      if (level === 'error' && this.logConfig.errorReporting) {
+        this.reportError(
+          this.createStandardMessage('error', undefined, message, details),
+          'Logging'
+        );
+      }
+    }
+
+    /**
+     * Report error to configured error tracking service
+     * @param {Object} errorInfo - Normalized error information
+     * @param {string} context - Error context
+     */
+    reportError(errorInfo, context) {
+      // Comprehensive error reporting
+      try {
+        if (this.logConfig.errorReporting) {
+          this.logConfig.errorReporting.report({
+            ...errorInfo,
+            context
+          });
+        }
+      } catch (reportError) {
+        console.error("Error reporting failed:", reportError);
+      }
     }
 
   }; // End of class ErrorHandler

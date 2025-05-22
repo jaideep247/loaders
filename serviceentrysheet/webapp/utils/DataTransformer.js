@@ -4,6 +4,7 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
   /**
    * DataTransformer
    * Centralized utility for handling data transformation, formatting, and parsing for Service Entry Sheets.
+   * Updated to include Service and QuantityUnit fields
    */
   return class DataTransformer {
     constructor() {
@@ -11,7 +12,7 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
       this._oDataDateFormatter = DateFormat.getDateTimeInstance({ pattern: "yyyy-MM-dd'T00:00:00'", UTC: false });
       this._displayDateFormatter = DateFormat.getDateInstance({ pattern: "yyyy-MM-dd", strictParsing: false });
       this._displayDateTimeFormatter = DateFormat.getDateTimeInstance({ pattern: "yyyy-MM-dd HH:mm:ss", strictParsing: false });
-      console.log("DataTransformer initialized.");
+      console.log("DataTransformer initialized with Service and QuantityUnit support.");
     }
 
     // ====================================================================
@@ -83,6 +84,7 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
 
     /**
      * Transform a single service entry sheet item to the OData format needed for deep insert.
+     * Updated to include Service and QuantityUnit fields
      * @param {Object} item - The input service entry sheet item data.
      * @param {number} itemNumber - The sequential item number (e.g., 1, 2, 3...).
      * @returns {Object} Transformed item object for the OData payload.
@@ -103,6 +105,16 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
         ServicePerformanceEndDate: this.formatDateForOData(item.ServicePerformanceEndDate)
       };
 
+      // Add Service field if it has a value (optional field)
+      if (item.Service && typeof item.Service === "string" && item.Service.trim() !== "") {
+        serviceItem.Service = String(item.Service.trim());
+      }
+
+      // Add QuantityUnit field if it has a value (optional field)
+      if (item.QuantityUnit && typeof item.QuantityUnit === "string" && item.QuantityUnit.trim() !== "") {
+        serviceItem.QuantityUnit = String(item.QuantityUnit.trim());
+      }
+
       // Check if any account assignment field has a value
       const hasAccountAssignment = item.AccountAssignment || item.CostCenter || item.GLAccount || item.WBSElement;
 
@@ -112,7 +124,7 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
           results: [
             {
               ServiceEntrySheetItem: String(item.ServiceEntrySheetItem),
-              AccountAssignment: String(item.AccountAssignment || ""), // Default to '1' if missing
+              AccountAssignment: String(item.AccountAssignment || "1"), // Default to '1' if missing
               CostCenter: String(item.CostCenter || ""),
               GLAccount: String(item.GLAccount || ""),
               WBSElement: String(item.WBSElement || "")
@@ -266,6 +278,7 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
 
     /**
      * Maps input object keys (from Excel headers) to standardized internal property names.
+     * Updated to include Service and QuantityUnit field mappings
      * @param {Object} rowData - The raw input object for a single row.
      * @returns {Object} An object with standardized keys. Returns empty object if input is invalid or has no data.
      */
@@ -280,8 +293,9 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
         'posting date': 'PostingDate', 'postingdate': 'PostingDate', 'posting_date': 'PostingDate', 'post date': 'PostingDate',
         'service entry sheet item': 'ServiceEntrySheetItem', 'serviceentrysheetitem': 'ServiceEntrySheetItem', 'service_entry_sheet_item': 'ServiceEntrySheetItem', 'ses item': 'ServiceEntrySheetItem', 'item no': 'ServiceEntrySheetItem', 'item': 'ServiceEntrySheetItem',
         'account assignment category': 'AccountAssignmentCategory', 'accountassignmentcategory': 'AccountAssignmentCategory', 'account_assignment_category': 'AccountAssignmentCategory', 'acc assignment cat': 'AccountAssignmentCategory', 'acct ass cat': 'AccountAssignmentCategory', 'aac': 'AccountAssignmentCategory',
+        'service': 'Service', 'service number': 'Service', 'service_number': 'Service', 'activity number': 'Service', 'activity': 'Service', 'product': 'Service', 'product number': 'Service',
         'confirmed quantity': 'ConfirmedQuantity', 'confirmedquantity': 'ConfirmedQuantity', 'confirmed_quantity': 'ConfirmedQuantity', 'quantity': 'ConfirmedQuantity', 'qty': 'ConfirmedQuantity',
-        'unit': 'QuantityUnit', 'unit of measure': 'QuantityUnit', 'uom': 'QuantityUnit', 'quantityunit': 'QuantityUnit',
+        'unit': 'QuantityUnit', 'unit of measure': 'QuantityUnit', 'uom': 'QuantityUnit', 'quantityunit': 'QuantityUnit', 'quantity unit': 'QuantityUnit', 'measure': 'QuantityUnit',
         'plant': 'Plant', 'plantid': 'Plant', 'plant id': 'Plant', 'plant code': 'Plant',
         'net amount': 'NetAmount', 'netamount': 'NetAmount', 'net_amount': 'NetAmount', 'amount': 'NetAmount',
         'net price amount': 'NetPriceAmount', 'netpriceamount': 'NetPriceAmount', 'net_price_amount': 'NetPriceAmount', 'price amount': 'NetPriceAmount', 'price': 'NetPriceAmount',
@@ -289,7 +303,6 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
         'purchase order item': 'PurchaseOrderItem', 'purchaseorderitem': 'PurchaseOrderItem', 'purchase_order_item': 'PurchaseOrderItem', 'po_item': 'PurchaseOrderItem', 'po item': 'PurchaseOrderItem',
         'service performance date': 'ServicePerformanceDate', 'serviceperformancedate': 'ServicePerformanceDate', 'service_performance_date': 'ServicePerformanceDate', 'service start date': 'ServicePerformanceDate', 'start date': 'ServicePerformanceDate', 'performance date': 'ServicePerformanceDate',
         'service performance end date': 'ServicePerformanceEndDate', 'serviceperformanceenddate': 'ServicePerformanceEndDate', 'service_performance_end_date': 'ServicePerformanceEndDate', 'service end date': 'ServicePerformanceEndDate', 'end date': 'ServicePerformanceEndDate', 'performance end date': 'ServicePerformanceEndDate',
-        'service': 'Service', 'service number': 'Service', 'activity number': 'Service',
         'short text': 'ServiceEntrySheetItemDesc', 'description': 'ServiceEntrySheetItemDesc', 'serviceentrysheetitemdesc': 'ServiceEntrySheetItemDesc',
         'account assignment': 'AccountAssignment', 'accountassignment': 'AccountAssignment',
         'cost center': 'CostCenter', 'costcenter': 'CostCenter', 'cost_center': 'CostCenter', 'costctr': 'CostCenter',
@@ -454,6 +467,7 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
 
     /**
      * Reorders properties (columns) of objects in an array based on a desired sequence.
+     * Updated to include Service and QuantityUnit in the desired order
      * @param {Array<object>} records - Array of record objects.
      * @returns {Array<object>} Array of records with properties reordered.
      * @private
@@ -463,11 +477,10 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
         return records;
       }
 
-      // Set desired order as requested by business requirements
+      // Set desired order as requested by business requirements - updated to include new fields
       const desiredOrder = [
         // Identification and sequence
         "SequenceNumber",
-
         "ServiceEntrySheet",
         // Status Fields
         "Status",
@@ -481,16 +494,18 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
         "StatusMessage",
         "ApprovalError",
 
-        // Document info
-
         // Business data
-
         "ServiceEntrySheetName",
         "ServiceEntrySheetItem",
         "Supplier",
         "PostingDate",
         "Plant",
         "AccountAssignmentCategory",
+        
+        // Service and Quantity fields (new)
+        "Service",
+        "QuantityUnit",
+        
         "ConfirmedQuantity",
         "NetAmount",
         "NetPriceAmount",

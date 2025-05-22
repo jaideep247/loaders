@@ -1,40 +1,48 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <core:FragmentDefinition
     xmlns="sap.m"
     xmlns:core="sap.ui.core"
     xmlns:form="sap.ui.layout.form"
     xmlns:layout="sap.ui.layout"
-    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
-    
+    xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+>
     <Dialog
-        id="batchProcessingDialog"
+        id="wbsCreationDialog"
         class="sapUiSizeCompact"
         contentWidth="650px"
         contentHeight="550px"
-        title="Processing Service Entries"
+        title="WBS Element Creation"
         resizable="true"
         draggable="true"
-        stretch="{device>/system/phone}">
-        
+        stretch="{device>/system/phone}"
+    >
         <content>
-            <VBox id="bpd_mainVBox" class="sapUiSmallMargin">
+            <VBox
+                id="wbs_mainVBox"
+                class="sapUiSmallMargin"
+            >
                 <!-- Status Messages -->
-                <MessageStrip id="bpd_infoMessageStrip"
+                <MessageStrip
+                    id="wbs_infoMessageStrip"
                     type="Information"
                     showIcon="true"
-                    visible="{= ${batchDisplay>/status} !== ''}"
-                    text="{batchDisplay>/status}"
-                    class="sapUiSmallMarginBottom"/>
-                
-                <MessageStrip id="bpd_errorMessageStrip"
+                    visible="{= ${wbsDisplay>/status} !== ''}"
+                    text="{wbsDisplay>/status}"
+                    class="sapUiSmallMarginBottom"
+                />
+
+                <MessageStrip
+                    id="wbs_errorMessageStrip"
                     type="Error"
                     showIcon="true"
-                    visible="{= ${batchDisplay>/error} !== ''}"
-                    text="{batchDisplay>/error}"
-                    class="sapUiSmallMarginBottom"/>
-                
+                    visible="{= ${wbsDisplay>/error} !== ''}"
+                    text="{wbsDisplay>/error}"
+                    class="sapUiSmallMarginBottom"
+                />
+
                 <!-- Progress Information -->
-                <form:SimpleForm id="bpd_progressForm"
+                <form:SimpleForm
+                    id="wbs_progressForm"
                     editable="false"
                     layout="ResponsiveGridLayout"
                     labelSpanXL="4"
@@ -48,110 +56,179 @@
                     emptySpanS="0"
                     columnsXL="2"
                     columnsL="2"
-                    columnsM="2">
-                    
+                    columnsM="2"
+                >
                     <form:content>
-                        <Label id="bpd_totalRecordsLabel" text="Total Records"/>
-                        <Text id="bpd_totalRecordsText" text="{batchDisplay>/totalEntries}"/>
-                        
-                        <Label id="bpd_batchLabel" text="Current Batch"/>
-                        <Text id="bpd_batchText" text="{batchDisplay>/currentBatch} of {batchDisplay>/totalBatches}"/>
-                        
-                        <Label id="bpd_processedLabel" text="Processed"/>
-                        <Text id="bpd_processedText" text="{batchDisplay>/processedEntries}"/>
-                        
-                        <Label id="bpd_timeLabel" text="Time Remaining"/>
-                        <Text id="bpd_timeText" text="{batchDisplay>/timeRemaining}"/>
-                        
-                        <Label id="bpd_successLabel" text="Success"/>
-                        <Text id="bpd_successText" text="{batchDisplay>/successCount}"/>
-                        
-                        <Label id="bpd_speedLabel" text="Processing Speed"/>
-                        <Text id="bpd_speedText" text="{batchDisplay>/processingSpeed}"/>
-                        
-                        <Label id="bpd_failedLabel" text="Failed"/>
-                        <Text id="bpd_failedText" text="{batchDisplay>/failureCount}"/>
+                        <Label
+                            id="wbs_totalRecordsLabel"
+                            text="Total Records"
+                        />
+                        <Text
+                            id="wbs_totalRecordsText"
+                            text="{wbsDisplay>/totalEntries}"
+                        />
+
+                        <Label
+                            id="wbs_currentWBSLabel"
+                            text="Current WBS"
+                        />
+                        <Text
+                            id="wbs_currentWBSText"
+                            text="{wbsDisplay>/currentWBS} of {wbsDisplay>/totalWBS}"
+                        />
+
+                        <Label
+                            id="wbs_processedLabel"
+                            text="Processed"
+                        />
+                        <Text
+                            id="wbs_processedText"
+                            text="{wbsDisplay>/processedEntries}"
+                        />
+
+                        <Label
+                            id="wbs_timeLabel"
+                            text="Time Remaining"
+                        />
+                        <Text
+                            id="wbs_timeText"
+                            text="{wbsDisplay>/timeRemaining}"
+                        />
+
+                        <Label
+                            id="wbs_successLabel"
+                            text="Success"
+                        />
+                        <Text
+                            id="wbs_successText"
+                            text="{wbsDisplay>/successCount}"
+                        />
+
+                        <Label
+                            id="wbs_speedLabel"
+                            text="Processing Speed"
+                        />
+                        <Text
+                            id="wbs_speedText"
+                            text="{wbsDisplay>/processingSpeed}"
+                        />
+
+                        <Label
+                            id="wbs_failedLabel"
+                            text="Failed"
+                        />
+                        <Text
+                            id="wbs_failedText"
+                            text="{wbsDisplay>/failureCount}"
+                        />
                     </form:content>
                 </form:SimpleForm>
-                
+
                 <!-- Progress Indicators -->
-                <VBox id="bpd_progressVBox" class="sapUiSmallMarginTop sapUiSmallMarginBottom">
-                    <Label id="bpd_overallProgressLabel" text="Overall Progress" design="Bold"/>
-                    <ProgressIndicator id="bpd_overallProgressIndicator"
-                        percentValue="{batchDisplay>/entriesProgress}"
-                        displayValue="{= ${batchDisplay>/processedEntries} + ' of ' + ${batchDisplay>/totalEntries} + ' entries'}"
+                <VBox
+                    id="wbs_progressVBox"
+                    class="sapUiSmallMarginTop sapUiSmallMarginBottom"
+                >
+                    <Label
+                        id="wbs_overallProgressLabel"
+                        text="Overall Progress"
+                        design="Bold"
+                    />
+                    <ProgressIndicator
+                        id="entriesProgressBar"
+                        percentValue="{wbsDisplay>/entriesProgress}"
+                        displayValue="{= ${wbsDisplay>/processedEntries} + ' of ' + ${wbsDisplay>/totalEntries} + ' entries'}"
                         showValue="true"
-                        state="{= ${batchDisplay>/isError} ? 'Error' : ${batchDisplay>/isCompleted} ? 'Success' : 'None' }"
+                        state="{= ${wbsDisplay>/isError} ? 'Error' : ${wbsDisplay>/isCompleted} ? 'Success' : 'None' }"
                         class="sapUiSmallMarginBottom"
-                        height="20px"/>
-                    
-                    <Label id="bpd_batchProgressLabel" text="Current Batch Progress" design="Bold"/>
-                    <ProgressIndicator id="bpd_batchProgressIndicator"
-                        percentValue="{batchDisplay>/batchProgress}"
-                        displayValue="{= ${batchDisplay>/currentBatch} + ' of ' + ${batchDisplay>/totalBatches} + ' batches'}"
+                        height="20px"
+                    />
+
+                    <Label
+                        id="wbs_wbsProgressLabel"
+                        text="WBS Elements Progress"
+                        design="Bold"
+                    />
+                    <ProgressIndicator
+                        id="wbsProgressBar"
+                        percentValue="{wbsDisplay>/wbsProgress}"
+                        displayValue="{= ${wbsDisplay>/processedWBS} + ' of ' + ${wbsDisplay>/totalWBS} + ' WBS elements'}"
                         showValue="true"
-                        state="{= ${batchDisplay>/isError} ? 'Error' : ${batchDisplay>/isCompleted} ? 'Success' : 'None' }"
-                        height="20px"/>
+                        state="{= ${wbsDisplay>/isError} ? 'Error' : ${wbsDisplay>/isCompleted} ? 'Success' : 'None' }"
+                        height="20px"
+                    />
                 </VBox>
-                
+
                 <!-- Export Buttons -->
-                <Panel id="exportPanel"
-                    visible="{= ${batchDisplay>/isCompleted} === true || ${batchDisplay>/isError} === true }"
+                <Panel
+                    id="exportPanel"
+                    visible="{= ${wbsDisplay>/isCompleted} === true || ${wbsDisplay>/isError} === true }"
                     headerText="Export Options"
                     expandable="true"
                     expanded="true"
-                    class="sapUiSmallMarginTop sapUiNoContentPadding">
-                    
-                    <HBox id="exportButtonsContainer"
+                    class="sapUiSmallMarginTop sapUiNoContentPadding"
+                >
+                    <HBox
+                        id="exportButtonsContainer"
                         justifyContent="SpaceBetween"
                         wrap="Wrap"
-                        class="sapUiSmallMargin">
-                        
-                        <Button id="bpd_exportExcelBtn"
+                        class="sapUiSmallMargin exportContainer"
+                    >
+                        <Button
+                            id="wbs_exportExcelBtn"
                             text="Export to Excel"
                             icon="sap-icon://excel-attachment"
                             type="Transparent"
-                            press="onExportPress"
+                            press=".onExportPress"
                             customData:format="XLSX"
                             customData:type="all"
-                            class="sapUiSmallMarginEnd"/>
-                        
-                        <Button id="bpd_exportCsvBtn"
+                            class="sapUiSmallMarginEnd"
+                        />
+
+                        <Button
+                            id="wbs_exportErrorsBtn"
                             text="Export to CSV"
                             icon="sap-icon://attachment-text-file"
                             type="Transparent"
-                            press="onExportPress"
+                            press=".onExportPress"
                             customData:format="CSV"
                             customData:type="all"
-                            class="sapUiSmallMarginEnd"/>
-                        
-                        <Button id="bpd_exportPdfBtn"
+                            class="sapUiSmallMarginEnd"
+                        />
+
+                        <Button
+                            id="wbs_exportAllBtn"
                             text="Export to PDF"
                             icon="sap-icon://pdf-attachment"
                             type="Transparent"
-                            press="onExportPress"
+                            press=".onExportPress"
                             customData:format="PDF"
                             customData:type="all"
-                            class="sapUiSmallMarginEnd"/>                                                
+                            class="sapUiSmallMarginEnd"
+                        />
                     </HBox>
                 </Panel>
             </VBox>
         </content>
-        
+
         <buttons>
-            <Button id="bpd_cancelButton"
-                text="Cancel"
+            <Button
+                id="wbs_cancelButton"
+                text="Cancel Processing"
                 icon="sap-icon://decline"
                 type="Negative"
-                press="onCancelBatchProcessing"
-                visible="{= !${batchDisplay>/isCompleted} }"/>
-            
-            <Button id="bpd_closeButton"
+                press=".onCancelProcessing"
+                visible="{= !${wbsDisplay>/isCompleted} }"
+            />
+
+            <Button
+                id="wbs_closeButton"
                 text="Close"
                 icon="sap-icon://accept"
                 type="Emphasized"
-                press="onCloseBatchDialog"
-                visible="{= ${batchDisplay>/isCompleted} }"/>
+                press=".onCloseBatchDialog"
+                visible="{= ${wbsDisplay>/isCompleted} }"
+            />
         </buttons>
     </Dialog>
 </core:FragmentDefinition>

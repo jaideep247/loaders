@@ -5,7 +5,7 @@
     {
       "source": "^/sap/(.*)$",
       "target": "/sap/$1",
-      "destination": "TSI_S4_Loaders",
+      "destination": "TSI_S4_FIXASSET",
       "authenticationType": "xsuaa",
       "csrfProtection": true
     },

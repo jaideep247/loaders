@@ -164,20 +164,7 @@ sap.ui.define(
                 }
             },
 
-            /**
-             * Reset the form to initial state
-             */
-            onReset: function () {
-                this._errorHandler.showConfirmation(
-                    "Are you sure you want to reset the form? All unsaved data will be lost.",
-                    "Confirm Reset",
-                    () => {
-                        // Use ModelManager to reset models
-                        this._modelManager.resetModels();
-                        this._errorHandler.showSuccess("Form has been reset");
-                    }
-                );
-            },
+          
 
             /**
              * Handle file upload for Excel imports

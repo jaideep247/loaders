@@ -9,7 +9,7 @@
 |**Service Type**<br>OData Url|
 |**Service URL**<br>https://my416476-api.s4hana.cloud.sap/sap/opu/odata/sap/API_ENTERPRISE_PROJECT_SRV;v=0002|
 |**Module Name**<br>wbscreate|
-|**Application Title**<br>Loader to create WBS Loader|
+|**Application Title**<br>Loader to create WBS Elements|
 |**Namespace**<br>|
 |**UI5 Theme**<br>sap_horizon|
 |**UI5 Version**<br>1.130.9|

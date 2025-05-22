@@ -133,7 +133,53 @@ sap.ui.define([
       // Return first matching sheet or first sheet
       return potentialSheets[0] || workbook.SheetNames[0];
     },
+    /**
+     * Helper method to deduplicate array elements by a key property
+     * Keeps the first occurrence of each unique key value
+     * @private
+     * @param {Array} array - The array to deduplicate
+     * @param {string} keyProperty - The property to use as a unique key
+     * @returns {Array} Deduplicated array
+     */
+    _deduplicateByKey: function (array, keyProperty) {
+      if (!Array.isArray(array) || array.length <= 1) {
+        return array; // Return as-is if not an array or has 0-1 items
+      }
 
+      const seen = new Set();
+      const result = [];
+
+      // Keep track of duplicates for logging
+      const duplicates = [];
+
+      array.forEach((item, index) => {
+        const key = item[keyProperty];
+        if (!key) {
+          // Still keep items without the key property
+          result.push(item);
+        } else if (!seen.has(key)) {
+          // First occurrence - keep it
+          seen.add(key);
+          result.push(item);
+        } else {
+          // Duplicate - track it for logging
+          duplicates.push({
+            key: key,
+            index: index
+          });
+        }
+      });
+
+      // Log if duplicates were found (for debugging)
+      if (duplicates.length > 0) {
+        console.warn(
+          `Deduplicated ${duplicates.length} entries with duplicate ${keyProperty} values: `,
+          duplicates.map(d => `${d.key} at index ${d.index}`).join(', ')
+        );
+      }
+
+      return result;
+    },
     /**
      * Parse sheet data
      * @private
@@ -165,7 +211,13 @@ sap.ui.define([
         const standardizedRow = this._dataTransformer.mapAssetMasterColumns(row);
         // Then transform flat structure to nested arrays
         const structuredRow = this._dataTransformer.transformFlatToStructured(standardizedRow);
+        if (structuredRow.Valuation && Array.isArray(structuredRow.Valuation)) {
+          structuredRow.Valuation = this._deduplicateByKey(structuredRow.Valuation, 'AssetDepreciationArea');
+        }
 
+        if (structuredRow.TimeBasedValuation && Array.isArray(structuredRow.TimeBasedValuation)) {
+          structuredRow.TimeBasedValuation = this._deduplicateByKey(structuredRow.TimeBasedValuation, 'AssetDepreciationArea');
+        }
         // Create entry with additional metadata
         return {
           SequenceNumber: index + 1,

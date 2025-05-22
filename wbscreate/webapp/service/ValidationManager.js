@@ -10,9 +10,57 @@ sap.ui.define(["wbscreate/utils/DataTransformer"], function (DataTransformer) {
     this._dataTransformer = options.dataTransformer || new DataTransformer();
     this._errorHandler = options.errorHandler;
 
-    /**
-     * Field constraints derived from SAP Enterprise Project Element metadata
-     */
+    // Mapping to handle different input field names
+    this._fieldNameMapping = {
+      // Core field mappings
+      "Project Element": "ProjectElement",
+      "ProjectUUID": "ProjectUUID",
+      "Name of WBS": "Description",
+      "Description": "Description",
+      "Planned Start Date": "PlannedStartDate",
+      "Planned End Date": "PlannedEndDate",
+      "Responsible Cost Center": "ResponsibleCostCenter",
+      "Company Code": "CompanyCode",
+      "Profit Center": "ProfitCenter",
+      "Controlling Area": "ControllingArea",
+      "Billing Element": "WBSElementIsBillingElement",
+      "Is Billing Element (X=Yes)": "WBSElementIsBillingElement",
+
+      // Custom field mappings
+      "Old Project ID": "YY1_OldProjectSiteID_PTD",
+      "Old Project Site ID": "YY1_OldProjectSiteID_PTD",
+      "Exact WBS code": "YY1_ExactWBScode_PTD",
+      "Exact WBS Code": "YY1_ExactWBScode_PTD",
+      "Site type (OF/ON)": "YY1_Categorization1_PTD",
+      "Site Type": "YY1_Categorization1_PTD",
+      "ATM ID": "YY1_ATMID_PTD",
+      "District": "YY1_Address_PTD",
+      "State": "YY1_State_PTD",
+      "Bank name": "YY1_Project_PTD",
+      "Project": "YY1_Project_PTD",
+      "ATM count": "YY1_ATMCount_PTD",
+      "ATM Count": "YY1_ATMCount_PTD",
+      "Nature of WBS": "YY1_NatureOfWBS_PTD",
+      "SAP Site ID report": "YY1_SAPsiteIDReport_PTD",
+      "Address": "YY1_Addressandpostalco_PTD",
+      "Address and Postal Code": "YY1_Addressandpostalco_PTD",
+      "Deployment": "YY1_Deployment_PTD",
+      "Bank load percentage": "YY1_BankLoadATMDiscoun_PTD",
+      "Bank Load ATM Discount": "YY1_BankLoadATMDiscoun_PTD",
+      "ERP relocation Ref ATM ID": "YY1_ERPRelocationRefAT_PTD",
+      "ERP Site ID report": "YY1_ERPsiteIDReport_PTD",
+      "UDF-1": "YY1_UDF3_PTD",
+      "Categorization": "YY1_Categorization_PTD",
+      "Actual start date": "YY1_UDF1_PTD",
+      "Actual Start Date": "YY1_UDF1_PTD",
+      "Postal code": "YY1_Postalcode_PTD",
+      "Postal Code": "YY1_Postalcode_PTD",
+      "Actual end date": "YY1_UDF2_PTD",
+      "Actual End Date": "YY1_UDF2_PTD",
+      "ERP relocation ref. site id": "YY1_ERPRelocationRefer_PTD"
+    };
+
+    // Field constraints (remains the same as in previous version)
     this.fieldConstraints = {
       // Core Project Element Fields
       "ProjectElement": {
@@ -26,26 +74,12 @@ sap.ui.define(["wbscreate/utils/DataTransformer"], function (DataTransformer) {
         type: "string",
         description: "Project UUID"
       },
-      "ProjectElementDescription": {
+      "Description": {
         required: false,
         maxLength: 60,
         type: "string",
         description: "Name of WBS"
       },
-      "EntProjectElementType": {
-        required: false,
-        maxLength: 15,
-        type: "string",
-        description: "Task Type"
-      },
-      "ProcessingStatus": {
-        required: false,
-        maxLength: 2,
-        type: "string",
-        description: "Processing Status"
-      },
-
-      // Date Fields
       "PlannedStartDate": {
         required: false,
         type: "date",
@@ -56,8 +90,6 @@ sap.ui.define(["wbscreate/utils/DataTransformer"], function (DataTransformer) {
         type: "date",
         description: "Planned End Date"
       },
-
-      // Organizational Fields
       "ResponsibleCostCenter": {
         required: false,
         maxLength: 10,
@@ -82,8 +114,6 @@ sap.ui.define(["wbscreate/utils/DataTransformer"], function (DataTransformer) {
         type: "string",
         description: "Controlling Area"
       },
-
-      // Boolean Flags
       "WBSElementIsBillingElement": {
         required: false,
         type: "boolean",
@@ -91,9 +121,7 @@ sap.ui.define(["wbscreate/utils/DataTransformer"], function (DataTransformer) {
       }
     };
 
-    /**
-     * Custom field constraints for SAP extension fields (YY1_*)
-     */
+    // Custom field constraints (similar to previous version)
     this.customFieldConstraints = {
       "YY1_OldProjectSiteID_PTD": {
         required: false,
@@ -253,6 +281,38 @@ sap.ui.define(["wbscreate/utils/DataTransformer"], function (DataTransformer) {
     };
 
     /**
+     * Standardize input project element by mapping field names
+     * @param {Object} projectElement - Project element to standardize
+     * @returns {Object} Standardized project element
+     * @private
+     */
+    this._standardizeProjectElement = function (projectElement) {
+      const standardizedElement = {};
+
+      // Create a case-insensitive mapping
+      const caseInsensitiveMapping = {};
+      Object.keys(this._fieldNameMapping).forEach(key => {
+        caseInsensitiveMapping[key.toLowerCase().trim()] = this._fieldNameMapping[key];
+      });
+
+      // Map input fields to standard field names
+      Object.keys(projectElement).forEach(key => {
+        const trimmedKey = key.trim();
+
+        // First, try exact match
+        let standardKey = this._fieldNameMapping[key] ||
+          // Then try case-insensitive match
+          caseInsensitiveMapping[trimmedKey.toLowerCase()] ||
+          // If no match, use original key
+          key;
+
+        standardizedElement[standardKey] = projectElement[key];
+      });
+
+      return standardizedElement;
+    };
+
+    /**
      * Validate enterprise project elements
      * @param {array} projectElements - Project elements to validate
      * @returns {object} Validation result with validated entries and errors
@@ -264,8 +324,12 @@ sap.ui.define(["wbscreate/utils/DataTransformer"], function (DataTransformer) {
         projectElements = projectElements && projectElements.entries ? projectElements.entries : [];
       }
 
-      // Filter out empty rows
-      const nonEmptyElements = projectElements.filter(element => !this._isEmptyElement(element));
+      // Standardize and filter out empty rows
+      const standardizedElements = projectElements.map(element =>
+        this._standardizeProjectElement(element)
+      );
+
+      const nonEmptyElements = standardizedElements.filter(element => !this._isEmptyElement(element));
 
       console.log(`Filtered out ${projectElements.length - nonEmptyElements.length} empty rows from ${projectElements.length} total rows.`);
 
@@ -288,7 +352,7 @@ sap.ui.define(["wbscreate/utils/DataTransformer"], function (DataTransformer) {
 
       const validatedEntries = nonEmptyElements.map((projectElement) => {
         const errors = [];
-        const sequenceId = projectElement.ProjectElement || "Unknown";
+        const sequenceId = projectElement.ProjectElement || projectElement.ProjectUUID || "Unknown";
 
         // Validate core fields
         Object.keys(this.fieldConstraints).forEach(fieldName => {
@@ -355,12 +419,12 @@ sap.ui.define(["wbscreate/utils/DataTransformer"], function (DataTransformer) {
           }
         });
 
-        // Validate custom fields (YY1_* extension fields)
+        // Validate custom fields
         Object.keys(this.customFieldConstraints).forEach(fieldName => {
           const constraint = this.customFieldConstraints[fieldName];
           const value = projectElement[fieldName];
 
-          // Skip validation if the field doesn't exist or is empty
+          // Skip validation if the field doesn't exist
           if (value === undefined || value === null || value === '') return;
 
           // Type-specific validation
@@ -480,5 +544,8 @@ sap.ui.define(["wbscreate/utils/DataTransformer"], function (DataTransformer) {
         errors: result.errors
       };
     };
+
+    // Return the validation manager instance
+    return this;
   };
 });

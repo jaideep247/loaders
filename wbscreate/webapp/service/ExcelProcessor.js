@@ -1,7 +1,3 @@
-/**
- * Enhanced Excel Processor for WBS Element file format
- * This extends the existing ExcelProcessor to handle WBS Element files with the specific format provided
- */
 sap.ui.define([
   "sap/m/MessageBox",
   "sap/m/MessageToast",
@@ -13,17 +9,17 @@ sap.ui.define([
   "use strict";
 
   /**
-   * WBSElementProcessor
+   * ExcelProcessor
    * Specialized processor for WBS Element files
    */
-  return class WBSElementProcessor {
+  return class ExcelProcessor {
     /**
      * Constructor with dependency injection
      * @param {Object} options - Configuration options
      */
     constructor(options = {}) {
       this.oController = options.controller;
-      this._validationManager = options.validationManager || new ValidationManager(/* pass options if needed */);
+      this._validationManager = options.validationManager || new ValidationManager();
       this._dataTransformer = options.dataTransformer || new DataTransformer();
       this._errorHandler = options.errorHandler || new ErrorHandler();
       this._modelManager = options.modelManager;
@@ -146,6 +142,140 @@ sap.ui.define([
     }
 
     /**
+     * Process text data for space-separated format
+     * @param {string} textData - Raw text data in space-separated format
+     * @returns {Promise<object>} Promise that resolves with the processed data
+     */
+    processSpaceSeparatedText(textData) {
+      return new Promise((resolve, reject) => {
+        try {
+          if (!textData || typeof textData !== 'string') {
+            throw new Error("Invalid text data provided");
+          }
+
+          this._errorHandler.showSuccess("Processing text data, please wait...");
+
+          // Parse the space-separated format
+          const wbsElements = this._parseSpaceSeparatedFormat(textData);
+
+          if (!wbsElements || wbsElements.length === 0) {
+            console.warn("No WBS Elements found in the text data.");
+            const emptyResult = {
+              isValid: true,
+              entries: [],
+              count: 0,
+              errors: []
+            };
+
+            resolve(emptyResult);
+            return;
+          }
+
+          // Validate the WBS Elements
+          const validationResult = this._validateWBSElements(wbsElements);
+
+          // Log successful processing
+          console.log("Text data processed successfully", {
+            dataSource: "space-separated text",
+            totalEntries: wbsElements.length,
+            validEntries: validationResult.validCount,
+            invalidEntries: validationResult.errorCount
+          });
+
+          // Update models if needed
+          this._updateModels(validationResult);
+
+          // Show processing results
+          this._showProcessingResults(validationResult, "Text Input");
+
+          resolve(validationResult);
+
+        } catch (error) {
+          console.error("Error processing text data:", error);
+          BusyIndicator.hide();
+          this._errorHandler.showError("Error processing text data", error.message);
+          reject(error);
+        }
+      });
+    }
+
+    /**
+     * Parse the space-separated format
+     * @param {string} text - The space-separated data
+     * @returns {array} Array of WBS Element objects
+     * @private
+     */
+    _parseSpaceSeparatedFormat(text) {
+      try {
+        console.log("Parsing space-separated format data...");
+
+        // Split the text into lines
+        const lines = text.trim().split(/\r?\n/);
+
+        // If it's a single line, process differently
+        if (lines.length === 1) {
+          const parts = lines[0].trim().split(/\s+/);
+
+          // Find where field names end and values begin
+          // Look for the first part that starts with "B-SBP-OF-" as a heuristic
+          let dataStartIndex = 0;
+          for (let i = 0; i < parts.length; i++) {
+            if (parts[i].startsWith("B-SBP-OF-")) {
+              dataStartIndex = i;
+              break;
+            }
+          }
+
+          if (dataStartIndex === 0 || dataStartIndex >= parts.length) {
+            console.warn("Could not determine data structure in space-separated format");
+            return [];
+          }
+
+          // Extract field names and values
+          const fieldNames = parts.slice(0, dataStartIndex);
+          const values = parts.slice(dataStartIndex);
+
+          // Create an object with the corresponding field values
+          const rowData = {};
+          fieldNames.forEach((field, index) => {
+            if (index < values.length) {
+              rowData[field] = values[index];
+            }
+          });
+
+          // Map to standard field names
+          const standardizedRow = this._mapWBSFields(rowData);
+
+          // Handle special formatting
+          // Convert 'X' to boolean for WBSElementIsBillingElement
+          if (standardizedRow.WBSElementIsBillingElement === 'X') {
+            standardizedRow.WBSElementIsBillingElement = true;
+          } else if (standardizedRow.WBSElementIsBillingElement === '') {
+            standardizedRow.WBSElementIsBillingElement = false;
+          }
+
+          // Format dates
+          const dateFields = ['PlannedStartDate', 'PlannedEndDate', 'YY1_UDF1_PTD', 'YY1_UDF2_PTD'];
+          dateFields.forEach(field => {
+            if (standardizedRow[field]) {
+              standardizedRow[field] = this._dataTransformer.parseDate(standardizedRow[field]);
+            }
+          });
+
+          return [standardizedRow];
+        }
+        else {
+          // Handle multi-line format if needed (not implemented in this example)
+          console.warn("Multi-line space-separated format not implemented");
+          return [];
+        }
+      } catch (error) {
+        console.error("Error parsing space-separated format:", error);
+        return [];
+      }
+    }
+
+    /**
      * Parse WBS Element data from an Excel sheet
      * @param {object} workbook - XLSX workbook object
      * @param {string} sheetName - Name of the sheet to parse
@@ -158,7 +288,6 @@ sap.ui.define([
         if (!worksheet) {
           throw new Error(`Sheet "${sheetName}" could not be accessed in the workbook.`);
         }
-
         console.groupCollapsed(`📄 Parsing WBS Element Sheet: "${sheetName}"`);
 
         const sheetData = window.XLSX.utils.sheet_to_json(worksheet, {
@@ -276,7 +405,7 @@ sap.ui.define([
       // Define required fields for WBS Elements
       const requiredFields = [
         { field: "ProjectElement", description: "Project Element" },
-        { field: "ProjectElementDescription", description: "Name of WBS" },
+        { field: "Description", description: "Name of WBS" },
         { field: "PlannedStartDate", description: "Planned Start Date" },
         { field: "PlannedEndDate", description: "Planned End Date" }
       ];

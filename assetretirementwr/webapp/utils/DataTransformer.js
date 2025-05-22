@@ -128,7 +128,7 @@ sap.ui.define([
                     "Retirement Type": entry.FixedAssetRetirementType || "",
                     "Document Reference ID": entry.DocumentReferenceID || "",
                     "Accounting Document Header Text": entry.AccountingDocumentHeaderText || "",
-                    "Transaction Currency": entry.FxdAstRtrmtRevnTransCrcy || entry.FxdAstRetirementTransCrcy || "",
+                    "Transaction Currency": entry.FxdAstRtrmtRevnTransCrcy || "",
                     "Retirement Amount": entry.AstRtrmtAmtInTransCrcy || "",
                     "Quantity": entry.FxdAstRtrmtQuantityInBaseUnit || "",
                     "Base Unit SAP Code": entry.BaseUnitSAPCode || "",
@@ -223,9 +223,6 @@ sap.ui.define([
                 AssignmentReference: entry.AssignmentReference || "",
                 DocumentItemText: entry.DocumentItemText || "",
 
-                // Additional fields specific to the retirement transaction
-                AstRtrmtAmtInTransCrcy: this._formatAmount(entry.AstRtrmtAmtInTransCrcy),
-                FxdAstRetirementTransCrcy: entry.FxdAstRetirementTransCrcy || entry.FxdAstRtrmtRevnTransCrcy || "",
             };
         },
 

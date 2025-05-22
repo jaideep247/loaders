@@ -11,7 +11,7 @@ sap.ui.define(["serviceentrysheet/utils/DataTransformer"], function (DataTransfo
 
     /**
      * Field constraints derived from SAP metadata for Service Entry Sheets
-     * Focused only on the specified fields
+     * Updated to include Service and QuantityUnit fields
      */
     this.fieldConstraints = {
       // Header fields with their metadata constraints
@@ -70,6 +70,12 @@ sap.ui.define(["serviceentrysheet/utils/DataTransformer"], function (DataTransfo
         type: "string",
         description: "Account Assignment Category"
       },
+      "Service": {
+        required: false, // Optional field based on API schema
+        maxLength: 40,
+        type: "string",
+        description: "Service/Product Number"
+      },
       "ConfirmedQuantity": {
         required: true,
         type: "decimal",
@@ -78,6 +84,12 @@ sap.ui.define(["serviceentrysheet/utils/DataTransformer"], function (DataTransfo
         minValue: -9999999999.999,
         maxValue: 9999999999.999,
         description: "Stated Quantity"
+      },
+      "QuantityUnit": {
+        required: false, // Optional field based on API schema
+        maxLength: 3,
+        type: "string",
+        description: "Unit of Measure for Service Entry Statement"
       },
       "Plant": {
         required: true,
@@ -179,10 +191,6 @@ sap.ui.define(["serviceentrysheet/utils/DataTransformer"], function (DataTransfo
           ]
         };
       }
-
-      // Note: Removed PO/PostingDate combination validation since we now want to 
-      // allow multiple entries with the same PO/PostingDate to be treated as multiple
-      // items in the same SES
 
       const validatedEntries = entries.map((entry) => {
         const errors = [];
@@ -305,15 +313,17 @@ sap.ui.define(["serviceentrysheet/utils/DataTransformer"], function (DataTransfo
           entry.Items.forEach((item, index) => {
             const itemId = item.ServiceEntrySheetItem || (index + 1).toString();
 
-            // Validate required item fields
+            // Updated item fields to include Service and QuantityUnit
             const itemFields = [
-              "ServiceEntrySheetItem", "AccountAssignmentCategory", "ConfirmedQuantity",
-              "Plant", "NetAmount", "NetPriceAmount", "PurchaseOrderItem",
+              "ServiceEntrySheetItem", "AccountAssignmentCategory", "Service", "ConfirmedQuantity",
+              "QuantityUnit", "Plant", "NetAmount", "NetPriceAmount", "PurchaseOrderItem",
               "ServicePerformanceDate", "ServicePerformanceEndDate"
             ];
 
             itemFields.forEach(fieldName => {
               const constraint = this.fieldConstraints[fieldName];
+              if (!constraint) return; // Skip if no constraint defined
+
               const value = item[fieldName];
 
               // Check if required field exists
@@ -328,8 +338,11 @@ sap.ui.define(["serviceentrysheet/utils/DataTransformer"], function (DataTransfo
                 return; // Skip further validation for this field
               }
 
-              // Skip validation if the field doesn't exist
-              if (value === undefined || value === null) return;
+              // Skip validation if the field doesn't exist or is empty for optional fields
+              if (value === undefined || value === null || 
+                  (!constraint.required && typeof value === "string" && value.trim() === "")) {
+                return;
+              }
 
               // Type-specific validation
               switch (constraint.type) {
@@ -426,6 +439,30 @@ sap.ui.define(["serviceentrysheet/utils/DataTransformer"], function (DataTransfo
               }
             });
 
+            // Business Rule: Service and QuantityUnit must both have values or both be blank
+            const hasService = item.Service && typeof item.Service === "string" && item.Service.trim() !== "";
+            const hasQuantityUnit = item.QuantityUnit && typeof item.QuantityUnit === "string" && item.QuantityUnit.trim() !== "";
+            
+            if (hasService !== hasQuantityUnit) {
+              if (hasService && !hasQuantityUnit) {
+                errors.push({
+                  message: `QuantityUnit is required when Service is provided for Item ${itemId} in Service Entry Sheet ${sequenceId}`,
+                  sheet: "Service Entry Sheets",
+                  sequenceId: sequenceId,
+                  itemId: itemId,
+                  field: "QuantityUnit"
+                });
+              } else if (!hasService && hasQuantityUnit) {
+                errors.push({
+                  message: `Service is required when QuantityUnit is provided for Item ${itemId} in Service Entry Sheet ${sequenceId}`,
+                  sheet: "Service Entry Sheets",
+                  sequenceId: sequenceId,
+                  itemId: itemId,
+                  field: "Service"
+                });
+              }
+            }
+
             // Validate account assignments if present
             if (Array.isArray(item.AccountAssignments)) {
               item.AccountAssignments.forEach((assignment, assignmentIndex) => {
@@ -512,6 +549,17 @@ sap.ui.define(["serviceentrysheet/utils/DataTransformer"], function (DataTransfo
         errorCount: invalidEntries.length,
         validData: validEntries,
         errors: allErrors
+      };
+    };
+
+    /**
+     * Get field constraints description for template generation and help
+     * @returns {object} Field constraints object
+     */
+    this.getFieldConstraintsDescription = function () {
+      return {
+        ...this.fieldConstraints,
+        ...this.accountAssignmentConstraints
       };
     };
 

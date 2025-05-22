@@ -137,7 +137,7 @@ sap.ui.define(
       this.handleValidationErrors = function (errors) {
         console.log("UIManager: Handling validation errors (using Fragment)...");
         if (!errors || !errors.length) { return; }
-        const uniqueErrors = this.errorHandler.formatValidationErrors(errors);
+        const uniqueErrors = this._errorHandler.formatValidationErrors(errors);
         if (!uniqueErrors.length) { return; }
 
         // Create flat list with category info for simpler fragment binding
@@ -284,13 +284,49 @@ sap.ui.define(
       /** Show help dialog, reuses instance. @public */
       this.showHelpDialog = function (controllerContext) {
         console.log("UIManager: Showing help dialog...");
-        this._helpControllerContext = controllerContext && typeof controllerContext.onDownloadTemplate === 'function' ? controllerContext : null;
-        if (!this._helpControllerContext) { console.warn("UIManager: Help dialog context for actions missing."); }
-        const dialogId = "helpDialog"; const fragmentName = "wbscreate.view.HelpDialog"; // <<< ADJUST NAMESPACE
-        // Do NOT destroy this dialog on close
-        this.loadAndShowDialog(dialogId, fragmentName, null, null, { onHelpDialogClose: () => { this.closeDialog(dialogId, false); this._helpControllerContext = null; }, onDownloadTemplateLinkPress: () => { if (this._helpControllerContext) { this._helpControllerContext.onDownloadTemplate(); } else { this.errorHandler.showWarning("Cannot download template: Application context not available."); } } });
-      };
 
+        // Store controller context for template download
+        this._helpControllerContext = controllerContext &&
+          typeof controllerContext.onDownloadTemplate === 'function' ?
+          controllerContext : null;
+
+        if (!this._helpControllerContext) {
+          console.warn("UIManager: Help dialog context for onDownloadTemplate is missing.");
+        }
+
+        const dialogId = "helpDialog";
+        const fragmentName = "wbscreate.view.HelpDialog"; // Ensure this path is correct
+
+        // Create a controller object with the specific handlers needed
+        const dialogController = {
+          onHelpDialogClose: () => {
+            this.closeDialog(dialogId, false);
+            this._helpControllerContext = null;
+          },
+
+          // This is the critical function to fix the download link:
+          onDownloadTemplate: () => {
+            console.log("UIManager: onDownloadTemplate called from help dialog");
+            if (this._helpControllerContext &&
+              typeof this._helpControllerContext.onDownloadTemplate === 'function') {
+              this._helpControllerContext.onDownloadTemplate();
+            } else {
+              this._errorHandler.showWarning(
+                "Cannot download template: Application context not available."
+              );
+            }
+          }
+        };
+
+        // Pass the dedicated controller for help dialog
+        this.loadAndShowDialog(
+          dialogId,
+          fragmentName,
+          null,
+          null,
+          dialogController  // Pass the special controller with handlers
+        );
+      };
       // --- Result Dialogs (Success, Partial, Error) - Destroy on close ---
       /** Shows success dialog. @public */
       this.showSuccessWithDocuments = function (successEntries) {
