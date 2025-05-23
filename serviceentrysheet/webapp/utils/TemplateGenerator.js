@@ -229,7 +229,7 @@ sap.ui.define([
 
                 // Create workbook
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Service Entry Template");
+                XLSX.utils.book_append_sheet(wb, ws, "Service Entry Sheets");
                 
                 // Add metadata
                 wb.Props = {
@@ -264,7 +264,7 @@ sap.ui.define([
          * @returns {string} The template filename.
          */
         getTemplateFileName() {
-            let defaultName = "ServiceEntrySheet_Template_v2.xlsx"; // Updated version name
+            let defaultName = "ServiceEntrySheet_Template.xlsx"; // Updated version name
             if (this._customProcessor && typeof this._customProcessor.getTemplateFileName === 'function') {
                 try {
                     return this._customProcessor.getTemplateFileName() || defaultName;

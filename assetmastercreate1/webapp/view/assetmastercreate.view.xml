@@ -1,0 +1,563 @@
+<mvc:View
+    controllerName="assetmastercreate.controller.assetmastercreate"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:l="sap.ui.layout"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:unified="sap.ui.unified"
+    displayBlock="true"
+    height="100%"
+>
+    <Page
+        id="assetCreatePage"
+        title="Asset Master Creation"
+        showNavButton="true"
+        navButtonPress=".onNavBack"
+        showFooter="true"
+    >
+        <!-- User Information Display - Read Only -->
+        <Label
+            id="userInfoLabel"
+            text="Current User:"
+            class="sapUiTinyMarginEnd"
+        />
+        <ObjectStatus
+            id="userNameStatus"
+            text="{userInfo>/displayName}"
+            state="Information"
+            icon="sap-icon://person-placeholder"
+            class="sapUiMediumMarginEnd"
+        />
+        <headerContent>
+            <Text
+                id="infoText"
+                text="Click for instructions to create Assets Master from Excel to SAP."
+            />
+            <Button
+                id="headerHelpButton"
+                icon="sap-icon://sys-help"
+                tooltip="Help"
+                press=".onShowHelp"
+            />
+        </headerContent>
+
+        <content>
+            <f:DynamicPage
+                id="dynamicPageId"
+                headerExpanded="true"
+                toggleHeaderOnTitleClick="true"
+            >
+                <f:title>
+                    <f:DynamicPageTitle id="dynamicPageTitleId">
+                        <f:heading>
+                            <Title
+                                id="pageTitle"
+                                text="Create Asset Master"
+                            />
+                        </f:heading>
+                        <f:snappedContent>
+                            <Text
+                                id="snappedSubtitleText"
+                                text="Upload assets in bulk to SAP"
+                            />
+                        </f:snappedContent>
+                        <f:expandedContent>
+                            <Text
+                                id="expandedSubtitleText"
+                                text="Upload assets in bulk to SAP"
+                            />
+                        </f:expandedContent>
+                    </f:DynamicPageTitle>
+                </f:title>
+
+                <f:content>
+                    <VBox id="mainContentVBox">
+                        <!-- Excel Upload Panel -->
+                        <Panel
+                            id="uploadPanel"
+                            headerText="Excel File Upload"
+                            expandable="true"
+                            expanded="true"
+                        >
+                            <content>
+                                <VBox id="uploadPanelContentBox">
+                                    <HBox
+                                        id="uploadControlsBox"
+                                        alignItems="Center"
+                                        justifyContent="SpaceBetween"
+                                        class="sapUiSmallMarginBottom sapUiSmallMarginTop"
+                                    >
+                                        <VBox
+                                            id="uploaderBox"
+                                            width="60%"
+                                        >
+                                            <unified:FileUploader
+                                                id="fileUploader"
+                                                width="100%"
+                                                placeholder="Select Excel File (.xlsx) containing Asset Master data"
+                                                change=".onFileChange"
+                                                buttonText="Browse Files"
+                                                fileType="xlsx"
+                                                style="Emphasized"
+                                                icon="sap-icon://upload"
+                                                name="assetMasterUpload"
+                                            />
+                                            <Text
+                                                id="fileFormatHelper"
+                                                text="Please upload Excel file containing Asset Master data with required fields (Company Code, Asset Class, Description, etc.)"
+                                                class="sapUiTinyMarginTop"
+                                            />
+                                        </VBox>
+                                        <Button
+                                            id="downloadTemplateBtn"
+                                            text="Download Template"
+                                            press=".onDownloadTemplate"
+                                            type="Emphasized"                                            
+                                            icon="sap-icon://download"
+                                            class="sapUiSmallMarginBegin"
+                                        />
+                                    </HBox>
+                                </VBox>
+                            </content>
+                        </Panel>
+
+                        <!-- Batch Processing Display Container -->
+                        <Panel
+                            id="batchProcessingDisplayContainer"
+                            headerText="Batch Processing Progress"
+                            expandable="true"
+                            expanded="true"
+                            visible="{= ${uploadSummary>/isSubmitting} === true}"
+                        >
+                            <content>
+                                <VBox id="batchProcessingContentBox">
+                                    <!-- Batch processing display will be loaded from fragment -->
+                                </VBox>
+                            </content>
+                        </Panel>
+
+                        <!-- Filters Panel -->
+                        <Panel
+                            id="filtersPanel"
+                            headerText="Filters"
+                            expandable="true"
+                            expanded="false"
+                            visible="true"
+                        >
+                            <content>
+                                <HBox
+                                    id="filterControlsBox"
+                                    justifyContent="SpaceBetween"
+                                    wrap="Wrap"
+                                    class="sapUiSmallMarginBottom"
+                                >
+                                    <ComboBox
+                                        id="statusFilterComboBox"
+                                        width="12rem"
+                                        selectionChange=".onStatusFilterChange"
+                                        placeholder="Filter by Status"
+                                    >
+                                        <core:Item
+                                            id="statusFilterAll"
+                                            key="all"
+                                            text="All"
+                                        />
+                                        <core:Item
+                                            id="statusFilterValid"
+                                            key="valid"
+                                            text="Valid"
+                                        />
+                                        <core:Item
+                                            id="statusFilterInvalid"
+                                            key="invalid"
+                                            text="Invalid"
+                                        />
+                                    </ComboBox>
+                                    <!-- Company Code Filter -->
+                                    <Input
+                                        id="companyCodeFilter"
+                                        width="12rem"
+                                        placeholder="Company Code"
+                                        liveChange=".onFilterChange"
+                                        value="{filterModel>/companyCode}"
+                                    />
+
+                                    <!-- Asset Class Filter -->
+                                    <Input
+                                        id="assetClassFilter"
+                                        width="12rem"
+                                        placeholder="Asset Class"
+                                        liveChange=".onFilterChange"
+                                        value="{filterModel>/assetClass}"
+                                    />
+
+                                    <!-- Description Filter -->
+                                    <Input
+                                        id="descriptionFilter"
+                                        width="12rem"
+                                        placeholder="Description"
+                                        liveChange=".onFilterChange"
+                                        value="{filterModel>/description}"
+                                    />
+
+                                    <!-- WBS Element Filter -->
+                                    <Input
+                                        id="wbsElementFilter"
+                                        width="12rem"
+                                        placeholder="WBS Element"
+                                        liveChange=".onFilterChange"
+                                        value="{filterModel>/wbsElement}"
+                                    />
+
+                                    <Button
+                                        id="resetFiltersBtn"
+                                        text="Reset Filters"
+                                        type="Transparent"
+                                        icon="sap-icon://clear-filter"
+                                        iconDensityAware="true"
+                                        press=".onResetFilters"
+                                    />
+                                </HBox>
+                            </content>
+                        </Panel>
+
+                        <!-- Asset Items Panel -->
+                        <Panel
+                            id="assetsPanel"
+                            headerText="Asset Items"
+                            expandable="true"
+                            expanded="true"
+                            visible="true"
+                        >
+                            <content>
+                                <Toolbar id="assetsToolbar">
+                                    <Title
+                                        id="assetsTableTitle"
+                                        text="Uploaded Assets Master records"
+                                    />
+                                    <ToolbarSpacer id="assetsToolbarSpacer" />
+                                    <SegmentedButton
+                                        id="tableViewSelector"
+                                        selectionChange=".onTableViewChange"
+                                        selectedKey="All"
+                                    >
+                                        <items>
+                                            <SegmentedButtonItem
+                                                id="allItemsBtn"
+                                                text="All"
+                                                key="All"
+                                            />
+                                            <SegmentedButtonItem
+                                                id="validItemsBtn"
+                                                text="Valid"
+                                                key="Valid"
+                                            />
+                                            <SegmentedButtonItem
+                                                id="invalidItemsBtn"
+                                                text="Invalid"
+                                                key="Invalid"
+                                            />
+                                        </items>
+                                    </SegmentedButton>
+                                    <SearchField
+                                        id="assetSearchField"
+                                        width="15rem"
+                                        placeholder="Search..."
+                                        search=".onAssetSearch"
+                                    />
+                                    <Button
+                                        id="refreshTableBtn"
+                                        icon="sap-icon://refresh"
+                                        tooltip="Refresh Table"
+                                        press=".onRefreshTable"
+                                        type="Transparent"
+                                    />
+                                </Toolbar>
+
+                                <Table
+                                    id="assetTable"
+                                    items="{assetMasterEntries>/entries}"
+                                    mode="None"
+                                    growing="true"
+                                    growingThreshold="15"
+                                    alternateRowColors="true"
+                                    sticky="ColumnHeaders,HeaderToolbar"
+                                >
+                                    <columns>
+                                        <!-- Basic Information -->
+                                        <Column
+                                            id="sequenceIdColumn"
+                                            width="6%"
+                                            hAlign="Begin"
+                                        >
+                                            <Text
+                                                id="sequenceIdText"
+                                                text="Sequence ID"
+                                            />
+                                        </Column>
+                                        <Column
+                                            id="companyCodeColumn"
+                                            width="6%"
+                                            hAlign="Begin"
+                                        >
+                                            <Text
+                                                id="companyCodeText"
+                                                text="Company Code"
+                                            />
+                                        </Column>
+                                        <Column
+                                            id="assetClassColumn"
+                                            width="6%"
+                                            hAlign="Begin"
+                                        >
+                                            <Text
+                                                id="assetClassText"
+                                                text="Asset Class"
+                                            />
+                                        </Column>
+
+                                        <!-- Asset Properties -->
+                                        <Column
+                                            id="descriptionColumn"
+                                            width="12%"
+                                            hAlign="Begin"
+                                            minScreenWidth="Tablet"
+                                            demandPopin="true"
+                                        >
+                                            <Text
+                                                id="descriptionText"
+                                                text="Description"
+                                            />
+                                        </Column>
+
+                                        <!-- WBS Element -->
+                                        <Column
+                                            id="wbsElementColumn"
+                                            width="10%"
+                                            hAlign="Begin"
+                                            minScreenWidth="Tablet"
+                                            demandPopin="true"
+                                        >
+                                            <Text
+                                                id="wbsElementText"
+                                                text="WBS Element"
+                                            />
+                                        </Column>
+
+                                        <!-- Asset Addition Type -->
+                                        <Column
+                                            id="assetAdditionTypeColumn"
+                                            width="8%"
+                                            hAlign="Begin"
+                                            minScreenWidth="Tablet"
+                                            demandPopin="true"
+                                        >
+                                            <Text
+                                                id="assetAdditionTypeText"
+                                                text="Addition Type"
+                                            />
+                                        </Column>
+
+                                        <!-- Acquisition Date -->
+                                        <Column
+                                            id="acquisitionDateColumn"
+                                            width="10%"
+                                            hAlign="Begin"
+                                            minScreenWidth="Tablet"
+                                            demandPopin="true"
+                                        >
+                                            <Text
+                                                id="acquisitionDateText"
+                                                text="Acquisition Date"
+                                            />
+                                        </Column>
+                                        <!-- Depreciation -->
+                                        <Column
+                                            id="depreciationKeyColumn"
+                                            width="7%"
+                                            hAlign="Begin"
+                                            minScreenWidth="Desktop"
+                                            demandPopin="true"
+                                        >
+                                            <Text
+                                                id="depreciationKeyText"
+                                                text="Depr. Key"
+                                            />
+                                        </Column>
+                                        <Column
+                                            id="usefulLifeColumn"
+                                            width="7%"
+                                            hAlign="End"
+                                            minScreenWidth="Tablet"
+                                            demandPopin="true"
+                                        >
+                                            <Text
+                                                id="usefulLifeText"
+                                                text="Useful Life"
+                                            />
+                                        </Column>
+
+                                        <!-- Status and Actions -->
+                                        <Column
+                                            id="statusColumn"
+                                            width="7%"
+                                            hAlign="Center"
+                                        >
+                                            <Text
+                                                id="statusText"
+                                                text="Status"
+                                            />
+                                        </Column>
+                                        <Column
+                                            id="actionsColumn"
+                                            width="7%"
+                                            hAlign="End"
+                                        >
+                                            <Text
+                                                id="actionsText"
+                                                text="Actions"
+                                            />
+                                        </Column>
+                                    </columns>
+                                    <items>
+                                        <ColumnListItem
+                                            id="tableItem"
+                                            type="Active"
+                                            press=".onItemPress"
+                                        >
+                                            <cells>
+                                                <!-- Basic Information -->
+                                                <Text
+                                                    id="sequenceIdCellText"
+                                                    text="{assetMasterEntries>SequenceNumber}"
+                                                />
+                                                <Text
+                                                    id="companyCodeCellText"
+                                                    text="{assetMasterEntries>CompanyCode}"
+                                                />
+                                                <Text
+                                                    id="assetClassCellText"
+                                                    text="{assetMasterEntries>AssetClass}"
+                                                />
+
+                                                <!-- Asset Properties -->
+                                                <Text
+                                                    id="descriptionCellText"
+                                                    text="{assetMasterEntries>FixedAssetDescription}"
+                                                />
+
+                                                <!-- WBS Element -->
+                                                <Text
+                                                    id="wbsElementCellText"
+                                                    text="{assetMasterEntries>YY1_WBS_ELEMENT}"
+                                                />
+
+                                                <!-- Asset Addition Type -->
+                                                <Text
+                                                    id="assetAdditionTypeCellText"
+                                                    text="{= ${assetMasterEntries>AssetIsForPostCapitalization} ? 'Post-Cap' : 'Original' }"
+                                                />
+
+                                                <!-- Acquisition Date -->
+                                                <Text
+                                                    id="acquisitionDateCellText"
+                                                    text="{path: 'assetMasterEntries>LedgerInformation/0/AssetCapitalizationDate', 
+           formatter: '.formatter.formatDate'}"
+                                                />
+
+                                                <!-- Depreciation -->
+                                                <Text
+                                                    id="depreciationKeyCellText"
+                                                    text="{= ${assetMasterEntries>TimeBasedValuation}.length > 0 ? ${assetMasterEntries>TimeBasedValuation/0/DepreciationKey} : '' }"
+                                                />
+                                                <ObjectNumber
+                                                    id="usefulLifeCellText"
+                                                    number="{= ${assetMasterEntries>TimeBasedValuation}.length > 0 ? ${assetMasterEntries>TimeBasedValuation/0/PlannedUsefulLifeInYears} : '' }"
+                                                    unit="years"
+                                                />
+
+                                                <!-- Status and Actions -->
+                                                <ObjectStatus
+                                                    id="statusCellText"
+                                                    text="{assetMasterEntries>Status}"
+                                                    state="{= ${assetMasterEntries>Status} === 'Valid' ? 'Success' : 'Error'}"
+                                                    icon="{= ${assetMasterEntries>Status} === 'Valid' ? 'sap-icon://accept' : 'sap-icon://error'}"
+                                                />
+                                                <Button
+                                                    id="detailsButton"
+                                                    text="Details"
+                                                    type="Transparent"
+                                                    icon="sap-icon://detail-view"
+                                                    press=".onShowEntryDetails"
+                                                />
+                                            </cells>
+                                        </ColumnListItem>
+                                    </items>
+                                    <noData>
+                                        <MessageStrip
+                                            id="noItemsMessageStrip"
+                                            text="No Asset items available. Please upload an Excel file containing Asset Master records with all required fields."
+                                            type="Information"
+                                            showIcon="true"
+                                            class="sapUiMediumMargin"
+                                        />
+                                    </noData>
+                                </Table>
+                            </content>
+                        </Panel>
+                    </VBox>
+                </f:content>
+            </f:DynamicPage>
+        </content>
+
+        <footer>
+            <!-- Action Buttons -->
+            <Toolbar id="actionToolbar">
+                <ToolbarSpacer id="actionToolbarSpacer" />
+                <Button
+                    id="resetButton"
+                    text="{= ${uploadSummary>/ProcessingComplete} ? 'Upload New File' : 'Clear Data'}"
+                    type="{= ${uploadSummary>/ProcessingComplete} ? 'Default' : 'Transparent'}"
+                    press=".onReset"
+                    enabled="{= ${uploadSummary>/TotalEntries} > 0}"
+                    icon="{= ${uploadSummary>/ProcessingComplete} ? 'sap-icon://create-form' : 'sap-icon://clear-all'}"
+                />
+                <Button
+                    id="submitButton"
+                    type="Emphasized"
+                    text="Submit Assets"
+                    press=".onSubmitToSAP"
+                    icon="sap-icon://accept"
+                    enabled="{= ${uploadSummary>/IsSubmitEnabled} === true &amp;&amp; ${uploadSummary>/HasBeenSubmitted} !== true }"
+                />
+                <HBox
+                    id="downloadButtonsContainer"
+                    visible="{= ${uploadSummary>/ProcessingComplete} === true}"
+                    class="sapUiSmallMarginStart"
+                    justifyContent="End"
+                >
+                    <Button
+                        id="downloadResultsExcelButton"
+                        text="Export to Excel"
+                        press=".onExportPress"
+                        visible="false"
+                        type="Emphasized"
+                        icon="sap-icon://excel-attachment"
+                        class="sapUiSmallMarginEnd"
+                    />
+                    <Button
+                        id="downloadResultsCSVButton"
+                        text="Export to CSV"
+                        press=".onExportPress"
+                        visible="false"
+                        type="Emphasized"
+                        icon="sap-icon://document-text"
+                        class="sapUiSmallMarginEnd"
+                    />
+                </HBox>
+            </Toolbar>
+        </footer>
+    </Page>
+</mvc:View>

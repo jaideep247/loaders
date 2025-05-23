@@ -1,25 +1,25 @@
 ## Application Details
 |               |
 | ------------- |
-|**Generation Date and Time**<br>Mon Apr 28 2025 01:00:58 GMT+0000 (Coordinated Universal Time)|
-|**App Generator**<br>@sap/generator-fiori-freestyle|
-|**App Generator Version**<br>1.17.3|
+|**Generation Date and Time**<br>Fri May 23 2025 06:42:10 GMT+0000 (Coordinated Universal Time)|
+|**App Generator**<br>SAP Fiori Application Generator|
+|**App Generator Version**<br>1.17.5|
 |**Generation Platform**<br>SAP Business Application Studio|
-|**Template Used**<br>Basic|
-|**Service Type**<br>None|
-|**Service URL**<br>N/A|
+|**Template Used**<br>Basic V4|
+|**Service Type**<br>OData Url|
+|**Service URL**<br>https://my416476-api.s4hana.cloud.sap/sap/opu/odata4/sap/api_fixedasset/srvd_a2x/sap/fixedasset/0001/|
 |**Module Name**<br>assetmastercreate|
-|**Application Title**<br>Create Asset Master|
+|**Application Title**<br>Application to Create Asset Master |
 |**Namespace**<br>|
 |**UI5 Theme**<br>sap_horizon|
-|**UI5 Version**<br>1.135.0|
+|**UI5 Version**<br>1.130.10|
 |**Enable Code Assist Libraries**<br>False|
 |**Enable TypeScript**<br>False|
 |**Add Eslint configuration**<br>False|
 
 ## assetmastercreate
 
-Application to create Asset master.
+Application to Create Asset Master
 
 ### Starting the generated app
 
@@ -27,6 +27,12 @@ Application to create Asset master.
 
 ```
     npm start
+```
+
+- It is also possible to run the application using mock data that reflects the OData Service URL supplied during application generation.  In order to run the application with Mock Data, run the following from the generated app root folder:
+
+```
+    npm run start-mock
 ```
 
 #### Pre-requisites:

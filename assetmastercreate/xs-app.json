@@ -5,14 +5,9 @@
     {
       "source": "^/sap/(.*)$",
       "target": "/sap/$1",
-      "destination": "TSI_S4_FIXASSET",
+      "destination": "TSI_S4_Loaders",
       "authenticationType": "xsuaa",
-      "csrfProtection": true
-    },
-    {
-      "source": "^/user-api(.*)",
-      "target": "$1",
-      "service": "sap-approuter-userapi"
+      "csrfProtection": false
     },
     {
       "source": "^/resources/(.*)$",

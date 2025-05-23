@@ -6,7 +6,7 @@ metadata:
 type: application
 framework:
   name: SAPUI5
-  version: 1.135.0
+  version: 1.130.10
   libraries:
     - name: sap.m
     - name: sap.ui.core
@@ -23,9 +23,22 @@ server:
     - name: fiori-tools-preview
       afterMiddleware: fiori-tools-appreload
       configuration:
-        component: assetmastercreate
-        ui5Theme: sap_horizon
+        flp:
+          theme: sap_horizon
     - name: fiori-tools-proxy
       afterMiddleware: compression
       configuration:
         ignoreCertError: false # If set to true, certificate errors will be ignored. E.g. self-signed certificates will be accepted
+        backend:
+          - path: /sap
+            url: https://my416476-api.s4hana.cloud.sap
+    - name: sap-fe-mockserver
+      beforeMiddleware: csp
+      configuration:
+        mountPath: /
+        services:
+          - urlPath: /sap/opu/odata4/sap/api_fixedasset/srvd_a2x/sap/fixedasset/0001
+            metadataPath: ./webapp/localService/mainService/metadata.xml
+            mockdataPath: ./webapp/localService/mainService/data
+            generateMockData: true
+        annotations: []

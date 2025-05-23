@@ -8,11 +8,18 @@ sap.ui.define([
         constructor(options = {}) {
             this._xlsxFormatter = options.xlsxFormatter || new XlsxFormatter();
             this._customProcessor = options.customExcelProcessor;
+
+            // Define the standard mapping
+            this.AREA_TO_LEDGER_MAP = {
+                '01': '0L',
+                '15': '0L',
+                '32': '2L',
+                '34': '3L'
+            };
         }
 
         /**
-         * Generates the template file Blob with asset master data structure
-         * @returns {Promise<Blob>} Promise resolving with the template Blob
+         * Generates the template file Blob with updated column structure
          */
         generateTemplateBlob() {
             return new Promise(async (resolve, reject) => {
@@ -31,9 +38,9 @@ sap.ui.define([
                     }
 
                     if (!blob) {
-                        console.debug("TemplateGenerator: Generating Asset Master template.");
-                        const headers = this._getAssetMasterHeaders();
-                        const exampleRow = this._getExampleAssetData();
+                        console.debug("TemplateGenerator: Generating Asset Master template with new structure.");
+                        const headers = this._getUpdatedHeaders();
+                        const exampleRow = this._getUpdatedExampleData();
                         const wb = await this._xlsxFormatter.createWorkbookForTemplate(headers, exampleRow);
                         blob = await this._xlsxFormatter.workbookToBlob(wb);
                     }
@@ -47,134 +54,169 @@ sap.ui.define([
         }
 
         /**
-         * Returns the structured headers for asset master data
-         * @private
-         * @returns {Array} Array of header strings
+         * Returns the updated headers with new naming convention
          */
-        _getAssetMasterHeaders() {
+        _getUpdatedHeaders() {
             return [
-                // Basic Asset Information
-                "Seq. ID", "Companycode", "Assetclass", "AssetIsForPostCapitalization",
-                "FixedAssetDescription", "AssetAdditionalDescription", "AssetSerialNumber",
-                "BaseUnit", "InventoryNote", "WBSElementExternalID", "ROOM",
+                // Basic Information
+                "Seq_ID",
+                "CompanyCode",
+                "AssetClass",
+                "AssetIsForPostCapitalization",
+                "FixedAssetDescription",
+                "AssetAdditionalDescription",
+                "AssetSerialNumber",
+                "BaseUnit",
+                "InventoryNote",
+                "WBSElementExternalID",
+                "Room",
 
-                // Capitalization Dates (multiple ledgers)
-                "Ledger", "AssetCapitalizationDate",
-                "Ledger", "AssetCapitalizationDate",
-                "Ledger", "AssetCapitalizationDate",
+                // Capitalization Dates per Ledger
+                "CapDate_0L",
+                "CapDate_2L",
+                "CapDate_3L",
 
-                // Depreciation Areas Configuration
-                "AssetDepreciationArea", "NegativeAmountIsAllowed", "DepreciationStartDate",
-                "AssetDepreciationArea", "NegativeAmountIsAllowed", "DepreciationStartDate",
-                "AssetDepreciationArea", "NegativeAmountIsAllowed", "DepreciationStartDate",
-                "AssetDepreciationArea", "NegativeAmountIsAllowed", "DepreciationStartDate",
+                // Area 01 (Ledger 0L)
+                "ValidityDate_01",
+                "DeprKey_01",
+                "UsefulLife_01",
+                "ScrapPercent_01",
 
-                // Depreciation Area 01 Details
-                "AssetDepreciationArea", "DepreciationKey", "PlannedUsefulLifeInYears",
-                "PlannedUsefulLifeInPeriods", "ScrapAmountInCoCodeCrcy", "currencyCode",
-                "AcqnProdnCostScrapPercent",
+                // Area 15 (Ledger 0L)
+                "ValidityDate_15",
+                "DeprKey_15",
+                "UsefulLife_15",
+                "ScrapPercent_15",
 
-                // Depreciation Area 15 Details
-                "AssetDepreciationArea", "DepreciationKey", "PlannedUsefulLifeInYears",
-                "PlannedUsefulLifeInPeriods", "ScrapAmountInCoCodeCrcy", "currencyCode",
-                "AcqnProdnCostScrapPercent",
+                // Area 32 (Ledger 2L)
+                "ValidityDate_32",
+                "DeprKey_32",
+                "UsefulLife_32",
+                "ScrapPercent_32",
 
-                // Depreciation Area 32 Details
-                "AssetDepreciationArea", "DepreciationKey", "PlannedUsefulLifeInYears",
-                "PlannedUsefulLifeInPeriods", "ScrapAmountInCoCodeCrcy", "currencyCode",
-                "AcqnProdnCostScrapPercent",
+                // Area 34 (Ledger 3L)
+                "ValidityDate_34",
+                "DeprKey_34",
+                "UsefulLife_34",
+                "ScrapPercent_34",
 
-                // Depreciation Area 34 Details
-                "AssetDepreciationArea", "DepreciationKey", "PlannedUsefulLifeInYears",
-                "PlannedUsefulLifeInPeriods", "ScrapAmountInCoCodeCrcy", "currencyCode",
-                "AcqnProdnCostScrapPercent",
-
-                // Additional Information
-                "IN_AssetBlock", "IN_AssetPutToUseDate", "IN_AssetIsPriorYear", "YY1_WBS_ELEMENT"
+                // India-specific and Custom fields
+                "IN_AssetBlock",
+                "IN_AssetPutToUseDate",
+                "IN_AssetIsPriorYear",
+                "YY1_WBS_ELEMENT"
             ];
         }
 
         /**
-         * Returns example asset data matching the provided sample
-         * @private
-         * @returns {Object} Example asset data object
+         * Returns example data with the new structure
          */
-        _getExampleAssetData() {
+        _getUpdatedExampleData() {
             return {
-                // Basic Asset Information
-                "Seq. ID": 1,
-                "Companycode": "1000",
-                "Assetclass": "Z240",
-                "AssetIsForPostCapitalization": "",
-                "FixedAssetDescription": "E-SURV",
-                "AssetAdditionalDescription": "E-SURV",
-                "AssetSerialNumber": "SERIAL",
+                // Basic Information
+                "Seq_ID": 1,
+                "CompanyCode": "2000",
+                "AssetClass": "Z240",
+                "AssetIsForPostCapitalization": "FALSE",
+                "FixedAssetDescription": "Monkey Cage",
+                "AssetAdditionalDescription": "Monkey Cage",
+                "AssetSerialNumber": "12345",
                 "BaseUnit": "EA",
                 "InventoryNote": "INNOTE",
                 "WBSElementExternalID": "B-SBP-OF-00TSSBI0014-A",
-                "ROOM": "ROOM",
+                "Room": "ROOM",
 
                 // Capitalization Dates
-                "Ledger": "0L", "AssetCapitalizationDate": "2024-01-01",
-                "Ledger": "2L", "AssetCapitalizationDate": "2024-01-01",
-                "Ledger": "3L", "AssetCapitalizationDate": "2024-01-01",
+                "CapDate_0L": "2025-01-01",
+                "CapDate_2L": "2025-01-01",
+                "CapDate_3L": "2025-01-01",
 
-                // Depreciation Areas Configuration
-                "AssetDepreciationArea": "01", "NegativeAmountIsAllowed": "true", "DepreciationStartDate": "2024-01-01",
-                "AssetDepreciationArea": "15", "NegativeAmountIsAllowed": "false", "DepreciationStartDate": "2024-01-01",
-                "AssetDepreciationArea": "32", "NegativeAmountIsAllowed": "false", "DepreciationStartDate": "2024-01-01",
-                "AssetDepreciationArea": "34", "NegativeAmountIsAllowed": "false", "DepreciationStartDate": "2024-01-01",
+                // Area 01 (Book Depreciation - Ledger 0L)
+                "ValidityDate_01": "2025-01-01",
+                "DeprKey_01": "INWD",
+                "UsefulLife_01": "10",
+                "ScrapPercent_01": "10",
 
-                // Depreciation Area 01 Details
-                "AssetDepreciationArea": "01",
-                "DepreciationKey": "INDD",
-                "PlannedUsefulLifeInYears": "5",
-                "PlannedUsefulLifeInPeriods": "",
-                "ScrapAmountInCoCodeCrcy": "5",
-                "currencyCode": "INR",
-                "AcqnProdnCostScrapPercent": "15",
+                // Area 15 (Alternative Book - Ledger 0L)
+                "ValidityDate_15": "2025-01-01",
+                "DeprKey_15": "INWD",
+                "UsefulLife_15": "10",
+                "ScrapPercent_15": "10",
 
-                // Depreciation Area 15 Details
-                "AssetDepreciationArea": "15",
-                "DepreciationKey": "INDD",
-                "PlannedUsefulLifeInYears": "5",
-                "PlannedUsefulLifeInPeriods": "",
-                "ScrapAmountInCoCodeCrcy": "5",
-                "currencyCode": "INR",
-                "AcqnProdnCostScrapPercent": "32",
+                // Area 32 (Tax Depreciation - Ledger 2L)
+                "ValidityDate_32": "2025-01-01",
+                "DeprKey_32": "9AWD",
+                "UsefulLife_32": "10",
+                "ScrapPercent_32": "10",
 
-                // Depreciation Area 32 Details
-                "AssetDepreciationArea": "32",
-                "DepreciationKey": "9ADD",
-                "PlannedUsefulLifeInYears": "5",
-                "PlannedUsefulLifeInPeriods": "",
-                "ScrapAmountInCoCodeCrcy": "5",
-                "currencyCode": "INR",
-                "AcqnProdnCostScrapPercent": "34",
-
-                // Depreciation Area 34 Details
-                "AssetDepreciationArea": "34",
-                "DepreciationKey": "9NDD",
-                "PlannedUsefulLifeInYears": "5",
-                "PlannedUsefulLifeInPeriods": "",
-                "ScrapAmountInCoCodeCrcy": "5",
-                "currencyCode": "INR",
-                "AcqnProdnCostScrapPercent": "Z100",
+                // Area 34 (Alternative - Ledger 3L)
+                "ValidityDate_34": "2025-01-01",
+                "DeprKey_34": "9NWD",
+                "UsefulLife_34": "10",
+                "ScrapPercent_34": "10",
 
                 // Additional Information
                 "IN_AssetBlock": "Z100",
                 "IN_AssetPutToUseDate": "",
                 "IN_AssetIsPriorYear": "",
-                "YY1_WBS_ELEMENT": "N-PIY-1"
+                "YY1_WBS_ELEMENT": "W-TPWT3STN2829"
             };
         }
 
         /**
+         * Enhanced template with configuration sheet
+         */
+        async generateEnhancedTemplateBlob() {
+            try {
+                const wb = XLSX.utils.book_new();
+
+                // Create Data Sheet
+                const headers = this._getUpdatedHeaders();
+                const exampleData = [this._getUpdatedExampleData()];
+                const dataWs = XLSX.utils.json_to_sheet(exampleData, { header: headers });
+                XLSX.utils.book_append_sheet(wb, dataWs, "Asset Data");
+
+                // Create Configuration Sheet
+                const configData = [
+                    { Ledger: "0L", "Depreciation Area": "01", Description: "Book Depreciation", "Valid Keys": "INWD, INDD, INSD, 0000" },
+                    { Ledger: "0L", "Depreciation Area": "15", Description: "Alternative Book", "Valid Keys": "INWD, INDD, INSD, 0000" },
+                    { Ledger: "2L", "Depreciation Area": "32", Description: "Tax Depreciation", "Valid Keys": "9AWD, 9ADD, 9ASD, 0000" },
+                    { Ledger: "3L", "Depreciation Area": "34", Description: "Alternative Reporting", "Valid Keys": "9NWD, 9NDD, 9NSD, 0000" }
+                ];
+                const configWs = XLSX.utils.json_to_sheet(configData);
+                XLSX.utils.book_append_sheet(wb, configWs, "Configuration");
+
+                // Create Instructions Sheet
+                const instructions = [
+                    { Instruction: "Column Naming Convention:" },
+                    { Instruction: "- CapDate_XL: Capitalization date for Ledger XL (e.g., CapDate_0L)" },
+                    { Instruction: "- DeprKey_XX: Depreciation key for area XX (e.g., DeprKey_01)" },
+                    { Instruction: "- UsefulLife_XX: Useful life in years for area XX" },
+                    { Instruction: "- ScrapPercent_XX: Scrap percentage for area XX" },
+                    { Instruction: "" },
+                    { Instruction: "The system automatically maps:" },
+                    { Instruction: "- Areas 01, 15 → Ledger 0L" },
+                    { Instruction: "- Area 32 → Ledger 2L" },
+                    { Instruction: "- Area 34 → Ledger 3L" }
+                ];
+                const instructWs = XLSX.utils.json_to_sheet(instructions);
+                XLSX.utils.book_append_sheet(wb, instructWs, "Instructions");
+
+                // Convert to blob
+                const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                return new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+            } catch (error) {
+                console.error("Error generating enhanced template:", error);
+                throw error;
+            }
+        }
+
+        /**
          * Gets the template filename
-         * @returns {string} The template filename
          */
         getTemplateFileName() {
-            let defaultName = "Asset_Master_Create_Template.xlsx";
+            let defaultName = "Asset_Master_Template_v2.xlsx";
             if (this._customProcessor && typeof this._customProcessor.getTemplateFileName === 'function') {
                 try {
                     return this._customProcessor.getTemplateFileName() || defaultName;

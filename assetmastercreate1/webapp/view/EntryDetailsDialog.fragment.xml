@@ -1,0 +1,518 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout"
+    xmlns:table="sap.ui.table"
+>
+    <Dialog
+        id="assetDetailsDialog"
+        title="{= ${entryDetails>/Status} === 'Invalid' ? 'Invalid Asset Master Details' : 'Asset Master Details'}"
+        contentWidth="90%"
+        stretch="{device>/system/phone}"
+        ariaLabelledBy="dialogTitle"
+    >
+        <content>
+            <VBox
+                id="_IDGenVBox5"
+                class="sapUiMediumMargin"
+            >
+                <!-- Status Header -->
+                <l:BlockLayout id="_IDGenBlockLayout">
+                    <l:BlockLayoutRow id="_IDGenBlockLayoutRow">
+                        <l:BlockLayoutCell
+                            id="_IDGenBlockLayoutCell"
+                            class="sapUiNoPadding"
+                            backgroundColorSet="ColorSet5"
+                            backgroundColorShade="ShadeB"
+                        >
+                            <HBox
+                                id="_IDGenHBox2"
+                                alignItems="Center"
+                                justifyContent="SpaceBetween"
+                                class="sapUiMediumMargin"
+                            >
+                                <Title
+                                    id="dialogTitle"
+                                    text="Asset Master: {entryDetails>/BasicInfo/SequenceNumber}"
+                                    level="H2"
+                                    wrapping="true"
+                                />
+                                <HBox
+                                    id="_IDGenHBox3"
+                                    alignItems="Center"
+                                >
+                                    <ObjectStatus
+                                        id="_IDGenObjectStatus"
+                                        text="{entryDetails>/Status}"
+                                        state="{= ${entryDetails>/Status} === 'Valid' ? 'Success' : 'Error'}"
+                                        class="sapUiSmallMarginEnd"
+                                    />
+                                    <core:Icon
+                                        id="_IDGenIcon"
+                                        src="{= ${entryDetails>/Status} === 'Invalid' ? 'sap-icon://alert' : 'sap-icon://sys-enter-2'}"
+                                        color="{= ${entryDetails>/Status} === 'Invalid' ? 'Negative' : 'Positive'}"
+                                        size="1.5rem"
+                                    />
+                                </HBox>
+                            </HBox>
+                        </l:BlockLayoutCell>
+                    </l:BlockLayoutRow>
+                </l:BlockLayout>
+
+                <!-- Tab Container -->
+                <IconTabBar
+                    id="assetDetailsTabs"
+                    class="sapUiResponsiveContentPadding"
+                    expandable="false"
+                    selectedKey="basicTab"
+                >
+                    <items>
+                        <!-- Basic Information Tab -->
+                        <IconTabFilter
+                            id="basicTab"
+                            icon="sap-icon://hint"
+                            text="Basic Info"
+                            key="basicTab"
+                        >
+                            <f:SimpleForm
+                                id="_IDGenSimpleForm"
+                                editable="false"
+                                layout="ResponsiveGridLayout"
+                                labelSpanXL="4"
+                                labelSpanL="4"
+                                labelSpanM="4"
+                                labelSpanS="12"
+                                columnsXL="2"
+                                columnsL="2"
+                                columnsM="2"
+                            >
+                                <f:content>
+                                    <Label
+                                        id="_IDGenLabel3"
+                                        text="Sequence ID"
+                                    />
+                                    <Text
+                                        id="_IDGenText3"
+                                        text="{entryDetails>/BasicInfo/SequenceNumber}"
+                                    />
+
+                                    <Label
+                                        id="_IDGenLabel4"
+                                        text="Company Code"
+                                    />
+                                    <Text
+                                        id="_IDGenText4"
+                                        text="{entryDetails>/BasicInfo/CompanyCode}"
+                                    />
+
+                                    <Label
+                                        id="_IDGenLabel5"
+                                        text="Asset Class"
+                                    />
+                                    <Text
+                                        id="_IDGenText5"
+                                        text="{entryDetails>/BasicInfo/AssetClass}"
+                                    />
+
+                                    <Label
+                                        id="_IDGenLabel6"
+                                        text="Post Capitalization"
+                                    />
+                                    <Text
+                                        id="_IDGenText6"
+                                        text="{= ${entryDetails>/BasicInfo/IsPostCapitalization} ? 'Yes' : 'No'}"
+                                    />
+
+                                    <Label
+                                        id="_IDGenLabel7"
+                                        text="Description"
+                                    />
+                                    <Text
+                                        id="_IDGenText7"
+                                        text="{entryDetails>/GeneralDetails/FixedAssetDescription}"
+                                    />
+
+                                    <Label
+                                        id="_IDGenLabel11"
+                                        text="Additional Description"
+                                    />
+                                    <Text
+                                        id="_IDGenText8"
+                                        text="{entryDetails>/GeneralDetails/AdditionalDescription}"
+                                    />
+
+                                    <Label
+                                        id="_IDGenLabel12"
+                                        text="Serial Number"
+                                    />
+                                    <Text
+                                        id="_IDGenText9"
+                                        text="{entryDetails>/GeneralDetails/SerialNumber}"
+                                    />
+
+                                    <Label
+                                        id="_IDGenLabel13"
+                                        text="Base Unit"
+                                    />
+                                    <Text
+                                        id="_IDGenText10"
+                                        text="{entryDetails>/GeneralDetails/BaseUnit}"
+                                    />
+
+                                    <Label
+                                        id="_IDGenLabel14"
+                                        text="Inventory Note"
+                                    />
+                                    <Text
+                                        id="_IDGenText11"
+                                        text="{entryDetails>/GeneralDetails/InventoryNote}"
+                                    />
+                                </f:content>
+                            </f:SimpleForm>
+                        </IconTabFilter>
+
+                        <!-- Account Assignment Tab -->
+                        <IconTabFilter
+                            id="accountTab"
+                            icon="sap-icon://account"
+                            text="Account"
+                            key="accountTab"
+                        >
+                            <f:SimpleForm
+                                id="_IDGenSimpleForm1"
+                                editable="false"
+                                layout="ResponsiveGridLayout"
+                                labelSpanXL="4"
+                                labelSpanL="4"
+                                labelSpanM="4"
+                                labelSpanS="12"
+                                columnsXL="2"
+                                columnsL="2"
+                                columnsM="2"
+                            >
+                                <f:content>
+                                    <Label
+                                        id="_IDGenLabel15"
+                                        text="WBS Element (External ID)"
+                                    />
+                                    <Text
+                                        id="_IDGenText12"
+                                        text="{entryDetails>/AccountAssignment/WBSElementExternalID}"
+                                    />
+
+                                    <Label
+                                        id="_IDGenLabel16"
+                                        text="Custom WBS Element"
+                                    />
+                                    <Text
+                                        id="_IDGenText13"
+                                        text="{entryDetails>/AccountAssignment/CustomWBSElement}"
+                                    />
+
+                                    <Label
+                                        id="_IDGenLabel17"
+                                        text="Room"
+                                    />
+                                    <Text
+                                        id="_IDGenText14"
+                                        text="{entryDetails>/AccountAssignment/Room}"
+                                    />
+
+                                    <Label
+                                        id="_IDGenLabel18"
+                                        text="Asset Block"
+                                    />
+                                    <Text
+                                        id="_IDGenText15"
+                                        text="{entryDetails>/GlobalMasterData/AssetBlock}"
+                                    />
+
+                                    <Label
+                                        id="_IDGenLabel19"
+                                        text="Put to Use Date"
+                                    />
+                                    <Text
+                                        id="_IDGenText16"
+                                        text="{
+                                        path: 'entryDetails>/GlobalMasterData/PutToUseDate',
+                                        type: 'sap.ui.model.type.Date',
+                                        formatOptions: {
+                                            style: 'medium'
+                                        }
+                                    }"
+                                    />
+
+                                    <Label
+                                        id="_IDGenLabel20"
+                                        text="Prior Year Asset"
+                                    />
+                                    <Text
+                                        id="_IDGenText17"
+                                        text="{= ${entryDetails>/GlobalMasterData/IsPriorYear} ? 'Yes' : 'No'}"
+                                    />
+                                </f:content>
+                            </f:SimpleForm>
+                        </IconTabFilter>
+
+                        <!-- Ledger Information Tab -->
+                        <IconTabFilter
+                            id="ledgerTab"
+                            icon="sap-icon://lead"
+                            text="Ledgers"
+                            key="ledgerTab"
+                        >
+                            <List
+                                id="_IDGenList1"
+                                items="{entryDetails>/LedgerDetails/Ledgers}"
+                                mode="None"
+                            >
+                                <CustomListItem id="_IDGenCustomListItem">
+                                    <Panel
+                                        id="_IDGenPanel"
+                                        headerText="Ledger {entryDetails>Code}"
+                                        expandable="true"
+                                        expanded="false"
+                                    >
+                                        <f:SimpleForm
+                                            id="_IDGenSimpleForm2"
+                                            editable="false"
+                                            layout="ResponsiveGridLayout"
+                                        >
+                                            <f:content>
+                                                <Label
+                                                    id="_IDGenLabel21"
+                                                    text="Capitalization Date"
+                                                />
+                                                <Text
+                                                    id="_IDGenText18"
+                                                    text="{
+                                                    path: 'entryDetails>CapitalizationDate',
+                                                    type: 'sap.ui.model.type.Date',
+                                                    formatOptions: {
+                                                        style: 'medium'
+                                                    }
+                                                }"
+                                                />
+                                            </f:content>
+                                        </f:SimpleForm>
+
+                                        <!-- Valuations -->
+                                        <Panel
+                                            id="_IDGenPanel2"
+                                            headerText="Valuations"
+                                            expandable="true"
+                                            expanded="false"
+                                        >
+                                            <table:Table
+                                                id="_IDGenTable"
+                                                rows="{entryDetails>Valuations}"
+                                                visibleRowCount="{= ${entryDetails>Valuations}.length > 3 ? 3 : ${entryDetails>Valuations}.length}"
+                                                selectionMode="None"
+                                            >
+                                                <table:columns>
+                                                    <table:Column
+                                                        id="_IDGenColumn"
+                                                        width="120px"
+                                                    >
+                                                        <Label
+                                                            id="_IDGenLabel22"
+                                                            text="Depr. Area"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                id="_IDGenText19"
+                                                                text="{entryDetails>DepreciationArea}"
+                                                            />
+                                                        </table:template>
+                                                    </table:Column>
+                                                    <table:Column
+                                                        id="_IDGenColumn1"
+                                                        width="120px"
+                                                    >
+                                                        <Label
+                                                            id="_IDGenLabel23"
+                                                            text="Negative Allowed"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                id="_IDGenText20"
+                                                                text="{= ${entryDetails>NegativeAmountAllowed} ? 'Yes' : 'No'}"
+                                                            />
+                                                        </table:template>
+                                                    </table:Column>
+                                                    <table:Column
+                                                        id="_IDGenColumn2"
+                                                        width="150px"
+                                                    >
+                                                        <Label
+                                                            id="_IDGenLabel24"
+                                                            text="Start Date"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                id="_IDGenText21"
+                                                                text="{
+                                                                path: 'entryDetails>DepreciationStartDate',
+                                                                type: 'sap.ui.model.type.Date',
+                                                                formatOptions: {
+                                                                    style: 'medium'
+                                                                }
+                                                            }"
+                                                            />
+                                                        </table:template>
+                                                    </table:Column>
+                                                </table:columns>
+                                            </table:Table>
+                                        </Panel>
+
+                                        <!-- Time-Based Valuations -->
+                                        <Panel
+                                            id="_IDGenPanel3"
+                                            headerText="Time-Based Valuations"
+                                            expandable="true"
+                                            expanded="false"
+                                        >
+                                            <table:Table
+                                                id="_IDGenTable3"
+                                                rows="{entryDetails>TimeBasedValuations}"
+                                                visibleRowCount="{= ${entryDetails>TimeBasedValuations}.length > 3 ? 3 : ${entryDetails>TimeBasedValuations}.length}"
+                                                selectionMode="None"
+                                            >
+                                                <table:columns>
+                                                    <table:Column
+                                                        id="_IDGenColumn3"
+                                                        width="120px"
+                                                    >
+                                                        <Label
+                                                            id="_IDGenLabel25"
+                                                            text="Depr. Area"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                id="_IDGenText22"
+                                                                text="{entryDetails>DepreciationArea}"
+                                                            />
+                                                        </table:template>
+                                                    </table:Column>
+                                                    <table:Column
+                                                        id="_IDGenColumn4"
+                                                        width="120px"
+                                                    >
+                                                        <Label
+                                                            id="_IDGenLabel26"
+                                                            text="Depr. Key"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                id="_IDGenText23"
+                                                                text="{entryDetails>DepreciationKey}"
+                                                            />
+                                                        </table:template>
+                                                    </table:Column>
+                                                    <table:Column
+                                                        id="_IDGenColumn5"
+                                                        width="120px"
+                                                    >
+                                                        <Label
+                                                            id="_IDGenLabel27"
+                                                            text="Life (Years)"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                id="_IDGenText24"
+                                                                text="{entryDetails>PlannedUsefulLifeYears}"
+                                                            />
+                                                        </table:template>
+                                                    </table:Column>
+                                                    <table:Column
+                                                        id="_IDGenColumn6"
+                                                        width="120px"
+                                                    >
+                                                        <Label
+                                                            id="_IDGenLabel28"
+                                                            text="Life (Periods)"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                id="_IDGenText28"
+                                                                text="{entryDetails>PlannedUsefulLifePeriods}"
+                                                            />
+                                                        </table:template>
+                                                    </table:Column>
+                                                    <table:Column
+                                                        id="_IDGenColumn7"
+                                                        width="150px"
+                                                    >
+                                                        <Label
+                                                            id="_IDGenLabel29"
+                                                            text="Scrap Amount"
+                                                        />
+                                                        <table:template>
+                                                            <ObjectNumber
+                                                                id="_IDGenObjectNumber3"
+                                                                number="{entryDetails>ScrapAmount/Value}"
+                                                                unit="{entryDetails>ScrapAmount/Currency}"
+                                                            />
+                                                        </table:template>
+                                                    </table:Column>
+                                                    <table:Column
+                                                        id="_IDGenColumn13"
+                                                        width="120px"
+                                                    >
+                                                        <Label
+                                                            id="_IDGenLabel30"
+                                                            text="Scrap %"
+                                                        />
+                                                        <table:template>
+                                                            <Text
+                                                                id="_IDGenText35"
+                                                                text="{entryDetails>ScrapPercent}"
+                                                            />
+                                                        </table:template>
+                                                    </table:Column>
+                                                </table:columns>
+                                            </table:Table>
+                                        </Panel>
+                                    </Panel>
+                                </CustomListItem>
+                            </List>
+                        </IconTabFilter>
+
+                        <!-- Error Information -->
+                        <IconTabFilter
+                            id="errorTab"
+                            icon="sap-icon://error"
+                            text="Errors"
+                            key="errorTab"
+                            visible="{= ${entryDetails>/Status} === 'Invalid'}"
+                        >
+                            <List
+                                id="_IDGenList3"
+                                items="{entryDetails>/ValidationSummary/Errors}"
+                                noDataText="No error messages available"
+                            >
+                                <items>
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem1"
+                                        title="{entryDetails>}"
+                                        icon="sap-icon://error"
+                                        type="Inactive"
+                                        class="errorListItem"
+                                    />
+                                </items>
+                            </List>
+                        </IconTabFilter>
+                    </items>
+                </IconTabBar>
+            </VBox>
+        </content>
+        <buttons>
+            <Button
+                id="_IDGenButton11"
+                text="Close"
+                press=".onCloseAssetDetailsDialog"
+            />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

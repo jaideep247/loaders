@@ -243,7 +243,7 @@ sap.ui.define([], function () {
 
                 // Create workbook
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Service Entry Template");
+                XLSX.utils.book_append_sheet(wb, ws, "Service Entry Sheet");
 
                 // Add workbook properties
                 wb.Props = {
