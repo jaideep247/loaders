@@ -131,7 +131,7 @@ sap.ui.define([
       this.getView().getModel("advancedFilter").setProperty("/businessPlace", sBusinessPlace);
       this._applyVendorFilters();
     },
- 
+
     // Search field handler
     onSearchEntries: function (oEvent) {
       const sQuery = oEvent.getParameter("query");
@@ -459,8 +459,46 @@ sap.ui.define([
       // Show confirmation message
       sap.m.MessageToast.show("Form has been reset");
     },
-    // Add these methods to your controller
+   
+    /**
+     * Reset all filters to their initial state
+     * @param {sap.ui.core.mvc.View} oView - The view containing filter models
+     */
+    _resetAllFilters: function (oView) {
+      // Reset advanced filter model
+      const oAdvancedFilterModel = oView.getModel("advancedFilter");
+      if (oAdvancedFilterModel) {
+        oAdvancedFilterModel.setData({
+          vendorCode: "",
+          referenceKey: "",
+          businessPlace: "",
+          sheetType: "All",
+          indicator: "All",
+          status: "All",
+          searchQuery: ""
+        });
+      }
 
+      // Reset any other filter models you might have
+      const oFilterModel = oView.getModel("filterModel");
+      if (oFilterModel) {
+        oFilterModel.setData({
+          // Reset your filter model data here
+          selectedStatus: "All",
+          selectedSheet: "All",
+          selectedIndicator: "All"
+        });
+      }
+
+      // Clear any table filters
+      const oTable = this.byId("journalEntriesTable");
+      if (oTable && oTable.getBinding("items")) {
+        oTable.getBinding("items").filter([]);
+      }
+
+      // Apply the reset filters
+      this._applyVendorFilters();
+    },
     /**
      * Handle close of error summary dialog
      */

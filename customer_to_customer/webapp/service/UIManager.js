@@ -298,7 +298,8 @@ sap.ui.define([
         "Reference Key 1",
         "Reference Key 3",
         "Item Text",
-        "Business Place"
+        "Business Place",
+        "Special GL Code"
       ];
 
       // Fix for the field value misalignment
@@ -779,7 +780,7 @@ sap.ui.define([
         this._dialogs.errorSummaryDialog.open();
       }
     };
- 
+
     /**
     * Show help dialog with application instructions
     * @param {object} controllerContext - Controller context for event handling

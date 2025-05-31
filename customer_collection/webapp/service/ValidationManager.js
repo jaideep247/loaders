@@ -6,9 +6,9 @@ sap.ui.define([
    * ValidationManager
    * Responsible for validating journal entries data based on WSDL metadata
    */
-  return function(oController) {
+  return function (oController) {
     this.oController = oController;
-    
+
     /**
      * Field validation constraints from WSDL metadata
      * Used to validate input data against SAP field requirements
@@ -23,7 +23,7 @@ sap.ui.define([
       "Document Date": { required: true, format: "date" },
       "Posting Date": { required: true, format: "date" },
       "Created By": { maxLength: 12 },
-      
+
       // Transaction line fields
       "Reference Document Item": { required: true, maxLength: 10, minLength: 1 },
       "GL Account": { required: true, maxLength: 10, minLength: 1 },
@@ -41,22 +41,23 @@ sap.ui.define([
       "Special GL Code": { maxLength: 1 },
       "Account ID": { maxLength: 5 },
       "House Bank": { maxLength: 5 },
-      "Value Date": { format: "date" }
+      "Value Date": { format: "date" },
+      "Payment Reference": { maxLength: 30 },
     };
 
     /**
      * Download the template Excel file
      */
-    this.downloadTemplate = function() {
+    this.downloadTemplate = function () {
       const wb = this._createTemplateWorkbook();
       XLSX.writeFile(wb, "Customer_Collections.xlsx");
     };
-    
+
     /**
      * Create template workbook with sample data
      * @returns {object} XLSX workbook object
      */
-    this._createTemplateWorkbook = function() {
+    this._createTemplateWorkbook = function () {
       const wb = XLSX.utils.book_new();
 
       // Header Sheet
@@ -181,13 +182,13 @@ sap.ui.define([
      * @param {array} entries - Journal entries to validate
      * @returns {object} Validation result with validated entries and errors
      */
-    this.validateJournalEntries = function(entries) {
+    this.validateJournalEntries = function (entries) {
       // Ensure entries is an array
       if (!Array.isArray(entries)) {
         console.error('Invalid entries input:', entries);
         entries = entries ? [entries] : [];
       }
-      
+
       // If entries is empty, return an invalid result
       if (entries.length === 0) {
         return {
@@ -211,7 +212,7 @@ sap.ui.define([
           if (this.fieldConstraints[field]) {
             const constraints = this.fieldConstraints[field];
             const value = entry[field];
-            
+
             // Required field validation
             if (constraints.required && (!value || value.toString().trim() === "")) {
               errors.push({
@@ -221,11 +222,11 @@ sap.ui.define([
                 field: field
               });
             }
-            
+
             // Only continue validation if we have a value
             if (value) {
               const stringValue = value.toString();
-              
+
               // Length validation
               if (constraints.maxLength && stringValue.length > constraints.maxLength) {
                 errors.push({
@@ -235,7 +236,7 @@ sap.ui.define([
                   field: field
                 });
               }
-              
+
               if (constraints.minLength && stringValue.length < constraints.minLength) {
                 errors.push({
                   message: `${field} must be at least ${constraints.minLength} characters for entry with Sequence ID ${sequenceId}`,
@@ -244,7 +245,7 @@ sap.ui.define([
                   field: field
                 });
               }
-              
+
               // Format validation
               if (constraints.format) {
                 switch (constraints.format) {
@@ -258,7 +259,7 @@ sap.ui.define([
                       });
                     }
                     break;
-                    
+
                   case "amount":
                     const amount = parseFloat(value);
                     if (isNaN(amount)) {
@@ -277,7 +278,7 @@ sap.ui.define([
                       });
                     }
                     break;
-                    
+
                   case "currencyCode":
                     if (!/^[A-Z]{3}$/.test(value)) {
                       errors.push({
@@ -290,7 +291,7 @@ sap.ui.define([
                     break;
                 }
               }
-              
+
               // Validate against allowed values
               if (constraints.validValues && !constraints.validValues.includes(value)) {
                 errors.push({
@@ -319,7 +320,7 @@ sap.ui.define([
               });
             }
           }
-          
+
           // Ensure Debit/Credit indicator is properly set for bank entries
           if (entry['Indicator'] && !["S", "H"].includes(entry['Indicator'])) {
             errors.push({
@@ -343,7 +344,7 @@ sap.ui.define([
               });
             }
           }
-          
+
           // Ensure Special GL code is valid if provided (typically a single character)
           if (entry['Special GL Code'] && entry['Special GL Code'].toString().length > 1) {
             errors.push({
@@ -398,31 +399,31 @@ sap.ui.define([
         errors: allErrors
       };
     };
-    
+
     /**
      * Validate required sheets for each sequence ID
      * Each journal entry requires both Bank Lines and Customer Lines entries
      * @param {object} sequenceGroups - Entries grouped by sequence ID
      * @returns {object} Validation errors by sequence ID
      */
-    this._validateRequiredSheets = function(sequenceGroups) {
+    this._validateRequiredSheets = function (sequenceGroups) {
       if (!sequenceGroups || typeof sequenceGroups !== 'object') {
         console.error('Invalid input to _validateRequiredSheets', sequenceGroups);
         return {};
       }
-      
+
       const sheetErrors = {};
-      
+
       // Iterate through each sequence group
       for (const [sequenceId, entries] of Object.entries(sequenceGroups)) {
         if (!Array.isArray(entries)) {
           console.warn(`Entries for Sequence ID ${sequenceId} is not an array`, entries);
           continue;
         }
-        
+
         const groupErrors = [];
         const sheets = new Set(entries.map(entry => entry.Sheet));
-        
+
         // Check if we have both Bank Lines and Customer Lines
         if (!sheets.has("Bank Lines")) {
           groupErrors.push({
@@ -431,7 +432,7 @@ sap.ui.define([
             sequenceId: sequenceId
           });
         }
-        
+
         if (!sheets.has("Customer Lines")) {
           groupErrors.push({
             message: `Sequence ID ${sequenceId}: Missing Customer Lines entry`,
@@ -439,52 +440,52 @@ sap.ui.define([
             sequenceId: sequenceId
           });
         }
-        
+
         // Store any errors for this transaction
         if (groupErrors.length > 0) {
           sheetErrors[sequenceId] = groupErrors;
         }
       }
-      
+
       return sheetErrors;
     };
-    
+
     /**
      * Check if a value is a valid date in YYYY-MM-DD format
      * @param {string|Date} value - The date value to validate
      * @returns {boolean} True if valid date, false otherwise
      */
-    this._isValidDate = function(value) {
+    this._isValidDate = function (value) {
       if (value instanceof Date) {
         return !isNaN(value.getTime());
       }
-      
+
       const dateRegex = /^\d{4}-\d{2}-\d{2}$/; // Match YYYY-MM-DD format
       if (!dateRegex.test(value)) {
         return false;
       }
-      
+
       // Additional validation for valid date
       const parts = value.split('-');
       const year = parseInt(parts[0], 10);
       const month = parseInt(parts[1], 10) - 1; // 0-indexed month
       const day = parseInt(parts[2], 10);
-      
+
       const date = new Date(year, month, day);
-      
+
       return (
         date.getFullYear() === year &&
         date.getMonth() === month &&
         date.getDate() === day
       );
     };
-    
+
     /**
      * Group entries by Sequence ID
      * @param {array} entries - Entries to group
      * @returns {object} Grouped entries by sequence ID
      */
-    this._groupEntriesBySequenceId = function(entries) {
+    this._groupEntriesBySequenceId = function (entries) {
       // Ensure entries is an array
       if (!Array.isArray(entries)) {
         console.warn('Attempted to group non-array entries');
@@ -505,13 +506,13 @@ sap.ui.define([
         return groups;
       }, {});
     };
-    
+
     /**
      * Validate transaction balances
      * @param {object} sequenceGroups - Entries grouped by sequence ID
      * @returns {object} Validation errors by sequence ID
      */
-    this._validateTransactionBalances = function(sequenceGroups) {
+    this._validateTransactionBalances = function (sequenceGroups) {
       if (!sequenceGroups || typeof sequenceGroups !== 'object') {
         console.error('Invalid input to _validateTransactionBalances', sequenceGroups);
         return {};
@@ -546,7 +547,7 @@ sap.ui.define([
 
           // Track total amount (sign depends on indicator)
           totalAmount += indicator === "H" ? amount : -amount;
-   
+
           // Track indicators by sheet type
           if (sheetType === "Bank Lines") {
             if (indicator === "H") indicators.bankLines.H = true;
@@ -592,12 +593,12 @@ sap.ui.define([
 
       return sequenceErrors;
     };
-    
+
     /**
      * Handle unbalanced transactions with UI feedback
      * @param {object} unbalancedTransactions - Object of unbalanced transaction errors by sequence ID
      */
-    this.handleUnbalancedTransactions = function(unbalancedTransactions) {
+    this.handleUnbalancedTransactions = function (unbalancedTransactions) {
       const errorMessage = Object.entries(unbalancedTransactions)
         .map(([sequenceId, errors]) =>
           `Sequence ID ${sequenceId}: ${errors.map(err => err.message).join('; ')}`
@@ -608,29 +609,29 @@ sap.ui.define([
         details: errorMessage
       });
     };
-    
+
     /**
      * Validate SOAP response error and show appropriate messages
      * @param {Object} soapResponse - SOAP response to validate
      * @returns {Object} Error details if present
      */
-    this.validateSOAPResponse = function(soapResponse) {
+    this.validateSOAPResponse = function (soapResponse) {
       try {
         // Check for SOAP fault
         const $response = $(soapResponse);
         const faultElement = $response.find('Fault, soap\\:Fault, soap-env\\:Fault');
-        
+
         if (faultElement.length > 0) {
           const faultCode = faultElement.find('faultcode').text();
           const faultString = faultElement.find('faultstring').text();
-          
+
           // Extract transaction ID if available
           let transactionId = null;
           const transactionIdMatch = faultString.match(/Transaction ID ([A-Z0-9]+)/i);
           if (transactionIdMatch && transactionIdMatch.length > 1) {
             transactionId = transactionIdMatch[1];
           }
-          
+
           // Create error object
           const error = {
             code: faultCode,
@@ -638,15 +639,15 @@ sap.ui.define([
             transactionId: transactionId,
             needsBackendCheck: faultString.includes("Web service processing error")
           };
-          
+
           // Show custom message for backend errors
           if (error.needsBackendCheck) {
             this._showBackendErrorMessage(error);
           }
-          
+
           return error;
         }
-        
+
         return null;
       } catch (e) {
         console.error("Error validating SOAP response:", e);
@@ -656,20 +657,20 @@ sap.ui.define([
         };
       }
     };
-    
+
     /**
      * Show specific message for backend errors that need monitoring
      * @param {Object} error - Error details
      */
-    this._showBackendErrorMessage = function(error) {
+    this._showBackendErrorMessage = function (error) {
       let message = "Web service processing error occurred";
-      
+
       if (error.transactionId) {
         message += `\n\nTransaction ID: ${error.transactionId}`;
       }
-      
+
       message += "\n\nPlease check monitor SOAP application log in backend for more details.";
-      
+
       sap.m.MessageBox.error(message, {
         title: "Backend Processing Error"
       });

@@ -553,7 +553,7 @@ sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
         if (value === false || value === 'false' || value === '') return false;
         return false;
       };
-      debugger
+     
       // Detailed transformation with extensive fallback and mapping
       const transformedData = {
         // Core fields with multiple fallback options

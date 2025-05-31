@@ -346,58 +346,29 @@ sap.ui.define([
          * @private
          */
         _handleRecord(isSuccess, record, errorInfo, index) {
-            // Create standardized message
-            let messageObject = this._errorHandler.createStandardMessage(
-                isSuccess ? "success" : "error",
-                isSuccess ? "SUCCESS" : (errorInfo?.errorCode || "ERROR"),
-                isSuccess ? (record.Message || "Successfully processed material document") : (errorInfo?.error || "Processing failed"),
-                isSuccess ? "" : (errorInfo?.details || []),
+            // Use ErrorHandler for all normalization
+            const normalizedRecord = this._errorHandler.normalizeRecord(
+                record,
+                isSuccess,
+                errorInfo,
                 "BatchProcessor",
-                record ? (record.GRNDocumentNumber || record.MaterialDocument || "") : "",
+                index,
                 this.currentBatchIndex
             );
 
-            // Add index to message
-            messageObject.row = index;
-
-            // Add to appropriate collection in response data
+            // Add to appropriate collection
             if (isSuccess) {
-                // Add to success records
                 this.responseData.successCount++;
-                this.responseData.successRecords.push({
-                    ...record,
-                    Status: "Success",
-                    ProcessedAt: new Date().toISOString(),
-                    index: index,
-                    message: messageObject,
-                    Message: messageObject.message
-                });
+                this.responseData.successRecords.push(normalizedRecord);
             } else {
-                // Add to error records
                 this.responseData.failureCount++;
-
-                // Prepare normalized error record
-                const normalizedErrorRecord = {
-                    ...(record || {}),
-                    error: messageObject.message,
-                    errorCode: messageObject.code,
-                    details: messageObject.details,
-                    Status: "Error",
-                    ProcessedAt: new Date().toISOString(),
-                    index: index,
-                    ErrorMessage: messageObject.message,
-                    ErrorCode: messageObject.code,
-                    message: messageObject,
-                    Message: messageObject.message
-                };
-
-                this.responseData.errorRecords.push(normalizedErrorRecord);
+                this.responseData.errorRecords.push(normalizedRecord);
             }
 
             // Add to allMessages
-            this.responseData.allMessages.push(messageObject);
+            this.responseData.allMessages.push(normalizedRecord.message);
 
-            // Update batch display model
+            // Update batch display
             this._updateBatchDisplay({
                 successCount: this.responseData.successCount,
                 failureCount: this.responseData.failureCount,
@@ -428,51 +399,22 @@ sap.ui.define([
          * @private
          */
         _updateBatchDisplay(data) {
-            if (!this.oController || !this.oController.getView) {
-                return;
-            }
+            if (!this.oController?.getView) return;
 
             const batchDisplayModel = this.oController.getView().getModel("batchDisplay");
             if (!batchDisplayModel) return;
 
-            // Get current data
             const currentData = batchDisplayModel.getData();
 
-            // Calculate processing speed and time remaining
-            const currentTime = new Date();
-            const elapsedSeconds = Math.max(1, (currentTime - this.startTime) / 1000);
-            const processingSpeed = (this.responseData.processedCount / elapsedSeconds).toFixed(0);
+            // Use ErrorHandler for progress calculation
+            const progressInfo = this._errorHandler.calculateProgress({
+                processedCount: this.responseData.processedCount,
+                totalRecords: this.responseData.totalRecords,
+                currentBatch: this.currentBatchIndex + 1,
+                totalBatches: this.totalBatches
+            }, this.startTime);
 
-            // Calculate time remaining
-            const remainingRecords = this.responseData.totalRecords - this.responseData.processedCount;
-            let formattedTimeRemaining = "Calculating...";
-
-            if (remainingRecords > 0 && parseFloat(processingSpeed) > 0) {
-                const timeRemaining = Math.ceil(remainingRecords / parseFloat(processingSpeed));
-
-                if (timeRemaining > 3600) {
-                    const hours = Math.floor(timeRemaining / 3600);
-                    const minutes = Math.floor((timeRemaining % 3600) / 60);
-                    formattedTimeRemaining = `${hours}h ${minutes}m`;
-                } else if (timeRemaining > 60) {
-                    const minutes = Math.floor(timeRemaining / 60);
-                    const seconds = timeRemaining % 60;
-                    formattedTimeRemaining = `${minutes}m ${seconds}s`;
-                } else {
-                    formattedTimeRemaining = `${timeRemaining}s`;
-                }
-            }
-
-            // Create updated data
-            const updatedData = {
-                ...currentData,
-                ...data,
-                processingSpeed: `${processingSpeed} records/sec`,
-                timeRemaining: formattedTimeRemaining
-            };
-
-            // Update the model
-            batchDisplayModel.setData(updatedData);
+            batchDisplayModel.setData({ ...currentData, ...data, ...progressInfo });
         }
 
         /**
@@ -599,8 +541,9 @@ sap.ui.define([
                 this.oController._batchProcessingDialog.close();
             }
         }
+
         /**
-         * Process a batch using the OData service with grouping by purchase order and posting date
+         * Process a batch using the OData service with grouping by sequence ID, purchase order and posting date
          * @param {Array} batch - Batch of records to process
          * @param {Number} batchIndex - Batch index
          * @returns {Promise} Promise that resolves with batch processing results
@@ -613,8 +556,18 @@ sap.ui.define([
                 }
 
                 try {
-                    // Group records by purchase order and posting date
-                    const groupedRecords = this._groupRecordsByPOAndPostingDate(batch);
+                    // Group records by sequence ID, purchase order and posting date
+                    const groupedRecords = this._groupRecordsBySequencePOAndPostingDate(batch);
+
+                    console.log(`Processing batch ${batchIndex} with ${groupedRecords.length} groups:`,
+                        groupedRecords.map(g => ({
+                            key: g.key,
+                            recordCount: g.records.length,
+                            sequenceId: g.sequenceId,
+                            purchaseOrder: g.purchaseOrder,
+                            postingDate: g.postingDate
+                        }))
+                    );
 
                     // Process each group sequentially
                     this._processGroupedRecords(groupedRecords, batchIndex)
@@ -633,38 +586,30 @@ sap.ui.define([
         }
 
         /**
-         * Group records by purchase order and posting date
+         * Group records by sequence ID, purchase order and posting date
          * @param {Array} records - Records to group
          * @returns {Array} Array of grouped records
          * @private
          */
-        _groupRecordsByPOAndPostingDate(records) {
-            // Create a map to hold the groups
+        _groupRecordsBySequencePOAndPostingDate(records) {
             const groups = new Map();
 
-            // Group records by PO and posting date
             records.forEach(record => {
-                // Extract purchase order and posting date
-                const purchaseOrder = record.PurchaseOrder || "";
-                const postingDate = record.PostingDate || "";
+                // Use DataTransformer for field standardization
+                const standardized = this._dataTransformer.standardizeFieldNames(record);
+                const sequenceId = this._dataTransformer.getSequenceId(standardized);
+                const purchaseOrder = standardized.PurchaseOrder || "";
+                const postingDate = standardized.PostingDate || "";
+                const groupKey = `${sequenceId}_${purchaseOrder}_${postingDate}`;
 
-                // Create a composite key for grouping
-                const groupKey = `${purchaseOrder}_${postingDate}`;
-
-                // Add to group or create new group
                 if (!groups.has(groupKey)) {
                     groups.set(groupKey, {
-                        key: groupKey,
-                        purchaseOrder: purchaseOrder,
-                        postingDate: postingDate,
-                        records: []
+                        key: groupKey, sequenceId, purchaseOrder, postingDate, records: []
                     });
                 }
-
-                groups.get(groupKey).records.push(record);
+                groups.get(groupKey).records.push(standardized);
             });
 
-            // Convert map to array
             return Array.from(groups.values());
         }
 
@@ -750,6 +695,13 @@ sap.ui.define([
         }
 
         /**
+         * Process a single group of records
+         * @param {Object} group - Group object containing records
+         * @param {Number} batchIndex - Batch index
+         * @returns {Promise} Promise that resolves with group processing results
+         * @private
+         */
+        /**
   * Process a single group of records
   * @param {Object} group - Group object containing records
   * @param {Number} batchIndex - Batch index
@@ -758,72 +710,147 @@ sap.ui.define([
   */
         _processGroup(group, batchIndex) {
             return new Promise((resolve, reject) => {
-                console.log(`Processing group with PO ${group.purchaseOrder} and posting date ${group.postingDate}`,
-                    { recordCount: group.records.length });
-
-                // Transform the grouped data for OData
-                const transformedData = this._dataTransformer.transformToODataFormat(group.records);
-
-                // Add additional group info to the transformed data if needed
-                if (transformedData.header) {
-                    transformedData.header.PurchaseOrder = group.purchaseOrder;
-                    transformedData.header.PostingDate = group.postingDate;
+                // Add validation for group and its records
+                if (!group) {
+                    console.error("Group is undefined");
+                    reject(new Error("Group is undefined"));
+                    return;
                 }
 
-                // Submit to OData service
-                this._oDataService.createSingleMaterialDocument(
-                    transformedData,
-                    {
-                        success: (result) => {
-                            const materialDocument = result.responseData?.header?.MaterialDocument || "";
-                            const materialDocumentYear = result.responseData?.header?.MaterialDocumentYear || "";
-                            console.log(`Successfully created material document ${materialDocument} for group ${group.key}`);
+                if (!group.records || !Array.isArray(group.records) || group.records.length === 0) {
+                    console.error("Group records are invalid:", group);
+                    reject(new Error("Group records are undefined, not an array, or empty"));
+                    return;
+                }
 
-                            // Format success records
-                            const successfulRecords = group.records.map(item => {
-                                return {
-                                    ...item,
-                                    MaterialDocument: materialDocument,
-                                    MaterialDocumentYear: materialDocumentYear,
-                                    Status: "Success",
-                                    Message: "Material document created successfully"
-                                };
-                            });
+                console.log(`Processing group with Sequence ID ${group.sequenceId}, PO ${group.purchaseOrder} and posting date ${group.postingDate}`,
+                    { recordCount: group.records.length });
 
-                            resolve({
-                                successfulRecords: successfulRecords,
-                                failedRecordsList: []
-                            });
-                        },
-                        error: (error) => {
-                            console.error(`Error creating material document for group ${group.key}:`, error);
-
-                            // Format error records
-                            const failedRecordsList = group.records.map(item => {
-                                return {
-                                    entry: item,
-                                    error: error.message || "Unknown error",
-                                    errorCode: error.code || "ERROR",
-                                    details: error.details || [],
-                                    message: this._errorHandler.createStandardMessage(
-                                        "error",
-                                        error.code || "ERROR",
-                                        error.message || "Material document creation failed",
-                                        error.details || [],
-                                        "ODataService",
-                                        item.GRNDocumentNumber || "",
-                                        batchIndex
-                                    )
-                                };
-                            });
-
-                            resolve({
-                                successfulRecords: [],
-                                failedRecordsList: failedRecordsList
-                            });
-                        }
+                try {
+                    // Add validation for dataTransformer
+                    if (!this._dataTransformer) {
+                        throw new Error("DataTransformer is not available");
                     }
-                );
+
+                    // Transform the grouped data for OData
+                    const transformedData = this._dataTransformer.transformToODataFormat(group.records);
+
+                    // Validate transformed data
+                    if (!transformedData) {
+                        throw new Error("Data transformation returned undefined");
+                    }
+
+                    // Add additional group info to the transformed data if needed
+                    if (transformedData.header) {
+                        transformedData.header.SequenceId = group.sequenceId;
+                        transformedData.header.PurchaseOrder = group.purchaseOrder;
+                        transformedData.header.PostingDate = group.postingDate;
+                    }
+
+                    // Add validation for OData service
+                    if (!this._oDataService) {
+                        throw new Error("OData service is not available");
+                    }
+
+                    if (typeof this._oDataService.createSingleMaterialDocument !== 'function') {
+                        throw new Error("OData service createSingleMaterialDocument method is not available");
+                    }
+
+                    // Submit to OData service
+                    this._oDataService.createSingleMaterialDocument(
+                        transformedData,
+                        {
+                            success: (result) => {
+                                try {
+                                    const materialDocument = result?.responseData?.header?.MaterialDocument || "";
+                                    const materialDocumentYear = result?.responseData?.header?.MaterialDocumentYear || "";
+                                    console.log(`Successfully created GRN ${materialDocument} for group ${group.key}`);
+
+                                    // Format success records with additional validation
+                                    const successfulRecords = group.records.map(item => {
+                                        if (!item) {
+                                            console.warn("Encountered null/undefined item in group records");
+                                            return null;
+                                        }
+                                        return {
+                                            ...item,
+                                            MaterialDocument: materialDocument,
+                                            MaterialDocumentYear: materialDocumentYear,
+                                            Status: "Success",
+                                            Message: "GRN created successfully"
+                                        };
+                                    }).filter(item => item !== null); // Remove any null items
+
+                                    resolve({
+                                        successfulRecords: successfulRecords,
+                                        failedRecordsList: []
+                                    });
+                                } catch (successError) {
+                                    console.error("Error processing success callback:", successError);
+                                    reject(successError);
+                                }
+                            },
+                            error: (error) => {
+                                try {
+                                    console.error(`Error creating GRN for group ${group.key}:`, error);
+
+                                    // Ensure error handler is available
+                                    if (!this._errorHandler) {
+                                        console.error("Error handler is not available");
+                                        // Fallback error handling
+                                        const failedRecordsList = group.records.map(item => ({
+                                            entry: item,
+                                            error: error?.message || "Unknown error",
+                                            errorCode: error?.code || "ERROR",
+                                            details: error?.details || [],
+                                            message: `Error: ${error?.message || "GRN creation failed"}`
+                                        }));
+
+                                        resolve({
+                                            successfulRecords: [],
+                                            failedRecordsList: failedRecordsList
+                                        });
+                                        return;
+                                    }
+
+                                    // Format error records with validation
+                                    const failedRecordsList = group.records.map(item => {
+                                        if (!item) {
+                                            console.warn("Encountered null/undefined item in error processing");
+                                            return null;
+                                        }
+                                        return {
+                                            entry: item,
+                                            error: error?.message || "Unknown error",
+                                            errorCode: error?.code || "ERROR",
+                                            details: error?.details || [],
+                                            message: this._errorHandler.createStandardMessage(
+                                                "error",
+                                                error?.code || "ERROR",
+                                                error?.message || "GRN creation failed",
+                                                error?.details || [],
+                                                "ODataService",
+                                                item?.GRNDocumentNumber || "",
+                                                batchIndex
+                                            )
+                                        };
+                                    }).filter(item => item !== null); // Remove any null items
+
+                                    resolve({
+                                        successfulRecords: [],
+                                        failedRecordsList: failedRecordsList
+                                    });
+                                } catch (errorProcessingError) {
+                                    console.error("Error processing error callback:", errorProcessingError);
+                                    reject(errorProcessingError);
+                                }
+                            }
+                        }
+                    );
+                } catch (error) {
+                    console.error("Error in _processGroup:", error);
+                    reject(error);
+                }
             });
         }
         /**

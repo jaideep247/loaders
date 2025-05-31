@@ -92,7 +92,7 @@ sap.ui.define([
     _collectRecords(batchData) {
       const successRecords = [];
       const errorRecords = [];
- 
+
       // Function to check record validity and categorize
       const processRecord = (record) => {
         // Prioritize entry if exists
@@ -314,7 +314,9 @@ sap.ui.define([
         "WBSElementExternalID",
         "Cost Center",
         "GL Account Number",
-        "Item Text"
+        "Item Text",
+        "Performance Start Date",
+        "Performance End Date"
       ];
 
       // Sample data matching the description
@@ -346,7 +348,9 @@ sap.ui.define([
           "WBSElementExternalID": "",
           "Cost Center": "",
           "GL Account Number": "",
-          "Item Text": ""
+          "Item Text": "",
+          "Performance Start Date": "2025-04-01",
+          "Performance End Date": "2025-04-01"
         },
         {
           "Sequence": "1",
@@ -375,7 +379,9 @@ sap.ui.define([
           "WBSElementExternalID": "I-24-DEP-100-BATHR",
           "Cost Center": "",
           "GL Account Number": "",
-          "Item Text": ""
+          "Item Text": "",
+          "Performance Start Date": "2025-04-01",
+          "Performance End Date": "2025-04-01"
         },
         {
           "Sequence": "2",
@@ -404,7 +410,9 @@ sap.ui.define([
           "WBSElementExternalID": "W-TPWT3SRJ2868",
           "Cost Center": "",
           "GL Account Number": "",
-          "Item Text": ""
+          "Item Text": "",
+          "Performance Start Date": "2025-04-01",
+          "Performance End Date": "2025-04-01"
         },
         {
           "Sequence": "2",
@@ -433,7 +441,9 @@ sap.ui.define([
           "WBSElementExternalID": "",
           "Cost Center": "2AN_C_COM",
           "GL Account Number": "",
-          "Item Text": ""
+          "Item Text": "",
+          "Performance Start Date": "2025-04-01",
+          "Performance End Date": "2025-04-01"
         }
       ];
 

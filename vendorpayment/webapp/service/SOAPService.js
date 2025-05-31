@@ -667,9 +667,10 @@ sap.ui.define([
         // Add Creditor transactions (credit entries)
         // Fix: Check if debtorTransactions exists and is an array
         if (entry.debtorTransactions && Array.isArray(entry.debtorTransactions)) {
-          
+
           entry.debtorTransactions.forEach((item) => {
             let specialGLCode = item["Special GL Code"];
+            let paymentReference = item["Payment Reference"];
             soapEnvelope += `<CreditorItem>
                                 <ReferenceDocumentItem>${itemIndex}</ReferenceDocumentItem>
                                 <Creditor>${item["Vendor Code"]}</Creditor>
@@ -681,7 +682,10 @@ sap.ui.define([
                                 <BusinessPlace>${item["Business Place"] || ""}</BusinessPlace>   
                                 <DownPaymentTerms>
                                     ${specialGLCode ? `<SpecialGLCode>${specialGLCode}</SpecialGLCode>` : ""}
-                                </DownPaymentTerms>                                                                   
+                                </DownPaymentTerms>   
+                                <PaymentDetails>
+                                    ${paymentReference ? `<PaymentReference>${paymentReference}</PaymentReference>` : ""}
+                                </PaymentDetails>                                                                                                
                             </CreditorItem>`;
             itemIndex++;
           });

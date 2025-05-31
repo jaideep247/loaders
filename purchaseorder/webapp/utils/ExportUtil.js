@@ -55,7 +55,7 @@ sap.ui.define([
             return data.map((item, index) => {
                 // Prioritize entry if exists, otherwise use the entire item
                 const entry = item.entry || item;
-
+             
                 // Comprehensive error detection
                 const isError =
                     type === "error" ||
@@ -152,12 +152,23 @@ sap.ui.define([
                 // If item is an error record, ensure additional error details are included
                 if (isError) {
                     if (item.errorDetails) {
-                        optionalFields.ErrorDetails = item.errorDetails;
+                        optionalFields.ErrorDetails = typeof item.errorDetails === 'object' ? JSON.stringify(item.errorDetails, null, 2) : item.errorDetails;
+                    }
+                    if (item.stack) { // Add stack trace for debugging if available
+                        optionalFields.StackTrace = item.stack;
                     }
                     if (entry.SAP__Messages && entry.SAP__Messages.length > 0) {
+                        // Concatenate all SAP messages for detailed error info
                         optionalFields.SAPMessages = entry.SAP__Messages.map(msg =>
-                            msg.message || msg.text || msg.description
-                        ).join('; ');
+                            `${msg.type ? `[${msg.type}] ` : ''}${msg.code ? `(${msg.code}) ` : ''}${msg.message || msg.text || msg.description}`
+                        ).join('\n'); // Use newline for better readability in PDF
+                    }
+                    // Add any other specific error fields you might have
+                    if (entry.ErrorDescription) {
+                        optionalFields.ErrorDescription = entry.ErrorDescription;
+                    }
+                    if (entry.TechnicalDetails) {
+                        optionalFields.TechnicalDetails = typeof entry.TechnicalDetails === 'object' ? JSON.stringify(entry.TechnicalDetails, null, 2) : entry.TechnicalDetails;
                     }
                 }
 
@@ -259,28 +270,51 @@ sap.ui.define([
          */
         _generatePDF(data, filename) {
             try {
-                // Define essential fields with their display names
+                // Define essential fields with their display names and approximate widths for PDF table
                 const fieldDefinitions = {
                     'Sequence': { width: 40, text: 'Seq #' },
                     'Status': { width: 50, text: 'Status' },
                     'PurchaseOrder': { width: 80, text: 'PO Number' },
+                    'POType': { width: 50, text: 'PO Type' }, // Added
                     'CompanyCode': { width: 60, text: 'Company' },
                     'Supplier': { width: 100, text: 'Supplier' },
-                    'ErrorMessage': { width: 150, text: 'Error Details' },
-                    'Message': { width: 150, text: 'Message' },
+                    'DocumentCurrency': { width: 60, text: 'Currency' }, // Added
+                    'TotalAmount': { width: 60, text: 'Total Amt' }, // Added
+                    'CreationDate': { width: 60, text: 'PO Date' }, // Added
+                    'PurchasingOrganization': { width: 70, text: 'P Org' }, // Added
+                    'PurchasingGroup': { width: 50, text: 'P Group' }, // Added
+                    'Message': { width: 150, text: 'Processing Message' }, // Changed text for clarity
+                    'SAPMessages': { width: 150, text: 'SAP Messages' }, // Added for detailed error
+                    'ErrorDetails': { width: 150, text: 'Error Details' }, // Added
+                    'ErrorDescription': { width: 150, text: 'Error Description' }, // Added
+                    'TechnicalDetails': { width: 150, text: 'Technical Details' }, // Added
+                    'StackTrace': { width: 150, text: 'Stack Trace' }, // Added
                     'Timestamp': { width: 80, text: 'Processed At' }
                 };
 
-                // Get available fields from first data item
+                // Get available fields from first data item, prioritize existing order if possible
                 const availableFields = Object.keys(data[0] || {});
 
-                // Filter to only include fields that exist in data and are defined
+                // Filter to only include fields that exist in data and are defined, maintaining a logical order
                 const fieldsToShow = Object.entries(fieldDefinitions)
                     .filter(([field]) => availableFields.includes(field))
-                    .sort((a, b) => availableFields.indexOf(a[0]) - availableFields.indexOf(b[0]));
+                    // Sort based on a preferred display order, then by their appearance in `availableFields`
+                    .sort((a, b) => {
+                        const order = ['Sequence', 'Status', 'PurchaseOrder', 'POType', 'CompanyCode', 'Supplier', 'DocumentCurrency', 'TotalAmount', 'CreationDate', 'PurchasingOrganization', 'PurchasingGroup', 'Message', 'SAPMessages', 'ErrorDetails', 'ErrorDescription', 'TechnicalDetails', 'StackTrace', 'Timestamp'];
+                        const indexA = order.indexOf(a[0]);
+                        const indexB = order.indexOf(b[0]);
+
+                        if (indexA === -1 && indexB === -1) {
+                            return availableFields.indexOf(a[0]) - availableFields.indexOf(b[0]);
+                        }
+                        if (indexA === -1) return 1;
+                        if (indexB === -1) return -1;
+                        return indexA - indexB;
+                    });
+
 
                 // Prepare table header
-                const headerRow = fieldsToShow.map(([field, def]) => ({
+                const headerRow = fieldsToShow.map(([, def]) => ({
                     text: def.text,
                     style: 'tableHeader',
                     fillColor: '#f5f5f5'
@@ -289,12 +323,19 @@ sap.ui.define([
                 // Prepare table body with conditional styling
                 const bodyRows = data.map(row => {
                     const isError = row.Status === 'Error';
-                    return fieldsToShow.map(([field, def]) => {
+                    return fieldsToShow.map(([field]) => {
                         let value = row[field] || '';
 
                         // Format specific fields
                         if (field === 'Timestamp' && value) {
-                            value = new Date(value).toLocaleString();
+                            try {
+                                value = new Date(value).toLocaleString();
+                            } catch (e) {
+                                // Fallback for invalid date strings
+                                value = String(value);
+                            }
+                        } else if (typeof value === 'object' && value !== null) {
+                            value = JSON.stringify(value); // Stringify objects
                         }
 
                         return {
@@ -306,10 +347,10 @@ sap.ui.define([
                 });
 
                 // Calculate column widths
-                const colWidths = fieldsToShow.map(([field, def]) => def.width || 'auto');
+                const colWidths = fieldsToShow.map(([, def]) => def.width || 'auto');
 
                 // Split data into chunks to prevent overflow
-                const rowsPerPage = 30; // Adjust based on your needs
+                const rowsPerPage = 25; // Adjusted slightly to fit more information
                 const tableChunks = [];
 
                 for (let i = 0; i < bodyRows.length; i += rowsPerPage) {
@@ -388,7 +429,12 @@ sap.ui.define([
                             vLineColor: () => '#cccccc',
                             fillColor: (rowIndex) => {
                                 if (rowIndex === 0) return '#f5f5f5'; // Header
-                                return (chunk[rowIndex - 1][0].style === 'errorText') ? '#ffebee' : '#e8f5e9';
+                                // Check the status of the original data row to apply fill color
+                                const originalDataRowIndex = (pageIndex * rowsPerPage) + (rowIndex - 1);
+                                if (data[originalDataRowIndex] && data[originalDataRowIndex].Status === 'Error') {
+                                    return '#ffebee';
+                                }
+                                return '#e8f5e9'; // Success or default
                             }
                         }
                     });

@@ -316,7 +316,8 @@ sap.ui.define([
                 referenceKey1,
                 referenceKey3,
                 itemText,
-                businessPlace
+                businessPlace,
+                specialGLCode
               ] = vendorEntry;
 
               return {
@@ -331,6 +332,7 @@ sap.ui.define([
                 "Reference Key 3": referenceKey3,
                 "Item Text": itemText,
                 "Business Place": businessPlace,
+                "Special GL Code":specialGLCode,                
                 "Created By": createdBy,
                 "LineType": "Vendor",
                 "Sheet": vendorSheetName
@@ -356,7 +358,8 @@ sap.ui.define([
                 referenceKey1,
                 referenceKey3,
                 itemText,
-                businessPlace
+                businessPlace,
+                specialGLCode,
               ] = customerEntry;
 
               return {
@@ -371,6 +374,7 @@ sap.ui.define([
                 "Reference Key 3": referenceKey3,
                 "Item Text": itemText,
                 "Business Place": businessPlace,
+                "Special GL Code":specialGLCode,                
                 "Created By": createdBy,
                 "LineType": "Customer",
                 "Sheet": customerSheetName

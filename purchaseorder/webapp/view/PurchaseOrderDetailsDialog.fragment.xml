@@ -15,7 +15,6 @@
             id="poDetailsMainVBox"
             class="sapUiMediumMargin"
         >
-            <!-- Header with Status -->
             <l:BlockLayout id="headerBlockLayout">
                 <l:BlockLayoutRow id="_IDGenBlockLayoutRow">
                     <l:BlockLayoutCell
@@ -53,7 +52,6 @@
                 </l:BlockLayoutRow>
             </l:BlockLayout>
 
-            <!-- Detailed Information Form -->
             <f:SimpleForm
                 id="poDetailsForm"
                 layout="ResponsiveGridLayout"
@@ -68,7 +66,6 @@
                 class="sapUiSmallMarginTop"
             >
                 <f:content>
-                    <!-- Column 1: Primary Information -->
                     <core:Title
                         id="_IDGenTitle5"
                         text="Purchase Order Primary Information"
@@ -134,15 +131,13 @@
                     />
                     <Text
                         id="_IDGenText67"
-                        text="{path: 'entryDetails>/PurchasingDocumentDate', formatter: '.formatDate'}"
+                        text="{path: 'entryDetails>/PurchasingDocumentDate'}"
                     />
 
-                    <!-- Column 2: Item Details -->
                     <core:Title
                         id="_IDGenTitle6"
                         text="Item Details"
                     />
-                    <!-- Item Text Section -->
                     <Label
                         id="_IDGenLabel13"
                         text="Item Number"
@@ -159,6 +154,24 @@
                     <Text
                         id="_IDGenText38"
                         text="{entryDetails>/ItemText}"
+                    />
+
+                    <Label
+                        id="_IDGenLabelPerformancePeriodStartDate"
+                        text="Performance Period Start Date"
+                    />
+                    <Text
+                        id="_IDGenTextPerformancePeriodStartDate"
+                        text="{path: 'entryDetails>/PerformancePeriodStartDate'}"
+                    />
+
+                    <Label
+                        id="_IDGenLabelPerformancePeriodEndDate"
+                        text="Performance Period End Date"
+                    />
+                    <Text
+                        id="_IDGenTextPerformancePeriodEndDate"
+                        text="{path: 'entryDetails>/PerformancePeriodEndDate'}"
                     />
 
                     <Label
@@ -226,7 +239,6 @@
                         unit="INR"
                     />
 
-                    <!-- Additional Information -->
                     <core:Title
                         id="_IDGenTitle7"
                         text="Additional Information"
@@ -319,7 +331,6 @@
             visible="{= ${entryDetails>/Status} === 'Invalid'}"
             class="sapUiMediumMarginTop"
         >
-            <!-- Header with Error Count -->
             <HBox
                 id="errorHeaderBox"
                 justifyContent="SpaceBetween"
@@ -342,7 +353,6 @@
                 />
             </HBox>
 
-            <!-- Error List with Cards -->
             <List
                 id="validationErrorsList"
                 items="{path: 'entryDetails>/ValidationErrors'}"
@@ -416,7 +426,6 @@
                 </CustomListItem>
             </List>
 
-            <!-- No Errors Fallback (shouldn't appear but good practice) -->
             <VBox
                 id="noErrorsBox"
                 visible="{= ${entryDetails>/Status} === 'Invalid' &amp;&amp; (!${entryDetails>/ValidationErrors} || ${entryDetails>/ValidationErrors}.length === 0)}"

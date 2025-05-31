@@ -1,0 +1,321 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        id="helpDialog"
+        title="Supplier Invoice Upload Help"
+        contentWidth="800px"
+    >
+        <content>
+            <IconTabBar
+                id="helpTabBar"
+                expanded="true"
+            >
+                <items>
+                    <IconTabFilter
+                        id="gettingStartedTab"
+                        icon="sap-icon://hint"
+                        text="Getting Started"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox2"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle7"
+                                        text="How to Upload Supplier Invoices"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText51"
+                                        text="1. Download the template using the 'Download Template' button."
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText52"
+                                        text="2. Fill out the template with your supplier invoice information."
+                                    />
+                                    <Text
+                                        id="_IDGenText53"
+                                        text="3. Upload the completed file using the 'Choose File' button."
+                                    />
+                                    <Text
+                                        id="_IDGenText54"
+                                        text="4. Review validation results and fix any errors."
+                                    />
+                                    <Text
+                                        id="_IDGenText55"
+                                        text="5. Click 'Submit Invoices' to process valid entries."
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="commonErrorsTab"
+                        icon="sap-icon://alert"
+                        text="Common Errors"
+                    >
+                        <content>
+                            <List id="_IDGenList">
+                                <items>
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem"
+                                        title="Missing Required Fields"
+                                        description="All required fields must be filled in for each entry."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem1"
+                                        title="Invalid Date Format"
+                                        description="Dates should be in YYYY-MM-DD format."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem2"
+                                        title="Tax Calculation Errors"
+                                        description="Ensure tax codes and amounts are correctly specified."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem5"
+                                        title="Duplicate Invoice Numbers"
+                                        description="Each supplier invoice must have a unique reference."
+                                    />
+                                    <StandardListItem
+                                        id="_IDGenStandardListItem6"
+                                        title="Currency Mismatch"
+                                        description="All amounts for an invoice must be in the same currency."
+                                    />
+                                </items>
+                            </List>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="fileFormatTab"
+                        icon="sap-icon://attachment-text-file"
+                        text="File Format"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox3"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Text
+                                        id="_IDGenText56"
+                                        text="The Excel file must contain two worksheets:"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <List id="_IDGenList3">
+                                        <items>
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem7"
+                                                title="Header_and_Credits: Contains invoice header and credit information"
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem8"
+                                                title="Debits: Contains expense/debit entries (Indicator S)"
+                                            />
+                                        </items>
+                                    </List>
+                                    <Title
+                                        id="_IDGenTitle8"
+                                        text="Required Fields"
+                                        class="sapUiSmallMarginTop sapUiTinyMarginBottom"
+                                    />
+                                    <Panel
+                                        id="_IDGenPanel1"
+                                        headerText="Header_and_Credits Sheet"
+                                        expandable="true"
+                                        expanded="false"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList4">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem11"
+                                                        title="Sequence Id"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem12"
+                                                        title="CompanyCode"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem13"
+                                                        title="DocumentDate"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem14"
+                                                        title="PostingDate"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem15"
+                                                        title="SupplierInvoiceIDByInvcgParty"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem16"
+                                                        title="InvoicingParty"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem17"
+                                                        title="DocumentCurrency"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem18"
+                                                        title="InvoiceGrossAmount"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem19"
+                                                        title="DocumentHeaderText"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem20"
+                                                        title="PaymentTerms"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem21"
+                                                        title="AccountingDocumentType"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem22"
+                                                        title="InvoiceReference"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem23"
+                                                        title="BusinessPlace"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem24"
+                                                        title="CostCenter"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Panel
+                                        id="_IDGenPanel2"
+                                        headerText="Debits Sheet"
+                                        expandable="true"
+                                        expanded="false"
+                                        class="sapUiTinyMarginTop"
+                                    >
+                                        <content>
+                                            <List id="_IDGenList6">
+                                                <items>
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem25"
+                                                        title="Sequence Id"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem26"
+                                                        title="GLAccount"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem27"
+                                                        title="WBSElement"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem28"
+                                                        title="DocumentCurrency"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem29"
+                                                        title="SupplierInvoiceItemAmount"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem30"
+                                                        title="TaxCode"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem31"
+                                                        title="DebitCreditCode (must be 'S')"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem32"
+                                                        title="SupplierInvoiceItemText"
+                                                    />
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem33"
+                                                        title="AssignmentReference"
+                                                    />
+                                                </items>
+                                            </List>
+                                        </content>
+                                    </Panel>
+                                    <Link
+                                        id="_IDGenLink"
+                                        text="Download Sample Template"
+                                        press=".onDownloadTemplate"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                    <IconTabFilter
+                        id="balancingRulesTab"
+                        icon="sap-icon://collaborate"
+                        text="Validation Rules"
+                    >
+                        <content>
+                            <VBox
+                                id="_IDGenVBox8"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginEnd"
+                            >
+                                <items>
+                                    <Title
+                                        id="_IDGenTitle9"
+                                        text="Invoice Validation Rules"
+                                        class="sapUiSmallMarginTop"
+                                    />
+                                    <Text
+                                        id="_IDGenText57"
+                                        text="Each invoice must follow these rules:"
+                                        class="sapUiTinyMarginTop"
+                                    />
+                                    <List id="_IDGenList8">
+                                        <items>
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem40"
+                                                title="Header to Line Item Matching"
+                                                description="Each Sequence ID in the Debits sheet must have a corresponding header in the Header_and_Credits sheet."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem41"
+                                                title="Amount Consistency"
+                                                description="The sum of all debit items must equal the InvoiceGrossAmount in the header."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem42"
+                                                title="Tax Code Validation"
+                                                description="Tax codes must be valid for the specified company code."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem43"
+                                                title="Currency Consistency"
+                                                description="All amounts for an invoice must use the same currency."
+                                            />
+                                            <StandardListItem
+                                                id="_IDGenStandardListItem44"
+                                                title="Date Validation"
+                                                description="DocumentDate and PostingDate must be valid dates and PostingDate cannot be in a closed period."
+                                            />
+                                        </items>
+                                    </List>
+                                </items>
+                            </VBox>
+                        </content>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+        <beginButton>
+            <Button
+                id="_IDGenButton3"
+                text="Close"
+                press=".onHelpDialogClose"
+            />
+        </beginButton>
+    </Dialog>
+</core:FragmentDefinition>

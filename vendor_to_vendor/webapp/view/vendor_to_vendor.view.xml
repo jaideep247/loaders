@@ -487,17 +487,7 @@
                                 text="Vendor Code"
                             />
                         </Column>
-                        <Column
-                            id="currencyColumn"
-                            width="6%"
-                            hAlign="Begin"
-                        >
-                            <Text
-                                id="_IDGenText5"
-                                text="Currency"
-                                textAlign="Right"
-                            />
-                        </Column>
+
                         <Column
                             id="amountColumn"
                             width="8%"

@@ -57,14 +57,14 @@ sap.ui.define([
                             "Quantity In Base Unit", "Base Unit SAP Code", "Base Unit ISO Code", "Accounting Document Type",
                             "Assignment Reference", "Document Item Text", "Offsetting Account"
                         ];
-
+              
                         // --- Create Example Row ---
                         const today = new Date();
                         const formattedDate = today.toISOString().slice(0, 10); // YYYY-MM-DD
                         const exampleRow = {
                             "Sequence ID": "1",
                             "Reference Document Item": "000001",
-                            "Business Transaction Type": "100",
+                            "Business Transaction Type": "RA10",
                             "Company Code": "1000",
                             "Master Fixed Asset": "ASSET-001",
                             "Fixed Asset": "0000",
@@ -72,12 +72,12 @@ sap.ui.define([
                             "Posting Date": formattedDate,
                             "Asset Value Date": formattedDate,
                             "Debit Credit Code": "S",
-                            "Fixed Asset Year Of Acqn Code": "1",
+                            "Fixed Asset Year Of Acquisition Code": "1",  // FIXED
                             "Document Reference ID": "Reference 0001",
                             "Accounting Document Header Text": "Acquisition XYZ",
                             "Transaction Currency": "INR",
-                            "Acqn Amt In Transaction Currency": "1500.00", 
-                            "Quantity In Base Unit": "1",   
+                            "Acquisition Amount In Transaction Currency": "1500.00",  // FIXED
+                            "Quantity In Base Unit": "1",
                             "Base Unit SAP Code": "EA",
                             "Base Unit ISO Code": "EA",
                             "Accounting Document Type": "AA",
@@ -85,7 +85,6 @@ sap.ui.define([
                             "Document Item Text": "Asset Item Description",
                             "Offsetting Account": "1234567890"
                         };
-
                         // Use XlsxFormatter to create the workbook with data and help sheet
                         const wb = await this._xlsxFormatter.createWorkbookForTemplate(
                             headers,

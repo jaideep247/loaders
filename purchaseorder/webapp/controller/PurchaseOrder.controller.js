@@ -154,7 +154,6 @@ sap.ui.define([
             try {
                 this._excelProcessor.processExcelFile(file)
                     .then(result => {
-                        console.log("File processing result:", result);
 
                         // If we have validation errors, show validation statistics
                         if (result.errors && result.errors.length > 0) {
@@ -233,7 +232,7 @@ sap.ui.define([
             this._purchaseOrderDetailsDialog.open();
 
             // Debug output
-            console.log("Dialog data:", oDialogData);
+
             if (oDialogData.Status === "Invalid") {
                 console.log("ValidationErrors:", oDialogData.ValidationErrors);
             }
@@ -295,9 +294,6 @@ sap.ui.define([
 
                 // Explicitly preserve sequence in both formats for compatibility
                 enhancedEntry.OriginalSequence = entry.Sequence;
-
-                // Log each entry's sequence value for debugging
-                console.log(`Submitting entry ${index} with sequence: ${enhancedEntry.OriginalSequence}`);
 
                 return enhancedEntry;
             });
@@ -368,7 +364,7 @@ sap.ui.define([
 
                 // Get response data from the batch processing manager
                 const batchData = this._batchProcessingManager.getResponseData();
-                console.log("Batch data for export:", batchData);
+
 
                 // Call the export manager to perform the export
                 if (this._exportManager) {
@@ -431,37 +427,52 @@ sap.ui.define([
             // Track processing state
             let processingComplete = false;
 
-            // Create deep copies of items without modifying the original sequence
-            const enhancedItems = items.map(item => {
+            // Create deep copies of items and ensure sequence information is preserved
+            const enhancedItems = items.map((item, index) => {
                 // Create a copy to avoid modifying the original
                 const enhancedItem = jQuery.extend(true, {}, item);
 
-                // Make sure the Sequence property is preserved 
-                // No need for OriginalSequence, just use Sequence
-                console.log(`Submitting entry with sequence: ${enhancedItem.Sequence}`);
+                // Ensure sequence is properly set - prioritize existing Sequence over index-based
+                if (!enhancedItem.Sequence) {
+                    enhancedItem.Sequence = item.OriginalSequence || `SEQ_${index + 1}`;
+                }
 
                 return enhancedItem;
             });
 
-            // Log enhanced items for debugging
-            console.log("Items before transformation:", enhancedItems);
+            // Log sequence grouping information
+            const sequenceGroups = this._groupItemsBySequence(enhancedItems);
+            console.log("Sequence Groups Summary:", {
+                totalItems: enhancedItems.length,
+                uniqueSequences: Object.keys(sequenceGroups).length,
+                groupDetails: Object.keys(sequenceGroups).map(seq => ({
+                    sequence: seq,
+                    itemCount: sequenceGroups[seq].length
+                }))
+            });
 
-            // Then transform data for OData format
+            // Transform data for OData format
             const transformedItems = this._dataTransformer.transformToODataFormat(enhancedItems);
 
-            // Log transformed items for debugging
-            console.log("Transformed items:", transformedItems);
-
-            // Use the BatchProcessingManager to handle batch submission
+            // Use the BatchProcessingManager to handle sequence-based batch submission
             this._batchProcessingManager.startBatchProcessing(
                 transformedItems,
                 {
-                    batchSize: 10,
-                    showProgress: true
+                    batchSize: 10, // This is now used for UI display grouping, not OData batching
+                    showProgress: true,
+                    processingMode: "sequence" // Flag to indicate sequence-based processing
                 }
             )
                 .then(result => {
                     processingComplete = true;
+
+                    // Log sequence processing results
+                    console.log("Sequence Processing Results:", {
+                        totalProcessed: result.successCount + result.failureCount,
+                        successful: result.successCount,
+                        failed: result.failureCount,
+                        sequenceResults: this._analyzeSequenceResults(result)
+                    });
 
                     // Update the upload summary
                     uploadSummaryModel.setProperty("/successfulEntries", result.successCount);
@@ -471,6 +482,7 @@ sap.ui.define([
                 })
                 .catch(error => {
                     processingComplete = true;
+                    console.error("Sequence-based processing error:", error);
                     MessageBox.error("Error processing entries: " + error.message);
                     uploadSummaryModel.setProperty("/isSubmitting", false);
                 })
@@ -485,7 +497,54 @@ sap.ui.define([
                         }, 500);
                     }
                 });
-        },     
+        },
+
+        // Add helper method to group items by sequence
+        _groupItemsBySequence: function (items) {
+            const groups = {};
+
+            items.forEach((item, index) => {
+                const sequenceId = item.Sequence || item.OriginalSequence || `SEQ_${index + 1}`;
+
+                if (!groups[sequenceId]) {
+                    groups[sequenceId] = [];
+                }
+
+                groups[sequenceId].push(item);
+            });
+
+            return groups;
+        },
+
+        // Add helper method to analyze sequence results
+        _analyzeSequenceResults: function (result) {
+            const sequenceAnalysis = {};
+
+            // Analyze successful records
+            if (result.successRecords) {
+                result.successRecords.forEach(record => {
+                    const seq = record.OriginalSequence || record.Sequence || "Unknown";
+                    if (!sequenceAnalysis[seq]) {
+                        sequenceAnalysis[seq] = { success: 0, failed: 0 };
+                    }
+                    sequenceAnalysis[seq].success++;
+                });
+            }
+
+            // Analyze failed records
+            if (result.errorRecords || result.failedRecordsList) {
+                const failedRecords = result.errorRecords || result.failedRecordsList;
+                failedRecords.forEach(record => {
+                    const seq = record.originalSequence || record.entry?.Sequence || "Unknown";
+                    if (!sequenceAnalysis[seq]) {
+                        sequenceAnalysis[seq] = { success: 0, failed: 0 };
+                    }
+                    sequenceAnalysis[seq].failed++;
+                });
+            }
+
+            return sequenceAnalysis;
+        },
 
         /**
          * Download template
@@ -818,7 +877,7 @@ sap.ui.define([
          * Export invalid entries
          */
         onExportInvalidEntries: function () {
-            const purchaseOrderModel = this.getView().getModel("purchaseOrders");         
+            const purchaseOrderModel = this.getView().getModel("purchaseOrders");
             const entries = purchaseOrderModel.getProperty("/entries") || [];
             const invalidEntries = entries.filter(entry => entry.Status === "Invalid");
 

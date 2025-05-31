@@ -343,7 +343,7 @@ sap.ui.define([
                 entrySequenceId, referenceDocumentItem, indicator,
                 VendorCode, currency, amount, assignment,
                 referenceKey1, itemText, businessPlace,
-                specialGlCode
+                specialGlCode,paymentReference
               ] = creditEntry;
 
               return {
@@ -358,6 +358,7 @@ sap.ui.define([
                 "Item Text": itemText,
                 "Business Place": businessPlace,
                 "Special GL Code": specialGlCode,
+                "Payment Reference": paymentReference,
                 "Created By": createdBy,
                 "Sheet": vendorSheet,
                 "Entry Type": "Credit" // Add entry type for easier filtering

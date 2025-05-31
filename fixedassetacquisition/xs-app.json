@@ -7,7 +7,7 @@
       "target": "/sap/$1",
       "destination": "TSI_S4_Loaders",
       "authenticationType": "xsuaa",
-      "csrfProtection": true
+      "csrfProtection": false
     },
     {
       "source": "^/user-api(.*)",

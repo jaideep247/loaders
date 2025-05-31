@@ -117,7 +117,7 @@ sap.ui.define([], function () {
                     // ws_data.push(headers.reduce((obj, h) => { obj[h] = ""; return obj; }, {}));
 
                     const ws = window.XLSX.utils.json_to_sheet(ws_data, { header: headers });
-                    window.XLSX.utils.book_append_sheet(wb, ws, "Goods Receipts");
+                    window.XLSX.utils.book_append_sheet(wb, ws, "Assets");
                     resolve(wb);
                 } catch (error) {
                      console.error("Error creating workbook for template:", error);

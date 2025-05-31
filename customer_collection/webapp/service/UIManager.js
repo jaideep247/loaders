@@ -314,8 +314,9 @@ sap.ui.define([
         "Reference Key 3",        
         "Item Text",
         "Business Place",
-        "Value Date",
-        "Special GL Code"
+        "Value Date",        
+        "Payment Reference",
+        "Special GL Indicator"
       ];
 
       // Fix for the field value misalignment in customer lines

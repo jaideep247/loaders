@@ -122,7 +122,7 @@ sap.ui.define([
       let processedData;
       try {
         // This will now process data with a unified Message field instead of separate error/success message fields
-        processedData = this._dataTransformer.processBatchResults(batchData, type);
+        processedData = this._errorHandler.processBatchResults(batchData, type);
         if (!processedData || processedData.length === 0 || (processedData.length === 1 && processedData[0].Status === "No Records")) {
           const msg = processedData.length === 1 && processedData[0].Status === "No Records" ?
             processedData[0].Message : `No batch data matching type '${type}' found to export.`;

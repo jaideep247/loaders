@@ -265,7 +265,7 @@
                             />
                             <ObjectNumber
                                 id="_IDGenObjectNumber3"
-                                number="{entryDetails>/Quantity}"
+                                number="{entryDetails>/QuantityInEntryUnit}"
                                 unit="{entryDetails>/EntryUnit}"
                                 state="{= ${entryDetails>/Status} === 'Valid' ? 'Success' : 'Error'}"
                             />

@@ -235,12 +235,19 @@
                                     <Text
                                         id="_IDGenText16"
                                         text="{
-                                        path: 'entryDetails>/GlobalMasterData/PutToUseDate',
-                                        type: 'sap.ui.model.type.Date',
-                                        formatOptions: {
-                                            style: 'medium'
-                                        }
-                                    }"
+                                            path: 'entryDetails>/GlobalMasterData/PutToUseDate',
+                                            type: 'sap.ui.model.type.Date',
+                                            formatOptions: {
+                                                style: 'medium'
+                                            }
+                                        }"
+                                        visible="{= !!${entryDetails>/GlobalMasterData/PutToUseDate}}"
+                                    />
+                                    <Text
+                                        id="_IDGenText16Alt"
+                                        text="Not specified"
+                                        textDirection="LTR"
+                                        visible="{= !${entryDetails>/GlobalMasterData/PutToUseDate}}"
                                     />
 
                                     <Label
@@ -259,233 +266,246 @@
                         <IconTabFilter
                             id="ledgerTab"
                             icon="sap-icon://lead"
-                            text="Ledgers"
+                            text="Ledgers ({= ${entryDetails>/LedgerDetails/Ledgers}.length || 0})"
                             key="ledgerTab"
                         >
-                            <List
-                                id="_IDGenList1"
-                                items="{entryDetails>/LedgerDetails/Ledgers}"
-                                mode="None"
+                            <VBox
+                                id="_IDGenVBox8"
+                                class="sapUiMediumMargin"
                             >
-                                <CustomListItem id="_IDGenCustomListItem">
-                                    <Panel
-                                        id="_IDGenPanel"
-                                        headerText="Ledger {entryDetails>Code}"
-                                        expandable="true"
-                                        expanded="false"
-                                    >
-                                        <f:SimpleForm
-                                            id="_IDGenSimpleForm2"
-                                            editable="false"
-                                            layout="ResponsiveGridLayout"
-                                        >
-                                            <f:content>
-                                                <Label
-                                                    id="_IDGenLabel21"
-                                                    text="Capitalization Date"
-                                                />
-                                                <Text
-                                                    id="_IDGenText18"
-                                                    text="{
-                                                    path: 'entryDetails>CapitalizationDate',
-                                                    type: 'sap.ui.model.type.Date',
-                                                    formatOptions: {
-                                                        style: 'medium'
-                                                    }
-                                                }"
-                                                />
-                                            </f:content>
-                                        </f:SimpleForm>
+                                <!-- Show message if no ledgers -->
+                                <MessageStrip
+                                    id="_IDGenMessageStrip3"
+                                    visible="{= !${entryDetails>/LedgerDetails/Ledgers} || ${entryDetails>/LedgerDetails/Ledgers}.length === 0}"
+                                    text="No ledger information available for this asset master."
+                                    type="Information"
+                                    class="sapUiSmallMarginBottom"
+                                />
 
-                                        <!-- Valuations -->
+                                <!-- List all ledgers -->
+                                <List
+                                    id="ledgerList"
+                                    items="{entryDetails>/LedgerDetails/Ledgers}"
+                                    mode="None"
+                                    visible="{= ${entryDetails>/LedgerDetails/Ledgers} &amp;&amp; ${entryDetails>/LedgerDetails/Ledgers}.length > 0}"
+                                >
+                                    <CustomListItem id="_IDGenCustomListItem">
                                         <Panel
-                                            id="_IDGenPanel2"
-                                            headerText="Valuations"
+                                            id="_IDGenPanel"
+                                            headerText="Ledger {entryDetails>Code} (Index: {entryDetails>Index})"
                                             expandable="true"
-                                            expanded="false"
+                                            expanded="true"
+                                            class="sapUiSmallMarginBottom"
                                         >
-                                            <table:Table
-                                                id="_IDGenTable"
-                                                rows="{entryDetails>Valuations}"
-                                                visibleRowCount="{= ${entryDetails>Valuations}.length > 3 ? 3 : ${entryDetails>Valuations}.length}"
-                                                selectionMode="None"
+                                            <!-- Basic Ledger Info -->
+                                            <f:SimpleForm
+                                                id="_IDGenSimpleForm2"
+                                                editable="false"
+                                                layout="ResponsiveGridLayout"
+                                                labelSpanXL="4"
+                                                labelSpanL="4"
+                                                labelSpanM="4"
+                                                labelSpanS="12"
+                                                columnsXL="2"
+                                                columnsL="2"
+                                                columnsM="1"
+                                                class="sapUiSmallMarginBottom"
                                             >
-                                                <table:columns>
-                                                    <table:Column
-                                                        id="_IDGenColumn"
-                                                        width="120px"
-                                                    >
-                                                        <Label
-                                                            id="_IDGenLabel22"
-                                                            text="Depr. Area"
-                                                        />
-                                                        <table:template>
-                                                            <Text
-                                                                id="_IDGenText19"
-                                                                text="{entryDetails>DepreciationArea}"
-                                                            />
-                                                        </table:template>
-                                                    </table:Column>
-                                                    <table:Column
-                                                        id="_IDGenColumn1"
-                                                        width="120px"
-                                                    >
-                                                        <Label
-                                                            id="_IDGenLabel23"
-                                                            text="Negative Allowed"
-                                                        />
-                                                        <table:template>
+                                                <f:content>
+                                                    <Label
+                                                        id="_IDGenLabel21"
+                                                        text="Ledger Code"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText18"
+                                                        text="{entryDetails>Code}"
+                                                    />
+
+                                                    <Label
+                                                        id="_IDGenLabel22"
+                                                        text="Capitalization Date"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText19"
+                                                        text="{
+                                                            path: 'entryDetails>CapitalizationDate',
+                                                            type: 'sap.ui.model.type.Date',
+                                                            formatOptions: {
+                                                                style: 'medium'
+                                                            }
+                                                        }"
+                                                        visible="{= !!${entryDetails>CapitalizationDate}}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText19Alt"
+                                                        text="Not specified"
+                                                        textDirection="LTR"
+                                                        visible="{= !${entryDetails>CapitalizationDate}}"
+                                                    />
+                                                </f:content>
+                                            </f:SimpleForm>
+
+                                            <!-- Valuations for this ledger -->
+                                            <Panel
+                                                id="_IDGenPanel2"
+                                                headerText="Depreciation Areas ({= ${entryDetails>Valuations}.length || 0})"
+                                                expandable="true"
+                                                expanded="false"
+                                                visible="{= ${entryDetails>Valuations} &amp;&amp; ${entryDetails>Valuations}.length > 0}"
+                                                class="sapUiSmallMarginTop"
+                                            >
+                                                <List
+                                                    id="_IDGenList1"
+                                                    items="{entryDetails>Valuations}"
+                                                    mode="None"
+                                                >
+                                                    <StandardListItem
+                                                        id="_IDGenStandardListItem5"
+                                                        title="Depreciation Area: {entryDetails>DepreciationArea}"
+                                                        description="Negative Amount Allowed: {= ${entryDetails>NegativeAmountAllowed} ? 'Yes' : 'No'}"
+                                                        icon="sap-icon://expense-report"
+                                                    />
+                                                </List>
+                                            </Panel>
+
+                                            <!-- Time-Based Valuations for this ledger -->
+                                            <Panel
+                                                id="_IDGenPanel3"
+                                                headerText="Time-Based Valuations ({= ${entryDetails>TimeBasedValuations}.length || 0})"
+                                                expandable="true"
+                                                expanded="true"
+                                                visible="{= ${entryDetails>TimeBasedValuations} &amp;&amp; ${entryDetails>TimeBasedValuations}.length > 0}"
+                                                class="sapUiSmallMarginTop"
+                                            >
+                                                <Table
+                                                    id="_IDGenTable"
+                                                    items="{entryDetails>TimeBasedValuations}"
+                                                    growing="true"
+                                                    growingThreshold="10"
+                                                    mode="None"
+                                                >
+                                                    <columns>
+                                                        <Column
+                                                            id="_IDGenColumn"
+                                                        >
                                                             <Text
                                                                 id="_IDGenText20"
-                                                                text="{= ${entryDetails>NegativeAmountAllowed} ? 'Yes' : 'No'}"
+                                                                text="Depr. Area"
                                                             />
-                                                        </table:template>
-                                                    </table:Column>
-                                                    <table:Column
-                                                        id="_IDGenColumn2"
-                                                        width="150px"
-                                                    >
-                                                        <Label
-                                                            id="_IDGenLabel24"
-                                                            text="Start Date"
-                                                        />
-                                                        <table:template>
+                                                        </Column>
+                                                        <Column
+                                                            id="_IDGenColumn1"
+                                                        >
                                                             <Text
                                                                 id="_IDGenText21"
-                                                                text="{
-                                                                path: 'entryDetails>DepreciationStartDate',
-                                                                type: 'sap.ui.model.type.Date',
-                                                                formatOptions: {
-                                                                    style: 'medium'
-                                                                }
-                                                            }"
+                                                                text="Depr. Key"
                                                             />
-                                                        </table:template>
-                                                    </table:Column>
-                                                </table:columns>
-                                            </table:Table>
-                                        </Panel>
-
-                                        <!-- Time-Based Valuations -->
-                                        <Panel
-                                            id="_IDGenPanel3"
-                                            headerText="Time-Based Valuations"
-                                            expandable="true"
-                                            expanded="false"
-                                        >
-                                            <table:Table
-                                                id="_IDGenTable3"
-                                                rows="{entryDetails>TimeBasedValuations}"
-                                                visibleRowCount="{= ${entryDetails>TimeBasedValuations}.length > 3 ? 3 : ${entryDetails>TimeBasedValuations}.length}"
-                                                selectionMode="None"
-                                            >
-                                                <table:columns>
-                                                    <table:Column
-                                                        id="_IDGenColumn3"
-                                                        width="120px"
-                                                    >
-                                                        <Label
-                                                            id="_IDGenLabel25"
-                                                            text="Depr. Area"
-                                                        />
-                                                        <table:template>
+                                                        </Column>
+                                                        <Column
+                                                            id="_IDGenColumn2"
+                                                        >
                                                             <Text
                                                                 id="_IDGenText22"
-                                                                text="{entryDetails>DepreciationArea}"
+                                                                text="Useful Life (Years)"
                                                             />
-                                                        </table:template>
-                                                    </table:Column>
-                                                    <table:Column
-                                                        id="_IDGenColumn4"
-                                                        width="120px"
-                                                    >
-                                                        <Label
-                                                            id="_IDGenLabel26"
-                                                            text="Depr. Key"
-                                                        />
-                                                        <table:template>
+                                                        </Column>
+                                                        <Column
+                                                            id="_IDGenColumn3"
+                                                        >
                                                             <Text
                                                                 id="_IDGenText23"
-                                                                text="{entryDetails>DepreciationKey}"
+                                                                text="Useful Life (Periods)"
                                                             />
-                                                        </table:template>
-                                                    </table:Column>
-                                                    <table:Column
-                                                        id="_IDGenColumn5"
-                                                        width="120px"
-                                                    >
-                                                        <Label
-                                                            id="_IDGenLabel27"
-                                                            text="Life (Years)"
-                                                        />
-                                                        <table:template>
+                                                        </Column>
+                                                        <Column
+                                                            id="_IDGenColumn4"
+                                                        >
                                                             <Text
                                                                 id="_IDGenText24"
-                                                                text="{entryDetails>PlannedUsefulLifeYears}"
+                                                                text="Scrap %"
                                                             />
-                                                        </table:template>
-                                                    </table:Column>
-                                                    <table:Column
-                                                        id="_IDGenColumn6"
-                                                        width="120px"
-                                                    >
-                                                        <Label
-                                                            id="_IDGenLabel28"
-                                                            text="Life (Periods)"
-                                                        />
-                                                        <table:template>
+                                                        </Column>
+                                                        <Column
+                                                            id="_IDGenColumn5"
+                                                        >
                                                             <Text
                                                                 id="_IDGenText28"
-                                                                text="{entryDetails>PlannedUsefulLifePeriods}"
+                                                                text="Scrap Amount"
                                                             />
-                                                        </table:template>
-                                                    </table:Column>
-                                                    <table:Column
-                                                        id="_IDGenColumn7"
-                                                        width="150px"
-                                                    >
-                                                        <Label
-                                                            id="_IDGenLabel29"
-                                                            text="Scrap Amount"
-                                                        />
-                                                        <table:template>
-                                                            <ObjectNumber
-                                                                id="_IDGenObjectNumber3"
-                                                                number="{entryDetails>ScrapAmount/Value}"
-                                                                unit="{entryDetails>ScrapAmount/Currency}"
-                                                            />
-                                                        </table:template>
-                                                    </table:Column>
-                                                    <table:Column
-                                                        id="_IDGenColumn13"
-                                                        width="120px"
-                                                    >
-                                                        <Label
-                                                            id="_IDGenLabel30"
-                                                            text="Scrap %"
-                                                        />
-                                                        <table:template>
+                                                        </Column>
+                                                        <Column
+                                                            id="_IDGenColumn6"
+                                                        >
                                                             <Text
                                                                 id="_IDGenText35"
-                                                                text="{entryDetails>ScrapPercent}"
+                                                                text="Validity Start"
                                                             />
-                                                        </table:template>
-                                                    </table:Column>
-                                                </table:columns>
-                                            </table:Table>
+                                                        </Column>
+                                                    </columns>
+                                                    <items>
+                                                        <ColumnListItem
+                                                            id="_IDGenColumnListItem"
+                                                        >
+                                                            <cells>
+                                                                <Text
+                                                                    id="_IDGenText36"
+                                                                    text="{entryDetails>DepreciationArea}"
+                                                                />
+                                                                <Text
+                                                                    id="_IDGenText37"
+                                                                    text="{entryDetails>DepreciationKey}"
+                                                                />
+                                                                <Text
+                                                                    id="_IDGenText38"
+                                                                    text="{entryDetails>PlannedUsefulLifeYears}"
+                                                                />
+                                                                <Text
+                                                                    id="_IDGenText39"
+                                                                    text="{entryDetails>PlannedUsefulLifePeriods}"
+                                                                />
+                                                                <Text
+                                                                    id="_IDGenText40"
+                                                                    text="{entryDetails>ScrapPercent}%"
+                                                                />
+                                                                <ObjectNumber
+                                                                    id="_IDGenObjectNumber3"
+                                                                    number="{entryDetails>ScrapAmount/Value}"
+                                                                    unit="{entryDetails>ScrapAmount/Currency}"
+                                                                />
+                                                                <Text
+                                                                    id="_IDGenText41"
+                                                                    text="{
+                                                                        path: 'entryDetails>ValidityStartDate',
+                                                                        type: 'sap.ui.model.type.Date',
+                                                                        formatOptions: {
+                                                                            style: 'medium'
+                                                                        }
+                                                                    }"
+                                                                    visible="{= !!${entryDetails>ValidityStartDate}}"
+                                                                />
+                                                                <Text
+                                                                    id="_IDGenText41Alt"
+                                                                    text="Not set"
+                                                                    visible="{= !${entryDetails>ValidityStartDate}}"
+                                                                />
+                                                            </cells>
+                                                        </ColumnListItem>
+                                                    </items>
+                                                </Table>
+                                            </Panel>
                                         </Panel>
-                                    </Panel>
-                                </CustomListItem>
-                            </List>
+                                    </CustomListItem>
+                                </List>
+                            </VBox>
                         </IconTabFilter>
 
                         <!-- Error Information -->
                         <IconTabFilter
                             id="errorTab"
                             icon="sap-icon://error"
-                            text="Errors"
+                            text="Errors ({= ${entryDetails>/ValidationSummary/TotalErrors} || 0})"
                             key="errorTab"
-                            visible="{= ${entryDetails>/Status} === 'Invalid'}"
+                            visible="{= ${entryDetails>/Status} === 'Invalid' || (${entryDetails>/ValidationSummary/TotalErrors} > 0)}"
                         >
                             <List
                                 id="_IDGenList3"

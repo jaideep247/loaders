@@ -18,7 +18,7 @@ sap.ui.define(
         "grn/service/UserService",
         "grn/utils/DataTransformer",
         "grn/utils/ErrorHandler",
-        "grn/model/ModelManager"  // Add ModelManager import
+        "grn/model/ModelManager"
     ],
     function (
         BaseFilterController,
@@ -82,43 +82,35 @@ sap.ui.define(
              * Initialize services using dependency injection pattern
              * @private
              */
+
             _initServices: function () {
                 try {
-                    // Get the OData model from the component
                     const odataModel = this.getOwnerComponent().getModel();
+                    if (!odataModel) throw new Error("OData model is not initialized");
 
-                    // Verify the model exists
-                    if (!odataModel) {
-                        throw new Error("OData model is not initialized");
-                    }
-
-                    // Create utilities first
-                    const errorHandler = new ErrorHandler();
-                    const dataTransformer = new DataTransformer();
-
-                    // IMPORTANT: Store reference to this controller 
                     const controller = this;
 
-                    // Initialize ModelManager first
+                    // Create DataTransformer FIRST (handles all data operations)
+                    const dataTransformer = new DataTransformer();
+
+                    // Create ErrorHandler SECOND (handles all error/message operations)
+                    const errorHandler = new ErrorHandler();
+
+                    // Cross-inject dependencies
+                    errorHandler.setDataTransformer(dataTransformer);
+                    dataTransformer._errorHandler = errorHandler;
+
+                    // Create ModelManager and INITIALIZE MODELS
                     const modelManager = new ModelManager(controller);
-                    this._modelManager = modelManager;
-                    
-                    // Initialize all models
-                    modelManager.initializeModels();
-                    
+                    modelManager.initializeModels(); 
                     // Load user info
                     const baseUrl = this.getBaseURL();
                     modelManager.loadUserInfo(baseUrl);
-
-                    // Create services with dependencies injected using proper objects
+                    
                     const oDataService = new ODataService({
                         model: odataModel,
                         dataTransformer: dataTransformer,
                         errorHandler: errorHandler
-                    });
-
-                    const userService = new UserService({
-                        controller: controller
                     });
 
                     const validationManager = new ValidationManager({
@@ -128,17 +120,19 @@ sap.ui.define(
 
                     const exportManager = new ExportManager({
                         controller: controller,
-                        errorHandler: errorHandler
+                        errorHandler: errorHandler,
+                        dataTransformer: dataTransformer
                     });
 
                     const uiManager = new UIManager(controller, errorHandler);
 
-                    // Fix ExcelProcessor instantiation - pass the controller explicitly
+                    // CREATE EXCEL PROCESSOR - This was missing!
                     const excelProcessor = new ExcelProcessor({
                         controller: controller,
                         dataTransformer: dataTransformer,
+                        errorHandler: errorHandler,
                         validationManager: validationManager,
-                        errorHandler: errorHandler
+                        modelManager: modelManager // Pass the initialized ModelManager
                     });
 
                     const batchProcessingManager = new BatchProcessingManager({
@@ -149,23 +143,21 @@ sap.ui.define(
                         exportManager: exportManager
                     });
 
-                    // Store service references
+                    // Store references - INCLUDE ExcelProcessor!
                     this._errorHandler = errorHandler;
                     this._dataTransformer = dataTransformer;
                     this._oDataService = oDataService;
-                    this._userService = userService;
                     this._validationManager = validationManager;
                     this._exportManager = exportManager;
                     this._uiManager = uiManager;
                     this._excelProcessor = excelProcessor;
                     this._batchProcessingManager = batchProcessingManager;
-
-                    console.log("Services initialized successfully", {
-                        oDataServiceUrl: odataModel.sServiceUrl
-                    });
+                    this._modelManager = modelManager;
+                        
+                    console.log("Services initialized with clean separation of concerns");
                 } catch (error) {
                     console.error("Error initializing services:", error);
-                    throw error; // Re-throw to be caught by caller
+                    throw error;
                 }
             },
 
@@ -192,17 +184,41 @@ sap.ui.define(
             onFileChange: function (oEvent) {
                 try {
                     const oFileUploader = oEvent.getSource();
-                    const file = oEvent.getParameter("files")[0];
+                    const file = oEvent.getParameter("files") && oEvent.getParameter("files")[0];
 
+                    // Validate file selection
                     if (!file) {
                         this._errorHandler.showError("No file selected. Please choose a file to upload.");
                         return;
                     }
 
                     // Validate file type
-                    if (!file.name.endsWith(".xlsx")) {
+                    if (!file.name.toLowerCase().endsWith(".xlsx")) {
                         this._errorHandler.showError("Invalid file type. Please upload an Excel file (.xlsx).");
                         oFileUploader.clear();
+                        return;
+                    }
+
+                    // Validate file size (optional - adjust limit as needed)
+                    const maxSizeInMB = 10;
+                    const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+                    if (file.size > maxSizeInBytes) {
+                        this._errorHandler.showError(`File size exceeds ${maxSizeInMB}MB limit. Please select a smaller file.`);
+                        oFileUploader.clear();
+                        return;
+                    }
+
+                    // Check if ExcelProcessor is initialized
+                    if (!this._excelProcessor) {
+                        console.error("ExcelProcessor not initialized");
+                        this._errorHandler.showError("Excel processor not available. Please refresh the page and try again.");
+                        return;
+                    }
+
+                    // Check if ModelManager is initialized
+                    if (!this._modelManager) {
+                        console.error("ModelManager not initialized");
+                        this._errorHandler.showError("Model manager not available. Please refresh the page and try again.");
                         return;
                     }
 
@@ -214,33 +230,88 @@ sap.ui.define(
                     if (oUploadSummaryModel) {
                         oUploadSummaryModel.setProperty("/HasBeenSubmitted", false);
                         oUploadSummaryModel.setProperty("/IsSubmitEnabled", true);
+                        oUploadSummaryModel.setProperty("/IsProcessing", true);
                     }
 
                     // Show busy indicator
                     BusyIndicator.show(0);
 
+                    console.log("Starting file processing:", {
+                        fileName: file.name,
+                        fileSize: file.size,
+                        fileType: file.type
+                    });
+
                     // Process file with slight delay for better UX
                     setTimeout(() => {
                         // Use ExcelProcessor to handle file parsing and validation
                         this._excelProcessor.processExcelFile(file)
-                            .then(() => {
+                            .then((result) => {
+                                console.log("File processing completed successfully:", result);
+
+                                // Update upload summary model
+                                if (oUploadSummaryModel) {
+                                    oUploadSummaryModel.setProperty("/IsProcessing", false);
+                                }
+
                                 // Expand the summary panel to show results
                                 const oSummaryPanel = this.byId("summaryPanel");
                                 if (oSummaryPanel) {
                                     oSummaryPanel.setExpanded(true);
                                 }
+
+                                // Show success message with summary
+                                if (result && result.totalRecords) {
+                                    this._errorHandler.showSuccess(
+                                        `File processed successfully. ${result.totalRecords} records loaded.`
+                                    );
+                                } else {
+                                    this._errorHandler.showSuccess("File processed successfully.");
+                                }
                             })
                             .catch(error => {
-                                this._errorHandler.showError("Error processing file: " + error.message);
+                                console.error("Error processing file:", error);
+
+                                // Update upload summary model
+                                if (oUploadSummaryModel) {
+                                    oUploadSummaryModel.setProperty("/IsProcessing", false);
+                                    oUploadSummaryModel.setProperty("/IsSubmitEnabled", false);
+                                }
+
+                                // Show detailed error message
+                                let errorMessage = "Error processing file";
+                                if (error && error.message) {
+                                    errorMessage += ": " + error.message;
+                                }
+
+                                this._errorHandler.showError(errorMessage);
+
+                                // Clear the file uploader
+                                oFileUploader.clear();
                             })
                             .finally(() => {
                                 BusyIndicator.hide();
                             });
                     }, 100);
+
                 } catch (error) {
                     console.error("Error handling file upload:", error);
                     BusyIndicator.hide();
+
+                    // Update upload summary model in case of error
+                    const oUploadSummaryModel = this._modelManager && this._modelManager.getModel("uploadSummary");
+                    if (oUploadSummaryModel) {
+                        oUploadSummaryModel.setProperty("/IsProcessing", false);
+                        oUploadSummaryModel.setProperty("/IsSubmitEnabled", false);
+                    }
+
                     this._errorHandler.showError("File upload failed: " + error.message);
+
+                    // Clear the file uploader
+                    const oFileUploader = oEvent.getSource();
+                    if (oFileUploader && oFileUploader.clear) {
+                        oFileUploader.clear();
+                    }
                 }
             },
 
@@ -274,7 +345,7 @@ sap.ui.define(
                         }
                     );
                 } catch (error) {
-                    console.error("Error in material document creation:", error);
+                    console.error("Error in GRN creation:", error);
                     this._errorHandler.showError("Failed to prepare submission: " + error.message);
                 }
             },
@@ -434,7 +505,7 @@ sap.ui.define(
                     this._errorHandler.showError("Export failed: " + error.message);
                 }
             },
-            
+
             /**
              * Submit Complete
              */
@@ -454,7 +525,7 @@ sap.ui.define(
                     this._uiManager.showValidationStatsDialog(aEntries.length, aEntries.length, 0);
                 }
             },
-            
+
             /**
             * Submit Complete
             */
@@ -475,7 +546,7 @@ sap.ui.define(
                     this._uiManager.updateBatchProcessingDisplay({ status: "Complete", visible: false });
                 }
             },
-            
+
             /**
             * Download template for Excel import
             */
@@ -556,7 +627,7 @@ sap.ui.define(
             /**
              * Handler for exporting errors from the Validation Errors Dialog.
              */
-            onExportValidationErrors: function (oEvent) { 
+            onExportValidationErrors: function (oEvent) {
                 if (!this._uiManager || !this._errorHandler) {
                     console.error("onExportValidationErrors: UIManager or ErrorHandler not found on controller.");
                     if (this._errorHandler) {
@@ -568,7 +639,7 @@ sap.ui.define(
                 let oButton = oEvent.getSource();
                 let oDialog = oButton;
                 // Traverse up to find the Dialog control
-                while (oDialog && !(oDialog instanceof Dialog)) { 
+                while (oDialog && !(oDialog instanceof Dialog)) {
                     oDialog = oDialog.getParent();
                 }
 
@@ -577,7 +648,7 @@ sap.ui.define(
                     if (oModel) {
                         const groupedErrorsData = oModel.getProperty("/_rawGroupedData");
                         if (groupedErrorsData) {
-                            this._uiManager.exportValidationErrors(groupedErrorsData); 
+                            this._uiManager.exportValidationErrors(groupedErrorsData);
                         } else {
                             console.error("Raw grouped data not found in validation model for export.");
                             this._errorHandler.showError("Could not retrieve errors for export.");
@@ -593,7 +664,7 @@ sap.ui.define(
                     this._errorHandler.showError("Operation failed: Could not identify the dialog window for export.");
                 }
             },
-            
+
             /**
              * Handler for closing the Entry Details Dialog.
              */
@@ -605,7 +676,7 @@ sap.ui.define(
                     console.error("onEntryDetailsDialogClose: UIManager instance not found on controller.");
                 }
             },
-            
+
             /**
              * Handler for exporting from the Entry Details Dialog.
              */
@@ -614,7 +685,7 @@ sap.ui.define(
                     this._errorHandler.showWarning("Export for single entry details is not implemented.");
                 }
             },
-            
+
             /**
              * Show success dialog close
              */

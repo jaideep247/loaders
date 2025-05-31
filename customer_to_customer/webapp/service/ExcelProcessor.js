@@ -356,7 +356,8 @@ sap.ui.define([
                 referenceKey1,
                 referenceKey3,
                 itemText,
-                businessPlace
+                businessPlace,
+                specialGlIndicator
               ] = creditEntry;
 
               return {
@@ -371,6 +372,7 @@ sap.ui.define([
                 "Reference Key 3": referenceKey3,
                 "Item Text": itemText,
                 "Business Place": businessPlace,
+                "Special GL Indicator": specialGlIndicator,
                 "Created By": createdBy,
                 "Sheet": customerCreditSheet,
                 "Entry Type": "Credit" // Added to differentiate

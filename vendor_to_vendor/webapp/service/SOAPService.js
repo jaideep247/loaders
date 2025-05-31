@@ -407,6 +407,7 @@ sap.ui.define([
     },
 
     _fetchCSRFToken: function () {
+   
       return new Promise((resolve, reject) => {
         // Update batch processing display
         this._updateBatchProcessingDisplay({
@@ -616,7 +617,7 @@ sap.ui.define([
         const sequenceId = entry.header["Sequence ID"];
         const subMessageId = `${changeSetId}_${sequenceId}`;
         let itemIndex = 1;
-
+   
         soapEnvelope += `
                         <JournalEntryCreateRequest>
                             <MessageHeader>
@@ -637,7 +638,7 @@ sap.ui.define([
 
         if (entry.glTransactions && Array.isArray(entry.glTransactions)) {
           entry.glTransactions.forEach((item) => {
-
+            let specialGLCode = item["Special GL Code"];
             soapEnvelope += `<CreditorItem>
                                 <ReferenceDocumentItem>${itemIndex}</ReferenceDocumentItem>
                                 <Creditor>${item["Vendor Code"]}</Creditor>
@@ -647,15 +648,19 @@ sap.ui.define([
                                 <AssignmentReference>${item["Assignment"] || ""}</AssignmentReference>
                                 <Reference1IDByBusinessPartner>${item["Reference Key 1"]}</Reference1IDByBusinessPartner>                                                                                                       
                                 <BusinessPlace>${item["Business Place"] || ""}</BusinessPlace>
+                                <DownPaymentTerms>
+                                    ${specialGLCode ? `<SpecialGLCode>${specialGLCode}</SpecialGLCode>` : ""}
+                                </DownPaymentTerms>
                                 </CreditorItem>`;
             itemIndex++;
           });
         }
-
+ 
         // Add Creditor transactions (credit entries)
         // Fix: Check if debtorTransactions exists and is an array
         if (entry.debtorTransactions && Array.isArray(entry.debtorTransactions)) {
           entry.debtorTransactions.forEach((item) => {
+            let specialGLCode = item["Special GL Code"];
             soapEnvelope += `<CreditorItem>
                                 <ReferenceDocumentItem>${itemIndex}</ReferenceDocumentItem>
                                 <Creditor>${item["Vendor Code"]}</Creditor>
@@ -665,6 +670,9 @@ sap.ui.define([
                                 <AssignmentReference>${item["Assignment"] || ""}</AssignmentReference>
                                 <Reference1IDByBusinessPartner>${item["Reference Key 1"]}</Reference1IDByBusinessPartner>                                                                                                       
                                 <BusinessPlace>${item["Business Place"] || ""}</BusinessPlace>
+                                <DownPaymentTerms>
+                                    ${specialGLCode ? `<SpecialGLCode>${specialGLCode}</SpecialGLCode>` : ""}
+                                </DownPaymentTerms>                                
                                 </CreditorItem>`;
             itemIndex++;
           });

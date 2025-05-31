@@ -111,7 +111,8 @@ sap.ui.define(
           "Item Text",
           "Business Place",
           "Value Date",
-          "Special GL Indicator"
+          "Special GL Indicator",
+          "Payment Reference"
         ];
         const debitorData = [
           [
@@ -127,7 +128,8 @@ sap.ui.define(
             "Item Customer",
             "1007",
             "2025-01-01",
-            "A"
+            "A",
+            "123456789"
           ]
         ];
         const debitorSheet = XLSX.utils.aoa_to_sheet([

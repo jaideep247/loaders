@@ -11,7 +11,7 @@ sap.ui.define(
 
     /**
      * ExcelProcessor
-     * Responsible for parsing and processing Excel files for Material Documents
+     * Responsible for parsing and processing Excel files for GRNs
      */
     return class ExcelProcessor {
       /**
@@ -23,6 +23,10 @@ sap.ui.define(
         this._validationManager = options.validationManager || new ValidationManager();
         this._dataTransformer = options.dataTransformer || new DataTransformer();
         this._errorHandler = options.errorHandler || new ErrorHandler();
+        this._modelManager = options.modelManager;
+        if (!this._modelManager && this.oController && this.oController._modelManager) {
+          this._modelManager = this.oController._modelManager;
+        }
       }
 
       /**
@@ -57,25 +61,25 @@ sap.ui.define(
                 cellStyles: true
               });
 
-              // Verify and find the material document sheet
+              // Verify and find the GRN sheet
               const sheetInfo = this._findMaterialDocumentSheet(workbook);
 
               if (!sheetInfo.found) {
                 throw new Error(sheetInfo.message);
               }
 
-              // Parse material document sheet
+              // Parse GRN sheet
               const parsedData = this._parseMaterialDocumentSheet(
                 workbook,
                 sheetInfo.sheetName
               );
 
-              // Validate material documents using the ValidationManager
+              // Validate GRNs using the ValidationManager
               const validationResult = this._validationManager.validateMaterialDocuments(
                 parsedData.entries
               );
 
-              // Update models with ALL material document data, including valid and invalid entries
+              // Update models with ALL GRN data, including valid and invalid entries
               this._updateModels(validationResult);
 
               // Update the UI with processing results
@@ -104,7 +108,7 @@ sap.ui.define(
       }
 
       /**
-       * Find the material document sheet in the workbook
+       * Find the GRN sheet in the workbook
        * @param {Object} workbook - XLSX workbook object
        * @returns {Object} Object with sheet information
        * @private
@@ -141,22 +145,22 @@ sap.ui.define(
         // No suitable sheet found
         return {
           found: false,
-          message: `Missing required sheet: Material Documents. Available sheets: ${workbook.SheetNames.join(
+          message: `Missing required sheet: GRNs. Available sheets: ${workbook.SheetNames.join(
             ", "
           )}. Please check your Excel file template or worksheet name.`
         };
       }
 
       /**
-       * Parse and validate material documents from Excel
+       * Parse and validate GRNs from Excel
        * @param {object} workbook - XLSX workbook object
-       * @param {string} materialDocSheetName - Name of the material documents sheet
-       * @returns {object} - Parsed material documents
+       * @param {string} materialDocSheetName - Name of the GRNs sheet
+       * @returns {object} - Parsed GRNs
        * @private
        */
       _parseMaterialDocumentSheet(workbook, materialDocSheetName) {
         try {
-          // Get the material documents sheet
+          // Get the GRNs sheet
           const materialDocSheet = workbook.Sheets[materialDocSheetName];
 
           if (!materialDocSheet) {
@@ -167,7 +171,7 @@ sap.ui.define(
             );
           }
 
-          console.group("📄 Detailed Material Document Parsing");
+          console.group("📄 Detailed GRN Parsing");
           console.log("Parsing sheet:", materialDocSheetName);
 
           // Parse sheet to JSON (assuming the first row contains headers)
@@ -198,7 +202,7 @@ sap.ui.define(
               return acc;
             }, {});
 
-            // Create a material document entry
+            // Create a GRN entry
             const materialDocument = {
               id: index + 1,
               Status: "Valid", // Initial status, will be updated during validation
@@ -236,18 +240,23 @@ sap.ui.define(
             entries: entries
           };
         } catch (error) {
-          console.error("❌ Error parsing material document sheet:", error);
+          console.error("❌ Error parsing GRN sheet:", error);
           console.groupEnd();
           throw error;
         }
       }
       /**
-       * Update models with material document data
+       * Update models with GRN data
        * @param {object} validationResult - Validation result object
        * @private
        */
+      /**
+   * Update models with GRN data
+   * @param {object} validationResult - Validation result object
+   * @private
+   */
       _updateModels(validationResult) {
-        console.group("🔄 Updating Material Document Models");
+        console.group("🔄 Updating GRN Models");
 
         try {
           if (!this.oController) {
@@ -256,12 +265,22 @@ sap.ui.define(
             return;
           }
 
-          // Get models
-          const uploadSummaryModel = this.oController.getView().getModel("uploadSummary");
-          const oMaterialDocumentModel = this.oController.getView().getModel("materialDocuments");
+          // Use ModelManager instead of direct model access
+          if (!this._modelManager) {
+            console.error("ModelManager not available");
+            console.groupEnd();
+            return;
+          }
+
+          // Get models through ModelManager
+          const uploadSummaryModel = this._modelManager.getModel("uploadSummary");
+          const oMaterialDocumentModel = this._modelManager.getModel("materialDocuments");
 
           if (!uploadSummaryModel || !oMaterialDocumentModel) {
-            console.warn("Required models not available, skipping model updates");
+            console.error("Required models not available:", {
+              uploadSummary: !!uploadSummaryModel,
+              materialDocuments: !!oMaterialDocumentModel
+            });
             console.groupEnd();
             return;
           }
@@ -309,6 +328,7 @@ sap.ui.define(
             oMaterialDocumentModel.refresh(true);
           }
 
+          console.log("✅ Models updated successfully");
           console.groupEnd();
         } catch (error) {
           console.error("Error updating models:", error);
@@ -454,7 +474,7 @@ sap.ui.define(
           const ws = window.XLSX.utils.json_to_sheet(templateData);
 
           // Add the worksheet to the workbook
-          window.XLSX.utils.book_append_sheet(wb, ws, "Material Documents");
+          window.XLSX.utils.book_append_sheet(wb, ws, "GRNs");
 
           // Add a Help sheet with field descriptions
           this._addHelpSheet(wb);
@@ -489,7 +509,7 @@ sap.ui.define(
         helpData.unshift(
           {
             "Field Name": "INSTRUCTIONS",
-            "Description": "This template is used for uploading material documents. Fill in all required fields."
+            "Description": "This template is used for uploading GRNs. Fill in all required fields."
           },
           {
             "Field Name": "",

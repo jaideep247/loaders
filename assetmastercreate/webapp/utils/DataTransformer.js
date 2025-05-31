@@ -1,337 +1,526 @@
-sap.ui.define([], function () {
+sap.ui.define([
+    "sap/ui/base/Object"
+], function (BaseObject) {
     "use strict";
 
-    /**
-     * DataTransformer - Updated for dynamic ledger-based column mapping
-     */
-    return class DataTransformer {
+    return BaseObject.extend("assetmastercreate.utils.DataTransformer", {
 
-        constructor() {
-            // Define the mapping of depreciation areas to ledgers
-            this.AREA_TO_LEDGER_MAP = {
-                '01': '0L',
-                '15': '0L',
-                '32': '2L',
-                '34': '3L'
-            };
+        constructor: function () {
+            BaseObject.call(this);
 
-            // Column mappings for basic fields (non-ledger specific)
-            this._basicColumnMappings = {
-                // Main fields
-                "seq_id": "SequenceNumber",
-                "seq id": "SequenceNumber",
-                "sequence id": "SequenceNumber",
-                "companycode": "CompanyCode",
-                "company code": "CompanyCode",
-                "assetclass": "AssetClass",
-                "asset class": "AssetClass",
-                "assetisforpostcapitalization": "AssetIsForPostCapitalization",
-                "asset is for post capitalization": "AssetIsForPostCapitalization",
-                "fixedassetdescription": "FixedAssetDescription",
-                "fixed asset description": "FixedAssetDescription",
-                "assetadditionaldescription": "AssetAdditionalDescription",
-                "asset additional description": "AssetAdditionalDescription",
-                "assetserialnumber": "AssetSerialNumber",
-                "asset serial number": "AssetSerialNumber",
-                "baseunit": "BaseUnit",
-                "base unit": "BaseUnit",
-                "inventorynote": "InventoryNote",
-                "inventory note": "InventoryNote",
-                "wbselementexternalid": "WBSElementExternalID",
-                "wbs element external id": "WBSElementExternalID",
-                "room": "Room",
-                "in_assetblock": "IN_AssetBlock",
-                "in_asset block": "IN_AssetBlock",
-                "in_assetputtousedate": "IN_AssetPutToUseDate",
-                "in_asset put to use date": "IN_AssetPutToUseDate",
-                "in_assetisprioryear": "IN_AssetIsPriorYear",
-                "in_asset is prior year": "IN_AssetIsPriorYear",
-                "yy1_wbs_element": "YY1_WBS_ELEMENT",
-                "yy1 wbs element": "YY1_WBS_ELEMENT"
-            };
-
-            this._defaultConfig = {
+            // Core configuration
+            this.config = {
                 defaultCurrency: "INR",
                 defaultDate: () => new Date().toISOString().split('T')[0],
-                defaultBoolean: false,
-                defaultNumeric: "0"
+                areaToLedgerMap: {
+                    '01': '0L', '15': '0L',
+                    '32': '2L', '34': '3L'
+                }
             };
-        }
+
+            // Field mappings for Excel columns
+            this.fieldMappings = {
+                // Basic fields
+                "seq_id": "SequenceNumber",
+                "sequencenumber": "SequenceNumber",
+                "companycode": "CompanyCode",
+                "assetclass": "AssetClass",
+                "assetisforpostcapitalization": "AssetIsForPostCapitalization",
+                "fixedassetdescription": "FixedAssetDescription",
+                "assetadditionaldescription": "AssetAdditionalDescription",
+                "assetserialnumber": "AssetSerialNumber",
+                "baseunit": "BaseUnit",
+                "inventorynote": "InventoryNote",
+                "wbselementexternalid": "WBSElementExternalID",
+                "room": "Room",
+                "in_assetblock": "IN_AssetBlock",
+                "in_assetputtousedate": "IN_AssetPutToUseDate",
+                "in_assetisprioryear": "IN_AssetIsPriorYear",
+                "yy1_wbs_element": "YY1_WBS_ELEMENT",
+
+                // Ledger field mappings
+                "assetdepreciationarea": "AssetDepreciationArea",
+                "negativeamountisallowed": "NegativeAmountIsAllowed",
+                "depreciationstartdate": "DepreciationStartDate",
+                "depreciationkey": "DepreciationKey",
+                "plannedusefullifeinyears": "PlannedUsefulLifeInYears",
+                "plannedusefullifeinperiods": "PlannedUsefulLifeInPeriods",
+                "scrapamountincocodcrcy": "ScrapAmountInCoCodeCrcy",
+                "currencycode": "CompanyCodeCurrency",
+                "acqnprodnscostcrappercent": "AcqnProdnCostScrapPercent",
+                "validitystartdate": "ValidityStartDate"
+            };
+        },
+
+        // =================
+        // MAIN TRANSFORMATION METHODS
+        // =================
 
         /**
-         * Transform flat Excel structure to nested OData structure
-         * Now handles the new column naming convention with area codes
+         * Transform flat Excel row to hierarchical structure
          */
-        transformFlatToStructured(data) {
+        convertFlatToHierarchical: function (flatRow) {
+            const mapped = this._mapBasicFields(flatRow);
+            const structured = this._buildStructuredData(mapped);
+            structured.ValidationErrors = this.validateAssetData(structured);
+            return structured;
+        },
+
+        /**
+         * Transform asset data for SAP OData API
+         */
+        transformToODataFormat: function (asset) {
+            try {
+                const sourceData = Array.isArray(asset) ? asset[0] : asset;
+
+                const payload = {
+                    CompanyCode: this._getValue(sourceData, "CompanyCode"),
+                    AssetClass: this._getValue(sourceData, "AssetClass"),
+                    AssetIsForPostCapitalization: this._parseBoolean(sourceData.AssetIsForPostCapitalization),
+
+                    _General: this._buildGeneralSection(sourceData),
+                    _AccountAssignment: this._buildAccountAssignmentSection(sourceData),
+                    _Inventory: this._buildInventorySection(sourceData)
+                };
+
+                // Add optional sections
+                this._addGlobalMasterData(payload, sourceData);
+                this._addLedgerData(payload, sourceData);
+
+                this._cleanEmptyObjects(payload);
+                this._validateRequiredFields(payload);
+
+                return payload;
+            } catch (error) {
+                throw new Error(`OData transformation failed: ${error.message}`);
+            }
+        },
+
+        /**
+         * Process entry data for UI display
+         */
+        processEntryDataForDisplay: function (entry) {
+            const processed = JSON.parse(JSON.stringify(entry));
+
+            processed.ProcessedValidationErrors = this._processValidationErrors(processed.ValidationErrors || []);
+            processed.GlobalMasterData = this._processGlobalMasterDataForDisplay(processed);
+            processed.LedgerDetails = this._processLedgerDetailsForDisplay(processed);
+            processed.Status = processed.Status || (processed.ProcessedValidationErrors.length > 0 ? 'Invalid' : 'Valid');
+
+            return processed;
+        },
+
+        // =================
+        // HELPER METHODS
+        // =================
+
+        /**
+         * Map basic Excel fields to standard names
+         */
+        _mapBasicFields: function (row) {
+            const mapped = {};
+
+            Object.entries(row).forEach(([key, value]) => {
+                const normalizedKey = key.toLowerCase().replace(/\s+/g, '');
+                const mappedField = this.fieldMappings[normalizedKey];
+
+                if (mappedField) {
+                    mapped[mappedField] = value;
+                } else {
+                    mapped[key] = value; // Keep original for pattern matching
+                }
+            });
+
+            return mapped;
+        },
+
+        /**
+         * Build structured data from mapped fields
+         */
+        _buildStructuredData: function (data) {
             const result = {};
             const ledgerData = {};
-            const areaData = {};
 
-            // First pass: separate basic fields from ledger/area specific fields
+            // Separate basic fields from ledger patterns
             Object.entries(data).forEach(([key, value]) => {
-                const lowerKey = key.toLowerCase().replace(/\s+/g, '');
-
-                // Check if it's a basic field
-                if (this._basicColumnMappings[lowerKey]) {
-                    result[this._basicColumnMappings[lowerKey]] = value;
-                }
-                // Check for capitalization date pattern (CapDate_XL)
-                else if (/capdate_(\w+)/i.test(key)) {
-                    const match = key.match(/capdate_(\w+)/i);
-                    if (match) {
-                        const ledger = match[1].toUpperCase();
-                        if (!ledgerData[ledger]) ledgerData[ledger] = {};
-                        ledgerData[ledger].capitalizationDate = value;
-                    }
-                }
-                // Check for area-specific fields (e.g., DeprKey_01, ValidityDate_32)
-                else if (/_(\d{2})$/i.test(key)) {
-                    const match = key.match(/^(.+?)_(\d{2})$/i);
-                    if (match) {
-                        const fieldType = match[1];
-                        const area = match[2];
-                        if (!areaData[area]) areaData[area] = {};
-                        areaData[area][fieldType] = value;
-                    }
-                }
-                // Default: keep the original field
-                else {
+                if (this._isLedgerField(key)) {
+                    this._processLedgerField(key, value, ledgerData);
+                } else {
                     result[key] = value;
                 }
             });
 
-            // Build Ledger structure
-            result._Ledger = this._buildLedgerStructure(ledgerData, areaData);
+            // Build ledger structure
+            result._Ledger = this._buildLedgerArray(ledgerData);
 
-            // Add India-specific fields if present
+            // Add India-specific fields
             if (result.IN_AssetBlock) {
                 result._GlobMasterData = {
                     _IN_AssetBlockData: {
                         IN_AssetBlock: result.IN_AssetBlock,
-                        IN_AssetPutToUseDate: result.IN_AssetPutToUseDate || null,
-                        IN_AssetIsPriorYear: result.IN_AssetIsPriorYear || ''
+                        IN_AssetPutToUseDate: result.IN_AssetPutToUseDate || "",
+                        IN_AssetIsPriorYear: result.IN_AssetIsPriorYear || ""
                     }
                 };
             }
 
-            // Add custom fields if present
+            // Add custom fields
             if (result.YY1_WBS_ELEMENT) {
-                result._CustomFields = {
-                    YY1_WBS_ELEMENT: result.YY1_WBS_ELEMENT
-                };
+                result._CustomFields = { YY1_WBS_ELEMENT: result.YY1_WBS_ELEMENT };
             }
 
             return result;
-        }
+        },
 
         /**
-         * Build the ledger structure based on the area-to-ledger mapping
+         * Check if field is ledger-related
          */
-        _buildLedgerStructure(ledgerData, areaData) {
-            const ledgers = {};
+        _isLedgerField: function (key) {
+            const patterns = [
+                /^Ledger_\w+$/i,
+                /^AssetCapitalizationDate_\w+$/i,
+                /^.+_\w+_\d{2}$/i
+            ];
+            return patterns.some(pattern => pattern.test(key));
+        },
 
-            // Process each depreciation area
-            Object.entries(areaData).forEach(([area, data]) => {
-                const ledgerCode = this.AREA_TO_LEDGER_MAP[area];
+        /**
+         * Process ledger field patterns
+         */
+        _processLedgerField: function (key, value, ledgerData) {
+            // Ledger code pattern: Ledger_0L
+            if (/^Ledger_(\w+)$/i.test(key)) {
+                const ledgerCode = key.match(/^Ledger_(\w+)$/i)[1];
+                this._initLedger(ledgerData, ledgerCode);
+                return;
+            }
 
-                if (!ledgerCode) {
-                    console.warn(`Unknown depreciation area: ${area}`);
-                    return;
-                }
+            // Capitalization date pattern: AssetCapitalizationDate_0L
+            if (/^AssetCapitalizationDate_(\w+)$/i.test(key)) {
+                const ledgerCode = key.match(/^AssetCapitalizationDate_(\w+)$/i)[1];
+                this._initLedger(ledgerData, ledgerCode);
+                ledgerData[ledgerCode].capitalizationDate = value;
+                return;
+            }
 
-                // Initialize ledger if not exists
-                if (!ledgers[ledgerCode]) {
-                    ledgers[ledgerCode] = {
-                        Ledger: ledgerCode,
-                        AssetCapitalizationDate: ledgerData[ledgerCode]?.capitalizationDate || null,
-                        _Valuation: []
-                    };
-                }
+            // Complex pattern: FieldName_LedgerCode_AreaCode
+            const complexMatch = key.match(/^(.+?)_(\w+)_(\d{2})$/i);
+            if (complexMatch) {
+                const [, fieldName, ledgerCode, areaCode] = complexMatch;
+                this._initLedger(ledgerData, ledgerCode);
+                this._initArea(ledgerData[ledgerCode], areaCode);
 
-                // Add valuation for this area
-                const valuation = {
-                    AssetDepreciationArea: area,
-                    _TimeBasedValuation: [{
-                        ValidityStartDate: data.ValidityDate || data.validitydate || null,
-                        DepreciationKey: data.DeprKey || data.deprkey || '',
-                        PlannedUsefulLifeInYears: data.UsefulLife || data.usefullife || '',
-                        PlannedUsefulLifeInPeriods: '0',
-                        AcqnProdnCostScrapPercent: parseFloat(data.ScrapPercent || data.scrappercent || '5'),
-                        ScrapAmountInCoCodeCrcy: 0,
-                        CompanyCodeCurrency: this._defaultConfig.defaultCurrency
-                    }]
+                const mappedField = this.fieldMappings[fieldName.toLowerCase()] || fieldName;
+                ledgerData[ledgerCode].areas[areaCode][mappedField] = value;
+            }
+        },
+
+        /**
+         * Initialize ledger structure
+         */
+        _initLedger: function (ledgerData, ledgerCode) {
+            if (!ledgerData[ledgerCode]) {
+                ledgerData[ledgerCode] = { areas: {} };
+            }
+        },
+
+        /**
+         * Initialize area structure
+         */
+        _initArea: function (ledger, areaCode) {
+            if (!ledger.areas[areaCode]) {
+                ledger.areas[areaCode] = {};
+            }
+        },
+
+        /**
+         * Build ledger array from collected data
+         */
+        _buildLedgerArray: function (ledgerData) {
+            return Object.entries(ledgerData).map(([ledgerCode, ledgerInfo]) => {
+                const ledger = {
+                    Ledger: ledgerCode,
+                    AssetCapitalizationDate: ledgerInfo.capitalizationDate || null,
+                    _Valuation: []
                 };
 
-                ledgers[ledgerCode]._Valuation.push(valuation);
-            });
+                // Build valuations for each area
+                Object.entries(ledgerInfo.areas || {}).forEach(([areaCode, areaData]) => {
+                    ledger._Valuation.push({
+                        AssetDepreciationArea: areaCode,
+                        NegativeAmountIsAllowed: this._parseBoolean(areaData.NegativeAmountIsAllowed),
+                        DepreciationStartDate: areaData.DepreciationStartDate || null,
+                        _TimeBasedValuation: [{
+                            ValidityStartDate: areaData.ValidityStartDate || areaData.DepreciationStartDate || null,
+                            DepreciationKey: areaData.DepreciationKey || '',
+                            PlannedUsefulLifeInYears: areaData.PlannedUsefulLifeInYears || '',
+                            PlannedUsefulLifeInPeriods: areaData.PlannedUsefulLifeInPeriods || '0',
+                            AcqnProdnCostScrapPercent: String(this._parseNumeric(areaData.AcqnProdnCostScrapPercent, "")),
+                            ScrapAmountInCoCodeCrcy: String(this._parseNumeric(areaData.ScrapAmountInCoCodeCrcy, "")),
+                            CompanyCodeCurrency: areaData.CompanyCodeCurrency || this.config.defaultCurrency,                           
+                        }]
+                    });
+                });
 
-            // Return array of ledgers
-            return Object.values(ledgers);
-        }
+                return ledger;
+            });
+        },
 
         /**
-         * Map Excel columns to standardized names
-         * Updated to handle the new column naming pattern
+         * Build OData sections
          */
-        mapAssetMasterColumns(row) {
-            const mappedRow = {};
+        _buildGeneralSection: function (data) {
+            return {
+                FixedAssetDescription: this._getValue(data, "FixedAssetDescription"),
+                AssetAdditionalDescription: this._getValue(data, "AssetAdditionalDescription"),
+                AssetSerialNumber: this._getValue(data, "AssetSerialNumber"),
+                BaseUnitSAPCode: this._getValue(data, "BaseUnit") || "EA",
+                BaseUnitISOCode: this._getValue(data, "BaseUnit") || "EA"
+            };
+        },
 
-            Object.entries(row).forEach(([key, value]) => {
-                const lowerKey = key.toLowerCase().replace(/\s+/g, '');
+        _buildAccountAssignmentSection: function (data) {
+            const section = {
+                WBSElementExternalID: this._getValue(data, "WBSElementExternalID"),
+                Room: this._getValue(data, "Room")
+            };
 
-                // Check basic mappings first
-                if (this._basicColumnMappings[lowerKey]) {
-                    mappedRow[this._basicColumnMappings[lowerKey]] = value;
-                } else {
-                    // Keep original key for pattern-based fields (will be processed in transformFlatToStructured)
-                    mappedRow[key] = value;
+            // Add custom field if present
+            if (this._getValue(data, "YY1_WBS_ELEMENT")) {
+                //    section.YY1_WBS_ELEMENT = this._getValue(data, "YY1_WBS_ELEMENT");
+            }
+
+            return section;
+        },
+
+        _buildInventorySection: function (data) {
+            return {
+                InventoryNote: this._getValue(data, "InventoryNote")
+            };
+        },
+
+        _addGlobalMasterData: function (payload, data) {
+            if (this._getValue(data, "IN_AssetBlock")) {
+                payload._GlobMasterData = {
+                    _IN_AssetBlockData: {
+                        IN_AssetBlock: this._getValue(data, "IN_AssetBlock"),
+                        IN_AssetPutToUseDate: this._getValue(data, "IN_AssetPutToUseDate"),
+                        IN_AssetIsPriorYear: this._getValue(data, "IN_AssetIsPriorYear")
+                    }
+                };
+            }
+        },
+
+        _addLedgerData: function (payload, data) {
+            if (data._Ledger && Array.isArray(data._Ledger)) {
+                payload._Ledger = data._Ledger.map(ledger => {
+                    const ledgerPayload = { Ledger: ledger.Ledger };
+
+                    // Add capitalization date if available
+                    const capDate = ledger.AssetCapitalizationDate ||
+                        data[`AssetCapitalizationDate_${ledger.Ledger}`];
+                    if (capDate) {
+                        ledgerPayload.AssetCapitalizationDate = capDate;
+                    }
+
+                    // Add valuations
+                    if (ledger._Valuation) {
+                        ledgerPayload._Valuation = ledger._Valuation;
+                    }
+
+                    return ledgerPayload;
+                });
+            }
+        },
+
+        /**
+         * Process validation errors for display
+         */
+        _processValidationErrors: function (errors) {
+            return errors.map(error => {
+                if (typeof error === 'string') {
+                    return { message: error, field: 'Unknown', sheet: '' };
+                }
+                return {
+                    message: error.message || error.Message || JSON.stringify(error),
+                    field: error.field || error.Field || 'Unknown',
+                    sheet: error.sheet || error.Sheet || ''
+                };
+            }).filter(error => error.message);
+        },
+
+        _processGlobalMasterDataForDisplay: function (data) {
+            const globalData = {};
+            const source = data._GlobMasterData?._IN_AssetBlockData || data;
+
+            if (source.IN_AssetBlock) globalData.AssetBlock = source.IN_AssetBlock;
+            if (source.IN_AssetPutToUseDate) globalData.PutToUseDate = source.IN_AssetPutToUseDate;
+            if (source.IN_AssetIsPriorYear !== undefined) {
+                globalData.IsPriorYear = source.IN_AssetIsPriorYear === "true" || source.IN_AssetIsPriorYear === true;
+            }
+
+            return globalData;
+        },
+
+        _processLedgerDetailsForDisplay: function (data) {
+            const ledgerSource = data._Ledger || data.LedgerDetails?.Ledgers || [];
+
+            return {
+                Ledgers: ledgerSource.map((ledger, index) => ({
+                    Index: index + 1,
+                    Code: ledger.Ledger || 'Unknown',
+                    CapitalizationDate: this._formatDateForDisplay(ledger.AssetCapitalizationDate),
+                    Valuations: this._processValuations(ledger._Valuation || []),
+                    TimeBasedValuations: this._flattenTimeBasedValuations(ledger._Valuation || [])
+                }))
+            };
+        },
+
+        _processValuations: function (valuations) {
+            return valuations.map(valuation => ({
+                DepreciationArea: valuation.AssetDepreciationArea,
+                NegativeAmountAllowed: valuation.NegativeAmountIsAllowed || false,
+                DepreciationStartDate: this._formatDateForDisplay(valuation.DepreciationStartDate),
+                TimeBasedValuations: (valuation._TimeBasedValuation || []).map(tbv => ({
+                    DepreciationArea: valuation.AssetDepreciationArea,
+                    DepreciationKey: tbv.DepreciationKey || '',
+                    PlannedUsefulLifeYears: tbv.PlannedUsefulLifeInYears || '',
+                    PlannedUsefulLifePeriods: tbv.PlannedUsefulLifeInPeriods || '0',
+                    ScrapAmount: {
+                        Value: String(tbv.ScrapAmountInCoCodeCrcy || ""),
+                        Currency: tbv.CompanyCodeCurrency || this.config.defaultCurrency
+                    },
+                    ScrapPercent: String(tbv.AcqnProdnCostScrapPercent) || "",
+                    ValidityStartDate: this._formatDateForDisplay(tbv.ValidityStartDate)
+                }))
+            }));
+        },
+
+        _flattenTimeBasedValuations: function (valuations) {
+            return valuations.flatMap(valuation =>
+                (valuation._TimeBasedValuation || []).map(tbv => ({
+                    DepreciationArea: valuation.AssetDepreciationArea,
+                    DepreciationKey: tbv.DepreciationKey || '',
+                    PlannedUsefulLifeYears: tbv.PlannedUsefulLifeInYears || '',
+                    PlannedUsefulLifePeriods: tbv.PlannedUsefulLifeInPeriods || '0',
+                    ScrapAmount: {
+                        Value: String(tbv.ScrapAmountInCoCodeCrcy || ""),
+                        Currency: tbv.CompanyCodeCurrency || this.config.defaultCurrency
+                    },
+                    ScrapPercent: String(tbv.AcqnProdnCostScrapPercent) || "",
+                    ValidityStartDate: this._formatDateForDisplay(tbv.ValidityStartDate)
+                }))
+            );
+        },
+
+        // =================
+        // VALIDATION
+        // =================
+
+        validateAssetData: function (asset) {
+            const errors = [];
+            const requiredFields = [
+                { field: 'CompanyCode', message: 'Company Code is required' },
+                { field: 'AssetClass', message: 'Asset Class is required' },
+                { field: 'FixedAssetDescription', message: 'Asset Description is required' }
+            ];
+
+            requiredFields.forEach(({ field, message }) => {
+                if (!this._getValue(asset, field)) {
+                    errors.push({
+                        field, message, severity: 'Error',
+                        sequenceId: asset.SequenceNumber || 'N/A'
+                    });
                 }
             });
 
-            return mappedRow;
-        }
+            return errors;
+        },
 
-        /**
-         * Parse date value - unchanged from original
-         */
-        parseDate(value) {
-            if (value === null || value === undefined || value === '') {
-                return this._defaultConfig.defaultDate();
+        _validateRequiredFields: function (payload) {
+            if (!payload.CompanyCode || !payload.AssetClass) {
+                throw new Error("Missing required fields: CompanyCode, AssetClass");
             }
-
-            if (value instanceof Date) {
-                if (!isNaN(value.getTime())) {
-                    return value.toISOString().split('T')[0];
-                } else {
-                    return this._defaultConfig.defaultDate();
-                }
+            if (!payload._General?.FixedAssetDescription) {
+                throw new Error("FixedAssetDescription is required");
             }
+        },
 
+        // =================
+        // UTILITY METHODS
+        // =================
+
+        _getValue: function (obj, key, defaultValue = '') {
+            if (!obj || typeof obj !== 'object') return defaultValue;
+            return obj[key] !== null && obj[key] !== undefined ? obj[key] : defaultValue;
+        },
+
+        _parseBoolean: function (value) {
+            if (typeof value === 'boolean') return value;
             if (typeof value === 'string') {
-                const cleanValue = value.trim().replace(/[^\d\-\/\.]/g, '');
-                let dateObj;
-
-                if (/^\d{4}-\d{2}-\d{2}$/.test(cleanValue)) {
-                    const parts = cleanValue.split('-');
-                    dateObj = new Date(Date.UTC(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10)));
-                } else if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(cleanValue)) {
-                    const parts = cleanValue.split('/');
-                    dateObj = new Date(Date.UTC(parseInt(parts[2], 10), parseInt(parts[0], 10) - 1, parseInt(parts[1], 10)));
-                } else if (/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(cleanValue)) {
-                    const parts = cleanValue.split('.');
-                    dateObj = new Date(Date.UTC(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10)));
-                } else if (/^\d{8}$/.test(cleanValue)) {
-                    const year = cleanValue.substring(0, 4);
-                    const month = cleanValue.substring(4, 6);
-                    const day = cleanValue.substring(6, 8);
-                    dateObj = new Date(Date.UTC(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10)));
-                }
-
-                if (dateObj instanceof Date && !isNaN(dateObj.getTime())) {
-                    const year = dateObj.getUTCFullYear();
-                    const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0');
-                    const day = dateObj.getUTCDate().toString().padStart(2, '0');
-                    return `${year}-${month}-${day}`;
-                }
+                const lower = value.toLowerCase();
+                return ['true', 'yes', '1', 'x'].includes(lower);
             }
+            return Boolean(value);
+        },
 
-            return this._defaultConfig.defaultDate();
-        }
-
-        /**
-         * Prepare entry for SOAP - updated to work with new structure
-         */
-        prepareEntryForSOAP(entry) {
-            const sourceEntry = entry || {};
-
-            const soapEntry = {
-                SequenceNumber: sourceEntry.SequenceNumber || '1',
-                CompanyCode: sourceEntry.CompanyCode,
-                AssetClass: sourceEntry.AssetClass,
-                AssetIsForPostCapitalization: sourceEntry.AssetIsForPostCapitalization === 'TRUE' || sourceEntry.AssetIsForPostCapitalization === true,
-
-                General: {
-                    FixedAssetDescription: sourceEntry.FixedAssetDescription || '',
-                    AssetAdditionalDescription: sourceEntry.AssetAdditionalDescription || '',
-                    AssetSerialNumber: sourceEntry.AssetSerialNumber || '',
-                    BaseUnit: sourceEntry.BaseUnit || 'EA'
-                },
-
-                AccountAssignment: {
-                    WBSElementExternalID: sourceEntry.WBSElementExternalID || null,
-                    Room: sourceEntry.Room || ''
-                },
-
-                Inventory: {
-                    InventoryNote: sourceEntry.InventoryNote || ''
-                },
-
-                // Use the _Ledger structure if available
-                LedgerInformation: sourceEntry._Ledger || [],
-
-                // Handle custom fields
-                YY1_WBS_ELEMENT: sourceEntry.YY1_WBS_ELEMENT || null
-            };
-
-            // Add India-specific fields if present
-            if (sourceEntry._GlobMasterData) {
-                soapEntry.GLO_MasterData = sourceEntry._GlobMasterData;
-            }
-
-            return soapEntry;
-        }
-
-        /**
-         * Prepare entry details for display
-         */
-        prepareEntryDetails(entry) {
-            const sourceEntry = entry ? JSON.parse(JSON.stringify(entry)) : {};
-
-            const preparedDetails = {
-                BasicInfo: {
-                    SequenceNumber: sourceEntry.SequenceNumber || 'N/A',
-                    CompanyCode: sourceEntry.CompanyCode || '',
-                    AssetClass: sourceEntry.AssetClass || '',
-                    IsPostCapitalization: sourceEntry.AssetIsForPostCapitalization === 'TRUE' || sourceEntry.AssetIsForPostCapitalization === true
-                },
-                GeneralDetails: {
-                    FixedAssetDescription: sourceEntry.FixedAssetDescription || '',
-                    AdditionalDescription: sourceEntry.AssetAdditionalDescription || '',
-                    SerialNumber: sourceEntry.AssetSerialNumber || '',
-                    BaseUnit: sourceEntry.BaseUnit || '',
-                    InventoryNote: sourceEntry.InventoryNote || ''
-                },
-                AccountAssignment: {
-                    WBSElementExternalID: sourceEntry.WBSElementExternalID || '',
-                    Room: sourceEntry.Room || '',
-                    CustomWBSElement: sourceEntry.YY1_WBS_ELEMENT || ''
-                },
-                LedgerDetails: {
-                    Ledgers: (sourceEntry._Ledger || []).map((ledger, index) => ({
-                        Index: index + 1,
-                        Code: ledger.Ledger,
-                        CapitalizationDate: this.parseDate(ledger.AssetCapitalizationDate),
-                        Valuations: ledger._Valuation || []
-                    }))
-                },
-                GlobalMasterData: sourceEntry._GlobMasterData?._IN_AssetBlockData || {},
-                ValidationSummary: {
-                    TotalErrors: (sourceEntry.ValidationErrors || []).length,
-                    Errors: sourceEntry.ValidationErrors || []
-                }
-            };
-
-            return preparedDetails;
-        }
-
-        _getValueOrDefault(source, key, defaultValue) {
-            if (source && typeof source === 'object' && source.hasOwnProperty(key)) {
-                const value = source[key];
-                if (value !== null && value !== undefined) {
-                    return value;
-                }
+        _parseNumeric: function (value, defaultValue = 0) {
+            if (typeof value === 'number') return value;
+            if (typeof value === 'string') {
+                const parsed = parseFloat(value);
+                return isNaN(parsed) ? defaultValue : parsed;
             }
             return defaultValue;
+        },
+
+        _formatDateForDisplay: function (dateValue) {
+            if (!dateValue) return null;
+
+            try {
+                const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
+                return !isNaN(date.getTime()) ? date : null;
+            } catch (error) {
+                return null;
+            }
+        },
+
+        _cleanEmptyObjects: function (obj) {
+            Object.keys(obj).forEach(key => {
+                const value = obj[key];
+
+                if (value === null || value === undefined || value === '') {
+                    delete obj[key];
+                } else if (typeof value === 'object' && !Array.isArray(value)) {
+                    this._cleanEmptyObjects(value);
+                    if (Object.keys(value).length === 0) {
+                        delete obj[key];
+                    }
+                } else if (Array.isArray(value) && value.length === 0) {
+                    delete obj[key];
+                }
+            });
+        },
+
+        // =================
+        // DISPLAY FORMATTERS
+        // =================
+
+        formatCurrency: function (amount, currency = 'INR') {
+            const numericAmount = this._parseNumeric(amount, 0);
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: currency,
+                minimumFractionDigits: 2
+            }).format(numericAmount);
+        },
+
+        formatPercentage: function (value) {
+            const numericValue = this._parseNumeric(value, 0);
+            return new Intl.NumberFormat('en-IN', {
+                style: 'percent',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(numericValue / 100);
         }
-    };
+    });
 });

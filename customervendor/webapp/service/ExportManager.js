@@ -60,19 +60,21 @@ sap.ui.define(
         XLSX.utils.book_append_sheet(wb, headerSheet, "Header");
 
         // Customer Debit Lines Transactions Sheet (Customer Debit Lines Entries Only)
-        const customerDebitLines = [
+        const vendorDataLines = [
           "Sequence ID",
           "Reference Document Item",
           "Indicator (S-Dr, H-Cr.)",
-          "customer Code",
+          "Vendor Code",
           "Currency",
           "Amount",
           "Assignment",
           "Reference Key-1",
+          "Reference Key-3",
           "Item Text",
-          "Business Place"
+          "Business Place",
+          "Special GL Code"
         ];
-        const customerDebitData = [
+        const vendorData = [
           [
             "1",
             "1",
@@ -80,17 +82,19 @@ sap.ui.define(
             "21000014",
             "INR",
             "1000",
-            "Axis Customer",
-            "Ref Customer",
-            "Debit Item Customer Text",
-            "1007"
+            "Axis Vendor",
+            "Ref Vend 1",
+            "Ref Vend 1",
+            "Debit Item Vendor Text",
+            "1007",
+            "A"
           ]
         ];
-        const debitSheet = XLSX.utils.aoa_to_sheet([customerDebitLines, ...customerDebitData]);
-        XLSX.utils.book_append_sheet(wb, debitSheet, "Customer Debit Lines");
+        const debitSheet = XLSX.utils.aoa_to_sheet([vendorDataLines, ...vendorData]);
+        XLSX.utils.book_append_sheet(wb, debitSheet, "Vendor Lines");
 
         // Customer Credit Lines Transactions Sheet (Customer Credit Lines Entries Only)
-        const customerCreditLines = [
+        const customerDataLines = [
           "Sequence ID",
           "Reference Document Item",
           "Indicator (S-Dr, H-Cr.)",
@@ -99,10 +103,12 @@ sap.ui.define(
           "Amount",
           "Assignment",
           "Reference Key-1",
+          "Reference Key-3",
           "Item Text",
-          "Business Place"
+          "Business Place",
+          "Special GL Code"
         ];
-        const customerCreditData = [
+        const customerData = [
           [
             "1",
             "1",
@@ -111,19 +117,21 @@ sap.ui.define(
             "INR",
             "1000",
             "Axis Customer",
-            "Ref Customer",
+            "Ref Cust 1",
+            "Ref Cust 3",
             "Credit Item Customer Text",
-            "1007"
+            "1007",
+            "A"
           ]
         ];
         const debitorSheet = XLSX.utils.aoa_to_sheet([
-          customerCreditLines,
-          ...customerCreditData
+          customerDataLines,
+          ...customerData
         ]);
         XLSX.utils.book_append_sheet(
           wb,
           debitorSheet,
-          "Customer Credit Lines"
+          "Customer Lines"
         );
 
         return wb;
@@ -435,13 +443,13 @@ sap.ui.define(
        */
       this._generatePDF = function (data, type) {
         // Define document title based on type
-        let title = "Customer Collection Entries Upload Report";
+        let title = "Customer Vendor Entries Upload Report";
         if (type === "success") {
-          title = "Customer Collection Entries Upload - Success Report";
+          title = "Customer Vendor Entries Upload - Success Report";
         } else if (type === "error") {
-          title = "Customer Collection Entries Upload - Error Report";
+          title = "Customer Vendor Entries Upload - Error Report";
         } else if (type === "partial") {
-          title = "Customer Collection Entries Upload - Partial Success Report";
+          title = "Customer Vendor Entries Upload - Partial Success Report";
         }
 
         // Create document definition

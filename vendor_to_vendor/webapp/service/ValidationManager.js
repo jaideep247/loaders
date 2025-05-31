@@ -36,6 +36,7 @@ sap.ui.define([
       "Reference Key 1": { maxLength: 12 },
       "Business Place": { maxLength: 4 },
       "Account ID": { maxLength: 5 },
+      "Special GL Code": { maxLength: 1 },
     };
 
     /**
@@ -91,7 +92,8 @@ sap.ui.define([
         "Assignment",
         "Reference Key 1",
         "Item Text",       
-        "Business Place"
+        "Business Place",
+        "Special GL Code"
       ];
       const vendorDrData = [
         [
@@ -104,7 +106,8 @@ sap.ui.define([
           "Axis Vendor",
           "Ref Vendor",
           "Item Vendor",
-          "1007"
+          "1007",
+          "B"
         ]
       ];
       const vendorDrSheet = XLSX.utils.aoa_to_sheet([vendorDrLines, ...vendorDrData]);
@@ -121,7 +124,8 @@ sap.ui.define([
         "Assignment",
         "Reference Key 1",       
         "Item Text",
-        "Business Place"
+        "Business Place",
+        "Special GL Code",
       ];
       const vendorCrData = [
         [
@@ -134,7 +138,8 @@ sap.ui.define([
           "Axis Vendor",
           "Ref Vendor",
           "Item Vendor",
-          "1007"
+          "1007",
+          "B"
         ]
       ];
       const vendorCrSheet = XLSX.utils.aoa_to_sheet([

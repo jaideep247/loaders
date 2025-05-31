@@ -313,6 +313,8 @@ sap.ui.define(
               CostCenter: row["Cost Center"] || "",
               GLAccountNumber: row["GL Account Number"] || "",
               ItemText: row["Item Text"] || "",
+              PerformancePeriodEndDate: row["Performance End Date"] || "",
+              PerformancePeriodStartDate: row["Performance Start Date"] || "",
               RawData: row // Keep the raw data for reference
             };
           });

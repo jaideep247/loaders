@@ -678,6 +678,7 @@ sap.ui.define([
         "Item Text",
         "Business Place",
         "Special GL Code",
+        "Payment Reference",
         "Entry Type"
       ];
 

@@ -343,7 +343,7 @@ sap.ui.define([
               const [
                 entrySequenceId, referenceDocumentItem, indicator,
                 CustomerCode, currency, amount, assignment,
-                referenceKey1, referenceKey3, itemText, businessPlace, valueDate, specialGlIndicator
+                referenceKey1, referenceKey3, itemText, businessPlace, valueDate, specialGlIndicator, paymentReference
               ] = creditEntry;
 
               return {
@@ -360,6 +360,7 @@ sap.ui.define([
                 "Business Place": businessPlace,
                 "Value Date": valueDate,
                 "Special GL Indicator": specialGlIndicator,
+                "Payment Reference": paymentReference || "",
                 "Created By": createdBy,
                 "Sheet": customerSheet,
                 "Entry Type": "Credit"

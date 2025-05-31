@@ -70,7 +70,8 @@ sap.ui.define(
           "Assignment",
           "Reference Key-1",
           "Item Text",
-          "Business Place"
+          "Business Place",
+          "Special GL Code"
         ];
         const vendorDebitData = [
           [
@@ -83,7 +84,8 @@ sap.ui.define(
             "Axis Vendor",
             "Ref Vendor",
             "Debit Item Vendor Text",
-            "1007"
+            "1007",
+            "A"
           ]
         ];
         const glSheet = XLSX.utils.aoa_to_sheet([vendorDebitLines, ...vendorDebitData]);
@@ -100,7 +102,8 @@ sap.ui.define(
           "Assignment",
           "Reference Key-1",
           "Item Text",
-          "Business Place"
+          "Business Place",
+          "Special GL Code"
         ];
         const vendorCreditData = [
           [
@@ -113,7 +116,8 @@ sap.ui.define(
             "Axis Vendor",
             "Ref Vendor",
             "Credit Item Vendor Text",
-            "1007"
+            "1007",
+            "A"
           ]
         ];
         const debitorSheet = XLSX.utils.aoa_to_sheet([

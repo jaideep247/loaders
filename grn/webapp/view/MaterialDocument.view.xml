@@ -13,24 +13,24 @@
 >
     <!--
     ============================================================
-    DOCUMENTATION: Material Document BULK UPLOAD
+    DOCUMENTATION: GRN BULK UPLOAD
     ============================================================
 
     PURPOSE:
-    This view provides an interface for bulk uploading Excel files containing material documents,
+    This view provides an interface for bulk uploading Excel files containing GRNs,
     validating them, and submitting them to SAP via OData service.
 
     MAIN COMPONENTS:
     1. Upload Section - For selecting and uploading Excel files
     2. Upload Summary - Shows validation statistics and progress
     3. Batch Processing - Shows detailed batch processing information for large uploads
-    4. Items Table - Displays material document items from Excel
-    5. Filters Panel - Filtering options for the material documents
-    6. Material Documents Table - Displays and allows manipulation of entries
+    4. Items Table - Displays GRNs items from Excel
+    5. Filters Panel - Filtering options for the GRNs
+    6. GRNs Table - Displays and allows manipulation of entries
     7. Action Buttons - For submitting, retrying validation, or clearing entries
     
     FILE FORMAT REQUIREMENTS:
-    - Excel (.xlsx) with Material Document
+    - Excel (.xlsx) with GRN
     - Required columns match OData service fields
 
     WORKFLOW:
@@ -42,7 +42,7 @@
 
     CONTROLLER: materialdocument.controller.MaterialDocument
     MODELS:
-    - materialDocuments: Contains material document data
+    - materialDocuments: Contains GRN data
     - uploadSummary: Contains summary statistics
     - statusModel: Contains status filter options
     - userModel: Contains user information fetched in controller's init method      
@@ -69,7 +69,7 @@
         <headerContent>
             <Text
                 id="infoText"
-                text="Click for instructions on uploading material documents from Excel to SAP."
+                text="Click for instructions on uploading GRNs from Excel to SAP."
             />
             <Button
                 id="headerHelpButton"
@@ -101,7 +101,7 @@
                         <f:expandedContent>
                             <Text
                                 id="expandedSubtitleText"
-                                text="Upload multiple material documents from Excel to SAP"
+                                text="Upload multiple GRNs from Excel to SAP"
                             />
                         </f:expandedContent>
                     </f:DynamicPageTitle>
@@ -130,7 +130,7 @@
                                             <unified:FileUploader
                                                 id="fileUploader"
                                                 width="100%"
-                                                placeholder="Select Excel File (.xlsx) containing material documents"
+                                                placeholder="Select Excel File (.xlsx) containing GRNs"
                                                 change="onFileChange"
                                                 buttonText="Browse Files"
                                                 fileType="xlsx"
@@ -140,7 +140,7 @@
                                             />
                                             <Text
                                                 id="fileFormatHelper"
-                                                text="Please upload Excel file containing material documents with required fields (GRN Document Number, Material, Plant, Quantity, etc.)"
+                                                text="Please upload Excel file containing GRNs with required fields (GRN Document Number, Material, Plant, Quantity, etc.)"
                                                 class="sapUiTinyMarginTop"
                                             />
                                         </VBox>
@@ -256,10 +256,10 @@
                             </content>
                         </Panel>
 
-                        <!-- Material Document Items Panel -->
+                        <!-- GRN Items Panel -->
                         <Panel
                             id="itemsPanel"
-                            headerText="Material Document Line Items"
+                            headerText="GRN Line Items"
                             expandable="true"
                             expanded="true"
                         >
@@ -268,7 +268,7 @@
                                     <Toolbar id="itemsToolbar">
                                         <Title
                                             id="itemsTableTitle"
-                                            text="Uploaded Material Document Items"
+                                            text="Uploaded GRN Items"
                                         />
                                         <ToolbarSpacer
                                             id="itemsToolbarSpacer"
@@ -319,7 +319,7 @@
                                         id="itemsTable"
                                         items="{materialDocuments>/entries}"
                                         mode="None"
-                                        noDataText="No items available. Please upload an Excel file with material document entries."
+                                        noDataText="No items available. Please upload an Excel file with GRN entries."
                                         growing="true"
                                         growingThreshold="15"
                                         alternateRowColors="true"
@@ -328,34 +328,43 @@
                                         <columns>
                                             <Column
                                                 id="sequenceIdColumn"
-                                                width="10%"
+                                                width="8%"
                                             >
                                                 <Text
                                                     id="sequenceIdText"
-                                                    text="Sequence Number"
+                                                    text="Sequence"
                                                 />
                                             </Column>
                                             <Column
                                                 id="grnDocNumberColumn"
-                                                width="15%"
+                                                width="12%"
                                             >
                                                 <Text
                                                     id="grnDocNumberText"
-                                                    text="GRN Document Number"
+                                                    text="GRN Document"
                                                 />
                                             </Column>
                                             <Column
                                                 id="documentDateColumn"
-                                                width="15%"
+                                                width="10%"
                                             >
                                                 <Text
                                                     id="documentDateText"
-                                                    text="Document Date"
+                                                    text="Doc Date"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="postingDateColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="postingDateText"
+                                                    text="Posting Date"
                                                 />
                                             </Column>
                                             <Column
                                                 id="materialColumn"
-                                                width="15%"
+                                                width="12%"
                                             >
                                                 <Text
                                                     id="materialText"
@@ -363,8 +372,35 @@
                                                 />
                                             </Column>
                                             <Column
+                                                id="plantColumn"
+                                                width="8%"
+                                            >
+                                                <Text
+                                                    id="plantText"
+                                                    text="Plant"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="storageLocationColumn"
+                                                width="8%"
+                                            >
+                                                <Text
+                                                    id="storageLocationText"
+                                                    text="Storage Loc"
+                                                />
+                                            </Column>
+                                            <Column
+                                                id="purchaseOrderColumn"
+                                                width="10%"
+                                            >
+                                                <Text
+                                                    id="purchaseOrderText"
+                                                    text="Purchase Order"
+                                                />
+                                            </Column>
+                                            <Column
                                                 id="quantityColumn"
-                                                width="15%"
+                                                width="10%"
                                             >
                                                 <Text
                                                     id="quantityText"
@@ -372,8 +408,17 @@
                                                 />
                                             </Column>
                                             <Column
+                                                id="movementTypeColumn"
+                                                width="8%"
+                                            >
+                                                <Text
+                                                    id="movementTypeText"
+                                                    text="Mvt Type"
+                                                />
+                                            </Column>
+                                            <Column
                                                 id="statusColumn"
-                                                width="15%"
+                                                width="8%"
                                             >
                                                 <Text
                                                     id="statusText"
@@ -382,7 +427,7 @@
                                             </Column>
                                             <Column
                                                 id="actionsColumn"
-                                                width="15%"
+                                                width="6%"
                                             >
                                                 <Text
                                                     id="actionsText"
@@ -408,17 +453,37 @@
                                                         text="{materialDocuments>GRNDocumentNumber}"
                                                     />
                                                     <Text
-                                                        id="_IDGenText3"
+                                                        id="_IDGenText61"
                                                         text="{path: 'materialDocuments>DocumentDate'}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText62"
+                                                        text="{path: 'materialDocuments>PostingDate'}"
                                                     />
                                                     <Text
                                                         id="_IDGenText8"
                                                         text="{materialDocuments>Material}"
                                                     />
+                                                    <Text
+                                                        id="_IDGenText63"
+                                                        text="{materialDocuments>Plant}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText64"
+                                                        text="{materialDocuments>StorageLocation}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText65"
+                                                        text="{materialDocuments>PurchaseOrder}"
+                                                    />
                                                     <ObjectNumber
                                                         id="_IDGenObjectNumber4"
                                                         number="{materialDocuments>QuantityInEntryUnit}"
                                                         unit="{materialDocuments>EntryUnit}"
+                                                    />
+                                                    <Text
+                                                        id="_IDGenText66"
+                                                        text="{materialDocuments>GoodsMovementType}"
                                                     />
                                                     <ObjectStatus
                                                         id="_IDGenObjectStatus1"
@@ -439,7 +504,7 @@
                                         <noData>
                                             <MessageStrip
                                                 id="noItemsMessageStrip"
-                                                text="No Material Document items available. Please upload an Excel file containing Material Document records with Sequence Number, GRN Document Number, Material, Plant, etc."
+                                                text="No GRN items available. Please upload an Excel file containing GRN records with Sequence Number, GRN Document Number, Material, Plant, etc."
                                                 type="Information"
                                                 showIcon="true"
                                                 class="sapUiMediumMargin"
@@ -468,7 +533,7 @@
                 <Button
                     id="createButton"
                     type="Emphasized"
-                    text="Submit Material Documents"
+                    text="Submit GRNs"
                     enabled="{= ${uploadSummary>/IsSubmitEnabled} === true &amp;&amp; ${uploadSummary>/HasBeenSubmitted} !== true }"
                     press="onCreateMaterialDocument"
                     icon="sap-icon://accept"

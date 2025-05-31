@@ -50,7 +50,6 @@ sap.ui.define(
           FixedAssetRetirementType: ["FixedAssetRetirementType", "Retirement Type", "retirement_type", "Asset Retirement Type", "Fixed Asset Retirement Type"],
           DocumentReferenceID: ["DocumentReferenceID", "Document Reference ID", "document_reference_id", "Doc Ref ID", "Reference ID"],
           AccountingDocumentHeaderText: ["AccountingDocumentHeaderText", "Accounting Document Header Text", "accounting_document_header_text", "Header Text", "Doc Header Text"],
-          FxdAstRtrmtQuantityInBaseUnit: ["FxdAstRtrmtQuantityInBaseUnit", "Quantity", "quantity", "Base Quantity"],
           BaseUnitSAPCode: ["BaseUnitSAPCode", "Base Unit SAP Code", "base_unit_sap_code", "SAP Unit", "Unit SAP Code"],
           BaseUnitISOCode: ["BaseUnitISOCode", "Base Unit ISO Code", "base_unit_iso_code", "ISO Unit", "Unit ISO Code"],
           AccountingDocumentType: ["AccountingDocumentType", "Accounting Document Type", "accounting_document_type", "Doc Type", "Document Type"],
@@ -291,7 +290,6 @@ sap.ui.define(
             FixedAssetRetirementType: this._findColumnValue(row, "FixedAssetRetirementType") || "",
             DocumentReferenceID: this._findColumnValue(row, "DocumentReferenceID") || "",
             AccountingDocumentHeaderText: this._findColumnValue(row, "AccountingDocumentHeaderText") || "",
-            FxdAstRtrmtQuantityInBaseUnit: this._findColumnValue(row, "FxdAstRtrmtQuantityInBaseUnit"),
             BaseUnitSAPCode: this._findColumnValue(row, "BaseUnitSAPCode") || "",
             BaseUnitISOCode: this._findColumnValue(row, "BaseUnitISOCode") || "",
             AccountingDocumentType: this._findColumnValue(row, "AccountingDocumentType") || "",
@@ -539,7 +537,6 @@ sap.ui.define(
           "FixedAssetRetirementType",
           "DocumentReferenceID",
           "AccountingDocumentHeaderText",
-          "FxdAstRtrmtQuantityInBaseUnit",
           "BaseUnitSAPCode",
           "BaseUnitISOCode",
           "AccountingDocumentType",
@@ -566,8 +563,7 @@ sap.ui.define(
             FixedAssetRetirementType: "1",
             DocumentReferenceID: "REF-ID",
             AccountingDocumentHeaderText: "Header text",
-            FxdAstRtrmtQuantityInBaseUnit: "1",
-            BaseUnitSAPCode: "EA",
+           BaseUnitSAPCode: "EA",
             BaseUnitISOCode: "EA",
             AccountingDocumentType: "SA",
             AssignmentReference: "Ass ref",
@@ -683,11 +679,7 @@ sap.ui.define(
           {
             "Field Name": "AccountingDocumentHeaderText",
             Description: "Header text for accounting document"
-          },
-          {
-            "Field Name": "FxdAstRtrmtQuantityInBaseUnit",
-            Description: "Quantity in base unit"
-          },
+          },          
           {
             "Field Name": "BaseUnitSAPCode",
             Description: "SAP code for the base unit (e.g., EA)"

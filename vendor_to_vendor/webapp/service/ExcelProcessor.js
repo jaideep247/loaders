@@ -296,7 +296,7 @@ sap.ui.define([
               entries: []
             };
           }
-
+     
           // Map vendor debit entries with correct column structure
           const mappedDebitEntries = debitData
             .filter((row) => {
@@ -315,7 +315,8 @@ sap.ui.define([
                 assignment,
                 referenceKey1,
                 itemText,
-                businessPlace
+                businessPlace,
+                specialGLCode
               ] = debitEntry;
 
               return {
@@ -329,6 +330,7 @@ sap.ui.define([
                 "Reference Key 1": referenceKey1,
                 "Item Text": itemText,
                 "Business Place": businessPlace,
+                "Special GL Code": specialGLCode || "", 
                 "Created By": createdBy,
                 "Sheet": vendorDebitSheet,
                 "Entry Type": "Debit" // Added to differentiate
@@ -353,7 +355,8 @@ sap.ui.define([
                 assignment,
                 referenceKey1,
                 itemText,
-                businessPlace
+                businessPlace,
+                specialGLCode
               ] = creditEntry;
 
               return {
@@ -367,6 +370,7 @@ sap.ui.define([
                 "Reference Key 1": referenceKey1,
                 "Item Text": itemText,
                 "Business Place": businessPlace,
+                "Special GL Code": specialGLCode || "", 
                 "Created By": createdBy,
                 "Sheet": vendorCreditSheet,
                 "Entry Type": "Credit" // Added to differentiate

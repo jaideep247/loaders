@@ -81,7 +81,7 @@ sap.ui.define([
 
               // Define title based on report type
               const reportType = options.reportType || "all";
-              let title = options.title || "Material Document - Upload Log Report";
+              let title = options.title || "GRN - Upload Log Report";
               if (reportType === "success") {
                 title += " (Success Records)";
               } else if (reportType === "error") {

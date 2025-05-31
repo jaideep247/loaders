@@ -174,7 +174,7 @@ sap.ui.define([
         processSingleFixedAssetRetirement: function (assetEntry) {
           const entryId = assetEntry?._originalIndex ?? "unknown";
           _logInfo(`Processing retirement entry index ${entryId} using $direct (createCompleted EVENT LISTENER)`);
-
+    
           return new Promise((resolve) => {
             let context;
             let listBinding;
@@ -247,7 +247,7 @@ sap.ui.define([
                 _logWarn(`createCompleted event ignored for index ${entryId} - Context mismatch?`);
               }
             };
-
+    
             try {
               // --- Transformation ---
               // If you want to transform multiple entries, you can map the array

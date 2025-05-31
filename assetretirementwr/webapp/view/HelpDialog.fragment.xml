@@ -203,10 +203,7 @@
                                                         id="_IDGenStandardListItem25"
                                                         title="DocumentItemText: Item text"
                                                     />
-                                                    <StandardListItem
-                                                        id="_IDGenStandardListItem27"
-                                                        title="FxdAstRtrmtQuantityInBaseUnit: Quantity in base unit"
-                                                    />
+                                               
                                                     <StandardListItem
                                                         id="_IDGenStandardListItem28"
                                                         title="BaseUnitSAPCode: SAP unit code"

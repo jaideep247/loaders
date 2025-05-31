@@ -37,7 +37,7 @@ sap.ui.define([
 
             // Get user info
             this._userService.getUserInfo();
-            
+
             // Initialize batch processing display
             setTimeout(() => {
                 const batchContainer = this.byId("batchProcessingDisplayContainer");
@@ -148,7 +148,7 @@ sap.ui.define([
                 if (!oControl) return;
 
                 if (sId.endsWith("ComboBox")) {
-                    oControl.setSelectedKey("All");                
+                    oControl.setSelectedKey("All");
                 } else {
                     oControl.setValue("");
                 }
@@ -212,7 +212,7 @@ sap.ui.define([
             this.getView().getModel("advancedFilter").setProperty("/companyCode", sCompanyCode);
             this._applyCustomerVendorFilters();
         },
-      
+
         onSearchEntries: function (oEvent) {
             const sQuery = oEvent.getParameter("query");
             this.getView().getModel("advancedFilter").setProperty("/searchQuery", sQuery);
@@ -366,7 +366,7 @@ sap.ui.define([
         // * Export & Utility Functions
         // ****************************************
         onDownloadTemplate: function () {
-            this._validationManager.downloadTemplate();
+            this._exportManager.downloadTemplate();
             sap.m.MessageToast.show("Template downloaded successfully");
         },
 
@@ -591,7 +591,7 @@ sap.ui.define([
                 if (filterData.companyCode) {
                     aFilters.push(new Filter("Company Code", FilterOperator.Contains, String(filterData.companyCode)));
                 }
-            
+
                 // Search filter
                 if (filterData.searchQuery) {
                     const sQuery = String(filterData.searchQuery);

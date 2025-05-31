@@ -3,7 +3,7 @@ sap.ui.define(["grn/utils/DataTransformer"], function (DataTransformer) {
 
   /**
    * ValidationManager
-   * Responsible for validating material document data based on SAP metadata constraints
+   * Responsible for validating GRN data based on SAP metadata constraints
    */
   return function (oController) {
     this.oController = oController;
@@ -112,8 +112,8 @@ sap.ui.define(["grn/utils/DataTransformer"], function (DataTransformer) {
     };
 
     /**
-     * Validate material documents
-     * @param {array} entries - Material documents to validate
+     * Validate GRNs
+     * @param {array} entries - GRNs to validate
      * @returns {object} Validation result with validated entries and errors
      */
     this.validateMaterialDocuments = function (entries) {
@@ -397,8 +397,8 @@ sap.ui.define(["grn/utils/DataTransformer"], function (DataTransformer) {
     };
 
     /**
-     * Validate a specific material document entry
-     * @param {object} entry - Material document entry to validate
+     * Validate a specific GRN entry
+     * @param {object} entry - GRN entry to validate
      * @returns {object} Validation result for single entry
      */
     this.validateSingleMaterialDocument = function (entry) {

@@ -359,6 +359,96 @@ sap.ui.define([
       if (oModel && progressData) {
         oModel.setData(progressData);
       }
-    }
+    },
+    /**
+* Reset all models to their initial state
+*/
+    resetModels: function () {
+      console.log("Resetting all models to initial state");
+
+      this._resetUploadSummaryModel();
+      this._resetAssetMasterModel();
+      this._resetBatchDisplayModel();
+
+      // Reset any other models that might have state
+      this._resetFilterModel();
+
+      console.log("All models reset successfully");
+    },
+
+    /**
+    * Reset filter model to initial state
+    * @private
+    */
+    _resetFilterModel: function () {
+      const oModel = this._view.getModel("filterModel");
+      if (oModel) {
+        oModel.setData({
+          companyCode: "",
+          assetClass: "",
+          description: "",
+          wbsElement: "",
+          status: "all"
+        });
+      }
+    },
+
+    /**
+    * Reset upload summary model to initial state
+    * @private
+    */
+    _resetUploadSummaryModel: function () {
+      const oModel = this._view.getModel("uploadSummary");
+      if (oModel) {
+        oModel.setData({
+          TotalEntries: 0,
+          SuccessfulEntries: 0,
+          FailedEntries: 0,
+          ValidationErrors: [],
+          IsSubmitEnabled: false,
+          HasBeenSubmitted: true,
+          LastUploadDate: null,
+          ProcessingComplete: false,
+          isSubmitting: false,
+          uploadProgress: 0
+        });
+      }
+    },
+
+    /**
+    * Reset Asset Master documents model
+    * @private
+    */
+    _resetAssetMasterModel: function () {
+      const oModel = this._view.getModel("assetMasterEntries");
+      if (oModel) {
+        oModel.setData({
+          entries: [],
+          validationStatus: "Pending",
+          filteredCount: 0
+        });
+      }
+    },
+
+    /**
+    * Reset batch display model
+    * @private
+    */
+    _resetBatchDisplayModel: function () {
+      const oModel = this._view.getModel("batchDisplay");
+      if (oModel) {
+        oModel.setData({
+          visible: false,
+          status: "Waiting",
+          currentBatch: 0,
+          totalBatches: 0,
+          processedItems: 0,
+          totalItems: 0,
+          progressPercentage: 0,
+          remainingTime: "Calculating...",
+          errors: []
+        });
+      }
+    },
   });
 });

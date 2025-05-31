@@ -296,7 +296,8 @@ sap.ui.define([
         "Assignment",
         "Reference Key 1",
         "Item Text",
-        "Business Place"
+        "Business Place",
+        "Special GL Code"
       ];
 
       // Fix for the field value misalignment
@@ -755,7 +756,7 @@ sap.ui.define([
       // Load the error summary dialog fragment if it doesn't exist
       if (!this._dialogs.errorSummaryDialog) {
         Fragment.load({
-          name: "vendortovendor.view.ErrorSummaryDialog",
+          name: "vendortovendor.view.ErrorDialog",
           controller: this.oController
         }).then((oDialog) => {
           // Store the dialog for future use
@@ -924,18 +925,30 @@ sap.ui.define([
           this._dialogs.errorDialog = oDialog;
           this.oController.getView().addDependent(this._dialogs.errorDialog);
           this._showErrorDialog(formattedErrors, failedEntries.length);
-        }.bind(this));
+        }.bind(this))  // ADD .bind(this) here - this was missing!
+          .catch(function (error) {
+            console.error("Error loading error dialog fragment:", error);
+            // Fallback to MessageBox if fragment loading fails
+            sap.m.MessageBox.error("Failed to display error details: " + error.message);
+          });
       } else {
         this._showErrorDialog(formattedErrors, failedEntries.length);
       }
     };
-
     /**
-     * Show error dialog with formatted errors
-     * @param {array} formattedErrors - Formatted error objects
-     * @param {number} errorCount - Number of failed entries
-     */
+  * Show error dialog with formatted errors
+  * @param {array} formattedErrors - Formatted error objects
+  * @param {number} errorCount - Number of failed entries
+  */
     this._showErrorDialog = function (formattedErrors, errorCount) {
+      // Check if dialog exists and has open method
+      if (!this._dialogs.errorDialog || typeof this._dialogs.errorDialog.open !== 'function') {
+        console.error("Error dialog not properly initialized");
+        // Fallback to MessageBox
+        sap.m.MessageBox.error(`${errorCount} journal entries failed to upload.`);
+        return;
+      }
+
       // Set the model for the dialog
       const oModel = new JSONModel({
         errors: formattedErrors,

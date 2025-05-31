@@ -12,8 +12,8 @@
     "resources": "resources.json",
     "sourceTemplate": {
       "id": "@sap/generator-fiori:basic",
-      "version": "1.17.5",
-      "toolsId": "7777e42b-c86b-473a-8bf8-a65a01b64f8b"
+      "version": "1.17.3",
+      "toolsId": "ca349bdc-85a5-4bb9-a045-a2c3ee14419d"
     },
     "dataSources": {
       "mainService": {
@@ -46,7 +46,7 @@
   "sap.ui5": {
     "flexEnabled": true,
     "dependencies": {
-      "minUI5Version": "1.130.10",
+      "minUI5Version": "1.135.0",
       "libs": {
         "sap.m": {},
         "sap.ui.core": {}

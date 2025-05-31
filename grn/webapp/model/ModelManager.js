@@ -31,7 +31,7 @@ sap.ui.define([
       this._initMaterialDocumentsModel();
       this._initBatchDisplayModel();
 
-      // Get material document model from models module
+      // Get GRN model from models module
       const oMaterialDocumentModel = this.createMaterialDocumentModel();
       this._view.setModel(oMaterialDocumentModel);
 
@@ -95,7 +95,7 @@ sap.ui.define([
     },
 
     /**
-     * Initialize material documents model
+     * Initialize GRNs model
      * @private
      */
     _initMaterialDocumentsModel: function () {
@@ -152,7 +152,7 @@ sap.ui.define([
     },
 
     /**
-     * Reset material documents model
+     * Reset GRNs model
      * @private
      */
     _resetMaterialDocumentsModel: function () {
@@ -216,8 +216,8 @@ sap.ui.define([
         });
     },
     /**
-     * Creates a new material document model with default structure
-     * @returns {sap.ui.model.json.JSONModel} JSON model for material document data
+     * Creates a new GRN model with default structure
+     * @returns {sap.ui.model.json.JSONModel} JSON model for GRN data
      */
     createMaterialDocumentModel: function () {
       return new JSONModel({
@@ -242,8 +242,8 @@ sap.ui.define([
     },
 
     /**
-     * Update material documents model with new entries
-     * @param {Array} entries - Material document entries
+     * Update GRNs model with new entries
+     * @param {Array} entries - GRN entries
      * @param {string} validationStatus - Validation status
      */
     updateMaterialDocuments: function (entries, validationStatus = "Pending") {

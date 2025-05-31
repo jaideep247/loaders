@@ -298,7 +298,8 @@ sap.ui.define([
         "Reference Key 1",
         "Reference Key 3",
         "Item Text",
-        "Business Place"
+        "Business Place",
+        "Special GL Code"
       ];
 
       // Log additional debugging information

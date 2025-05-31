@@ -178,7 +178,6 @@ sap.ui.define([
           FixedAssetRetirementType: "1",
           DocumentReferenceID: "",
           AccountingDocumentHeaderText: "",
-          FxdAstRtrmtQuantityInBaseUnit: "1",
           BaseUnitSAPCode: "EA",
           BaseUnitISOCode: "EA",
           AccountingDocumentType: "",

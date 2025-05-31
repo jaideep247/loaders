@@ -684,7 +684,7 @@ sap.ui.define([
 
         if (entry.vendorLines && Array.isArray(entry.vendorLines)) {
           entry.vendorLines.forEach((item) => {
-
+            let specialGLCode = item["Special GL Code"];
             soapEnvelope += `<CreditorItem>
                                 <ReferenceDocumentItem>${itemIndex}</ReferenceDocumentItem>
                                 <Creditor>${item["Vendor Code"]}</Creditor>
@@ -695,6 +695,9 @@ sap.ui.define([
                                 <Reference1IDByBusinessPartner>${item["Reference Key 1"]}</Reference1IDByBusinessPartner>
                                 <Reference3IDByBusinessPartner>${item["Reference Key 3"]}</Reference3IDByBusinessPartner>                                                                                                                                       
                                 <BusinessPlace>${item["Business Place"] || ""}</BusinessPlace>
+                                <DownPaymentTerms>
+                                    ${specialGLCode ? `<SpecialGLCode>${specialGLCode}</SpecialGLCode>` : ""}
+                                </DownPaymentTerms>                                
                                 </CreditorItem>`;
             itemIndex++;
           });
@@ -702,6 +705,7 @@ sap.ui.define([
 
         if (entry.customerLines && Array.isArray(entry.customerLines)) {
           entry.customerLines.forEach((item) => {
+            let specialGLCode = item["Special GL Code"];
             soapEnvelope += `<DebtorItem>
                                 <ReferenceDocumentItem>${itemIndex}</ReferenceDocumentItem>
                                 <Debtor>${item["Customer Code"]}</Debtor>
@@ -712,6 +716,9 @@ sap.ui.define([
                                 <Reference1IDByBusinessPartner>${item["Reference Key 1"]}</Reference1IDByBusinessPartner>
                                 <Reference3IDByBusinessPartner>${item["Reference Key 3"]}</Reference3IDByBusinessPartner>                                                                                                       
                                 <BusinessPlace>${item["Business Place"] || ""}</BusinessPlace>
+                                <DownPaymentTerms>
+                                    ${specialGLCode ? `<SpecialGLCode>${specialGLCode}</SpecialGLCode>` : ""}
+                                </DownPaymentTerms>                                
                                 </DebtorItem>`;
             itemIndex++;
           });

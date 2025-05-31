@@ -51,7 +51,7 @@
                         <f:heading>
                             <Title
                                 id="pageTitle"
-                                text="Fixed Asset Bulk Loader"
+                                text="Fixed Asset Acquisition Bulk Loader"
                             />
                         </f:heading>
                         <f:snappedContent>
@@ -396,36 +396,7 @@
                                                     text="Trans Type"
                                                 />
                                             </Column>
-                                            <Column
-                                                id="colDocumentDate"
-                                                width="8rem"
-                                                hAlign="Center"
-                                            >
-                                                <Text
-                                                    id="txtDocumentDate"
-                                                    text="Doc Date"
-                                                />
-                                            </Column>
-                                            <Column
-                                                id="colPostingDate"
-                                                width="8rem"
-                                                hAlign="Center"
-                                            >
-                                                <Text
-                                                    id="txtPostingDate"
-                                                    text="Posting Date"
-                                                />
-                                            </Column>
-                                            <Column
-                                                id="colAssetValueDate"
-                                                width="8rem"
-                                                hAlign="Center"
-                                            >
-                                                <Text
-                                                    id="txtAssetValueDate"
-                                                    text="Value Date"
-                                                />
-                                            </Column>
+
                                             <Column
                                                 id="colAmount"
                                                 width="9rem"
@@ -434,6 +405,7 @@
                                                 <Text
                                                     id="txtAmount"
                                                     text="Amount"
+                                                    textAlign="End"
                                                 />
                                             </Column>
                                             <Column
@@ -560,18 +532,7 @@
                                                         id="cellBusinessTransType"
                                                         text="{fixedAssetEntries>BusinessTransactionType}"
                                                     />
-                                                    <Text
-                                                        id="cellDocumentDate"
-                                                        text="{path: 'fixedAssetEntries>DocumentDate', formatter: '.formatDate'}"
-                                                    />
-                                                    <Text
-                                                        id="cellPostingDate"
-                                                        text="{path: 'fixedAssetEntries>PostingDate', formatter: '.formatDate'}"
-                                                    />
-                                                    <Text
-                                                        id="cellAssetValueDate"
-                                                        text="{path: 'fixedAssetEntries>AssetValueDate', formatter: '.formatDate'}"
-                                                    />
+
                                                     <ObjectNumber
                                                         id="cellAmount"
                                                         number="{path: 'fixedAssetEntries>AcqnAmtInTransactionCurrency', type: 'sap.ui.model.type.Float', formatOptions: {minFractionDigits: 2, maxFractionDigits: 2, groupingEnabled: true}}"

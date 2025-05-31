@@ -100,7 +100,8 @@ sap.ui.define(
           "Assignment",
           "Reference Key-1",
           "Item Text",
-          "Business Place"
+          "Business Place",
+          "Special GL Indicator"
         ];
         const customerCreditData = [
           [
@@ -113,7 +114,8 @@ sap.ui.define(
             "Axis Customer",
             "Ref Customer",
             "Credit Item Customer Text",
-            "1007"
+            "1007",
+             "A"
           ]
         ];
         const debitorSheet = XLSX.utils.aoa_to_sheet([
@@ -435,13 +437,13 @@ sap.ui.define(
        */
       this._generatePDF = function (data, type) {
         // Define document title based on type
-        let title = "Customer Collection Entries Upload Report";
+        let title = "Customer to Customer Entries Upload Report";
         if (type === "success") {
-          title = "Customer Collection Entries Upload - Success Report";
+          title = "Customer to Customer Entries Upload - Success Report";
         } else if (type === "error") {
-          title = "Customer Collection Entries Upload - Error Report";
+          title = "Customer to Customer Entries Upload - Error Report";
         } else if (type === "partial") {
-          title = "Customer Collection Entries Upload - Partial Success Report";
+          title = "Customer to Customer Entries Upload - Partial Success Report";
         }
 
         // Create document definition

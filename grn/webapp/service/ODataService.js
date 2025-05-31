@@ -33,52 +33,43 @@ sap.ui.define([
         }
 
         /**
-         * Create a single material document with all its items
-         * @param {Object} materialDocumentData - Complete material document data with header and items
+         * Create a single GRN with all its items
+         * @param {Object} materialDocumentData - Complete GRN data with header and items
          * @param {Object} callbacks - Callbacks for success, error
          */
         createSingleMaterialDocument(materialDocumentData, callbacks) {
             if (!materialDocumentData) {
-                throw new Error("Material document data is required");
+                throw new Error("GRN data is required");
             }
 
             BusyIndicator.show(0);
 
-            // Create the material document with deep insert
+            // Create the GRN with deep insert
             this._oModel.create("/A_MaterialDocumentHeader", materialDocumentData, {
                 success: (oData, oResponse) => {
                     BusyIndicator.hide();
-                    // Store the raw response for export
-                    this.lastResponseText =
-                        oResponse.body || oResponse.data || JSON.stringify(oData);
 
-                    // Try to extract data for export
-                    const exportData = this._parseODataResponse(this.lastResponseText);
+                    // Use DataTransformer for response parsing
+                    const exportData = this._parseODataResponse(oResponse.body || oResponse.data);
 
-                    // Prepare success result with consolidated message format
+                    // Use ErrorHandler for success messaging
+                    if (exportData.items) {
+                        exportData.items.forEach(item => {
+                            const successMsg = this._errorHandler.createSuccessMessage(item, "ODataService");
+                            item.Message = successMsg.message;
+                        });
+                    }
+
                     const result = {
                         totalRecords: materialDocumentData.to_MaterialDocumentItem.results.length,
                         successfulRecords: materialDocumentData.to_MaterialDocumentItem.results.length,
                         failedRecords: 0,
                         failedRecordsList: [],
-                        responseData: exportData, // Include parsed response data
-                        rawResponse: this.lastResponseText // Include raw response
+                        responseData: exportData,
+                        rawResponse: this.lastResponseText
                     };
 
-                    // Ensure success message is in "Message" field for each item
-                    if (result.responseData && result.responseData.items) {
-                        result.responseData.items.forEach(item => {
-                            // Set Message field directly, rather than using SuccessMessage or ErrorMessage
-                            item.Message = item.Message || "Document processed successfully";
-                            // Remove any separate message fields
-                            delete item.SuccessMessage;
-                            delete item.ErrorMessage;
-                        });
-                    }
-
-                    if (callbacks && callbacks.success) {
-                        callbacks.success(result);
-                    }
+                    callbacks?.success?.(result);
                 },
                 error: (oError) => {
                     BusyIndicator.hide();
@@ -92,33 +83,21 @@ sap.ui.define([
                         successfulRecords: 0,
                         failedRecords: materialDocumentData.to_MaterialDocumentItem.results.length,
                         failedRecordsList: materialDocumentData.to_MaterialDocumentItem.results.map(
-                            (item, index) => ({
-                                index: index,
-                                entry: item,
-                                // Use Message instead of separate error fields
-                                Message: errorInfo.message,
-                                errorCode: errorInfo.code,
-                                details: errorInfo.details
-                            })
+                            (item, index) => this._errorHandler.normalizeRecord(
+                                item, false, errorInfo, "ODataService", index
+                            )
                         )
                     };
 
                     // Call error callback if provided
-                    if (callbacks && callbacks.error) {
-                        callbacks.error({
-                            message: errorInfo.message,
-                            code: errorInfo.code,
-                            details: errorInfo.details,
-                            result: result
-                        });
-                    }
+                    callbacks?.error?.({ message: errorInfo.message, code: errorInfo.code, details: errorInfo.details, result });
                 }
             });
         }
 
         /**
-         * Create multiple material documents using batch processing
-         * @param {Array} materialDocuments - Array of material documents to process
+         * Create multiple GRNs using batch processing
+         * @param {Array} materialDocuments - Array of GRNs to process
          * @param {Object} callbacks - Callbacks for batch processing steps
          * @returns {Promise} Promise that resolves when all batches are processed
          */
@@ -126,7 +105,7 @@ sap.ui.define([
             return new Promise((resolve, reject) => {
                 try {
                     if (!materialDocuments || materialDocuments.length === 0) {
-                        throw new Error("No material documents to process");
+                        throw new Error("No GRNs to process");
                     }
 
                     // Initialize counters
@@ -180,11 +159,11 @@ sap.ui.define([
         }
 
         /**
-         * Submit a batch of material documents to OData service
+         * Submit a batch of GRNs to OData service
          * @param {Number} batchIndex - Current batch index
          * @param {Number} totalBatches - Total number of batches
          * @param {Array} originalDeferredGroups - Original deferred groups
-         * @param {Array} materialDocuments - All material documents to process
+         * @param {Array} materialDocuments - All GRNs to process
          * @param {Object} callbacks - Callbacks for batch processing steps
          * @returns {Promise} Promise that resolves when all batches are processed
          * @private
@@ -299,19 +278,31 @@ sap.ui.define([
                     callbacks.batchStart(batchIndex, totalBatches);
                 }
 
-                // Group entries by document number
-                const documentGroups = this._dataTransformer.groupByFields(batchEntries, ['PurchaseOrder', 'PostingDate']);
+                // Group entries by Sequence Id,Purchase Order number, Posting Date 
+                const documentGroups = this._dataTransformer.groupByFields(batchEntries, ['SequenceId', 'PurchaseOrder', 'PostingDate']);
 
-                // Process each document group
+                // Process each group
                 Object.keys(documentGroups).forEach(groupKey => {
                     const itemsForDocument = documentGroups[groupKey];
                     const firstItem = itemsForDocument[0];
                     const grnDocNumber = firstItem.GRNDocumentNumber || "Unknown";
+                    const sequenceId = firstItem.SequenceId || firstItem.SequenceID || "";
+                    const purchaseOrder = firstItem.PurchaseOrder || "";
+                    const postingDate = firstItem.PostingDate || "";
 
-                    // Create material document header with the DataTransformer
+                    console.log(`Creating GRN for group: SequenceId=${sequenceId}, PO=${purchaseOrder}, PostingDate=${postingDate}`);
+
+                    // Create GRN header with the DataTransformer
                     const materialDocHeader = this._dataTransformer.transformToODataFormat(itemsForDocument);
 
-                    // Create the material document with deep insert
+                    // Add group information to header
+                    if (materialDocHeader.header) {
+                        materialDocHeader.header.SequenceId = sequenceId;
+                        materialDocHeader.header.PurchaseOrder = purchaseOrder;
+                        materialDocHeader.header.PostingDate = postingDate;
+                    }
+
+                    // Create the GRN with deep insert
                     this._oModel.create("/A_MaterialDocumentHeader", materialDocHeader, {
                         groupId: groupId,
                         success: (data, response) => {
@@ -470,47 +461,30 @@ sap.ui.define([
                 const header = {
                     MaterialDocument: data.MaterialDocument,
                     MaterialDocumentYear: data.MaterialDocumentYear,
-                    DocumentDate: this._dataTransformer.parseODataDate(data.DocumentDate),
-                    PostingDate: this._dataTransformer.parseODataDate(data.PostingDate),
+                    // Use DataTransformer for date parsing
+                    DocumentDate: this._dataTransformer.parseDate(data.DocumentDate),
+                    PostingDate: this._dataTransformer.parseDate(data.PostingDate),
                     MaterialDocumentHeaderText: data.MaterialDocumentHeaderText,
                     ReferenceDocument: data.ReferenceDocument,
                     GoodsMovementCode: data.GoodsMovementCode,
                     InventoryTransactionType: data.InventoryTransactionType
                 };
 
-                // Check if items exist
                 const items = [];
-                if (data.to_MaterialDocumentItem && data.to_MaterialDocumentItem.results) {
+                if (data.to_MaterialDocumentItem?.results) {
                     data.to_MaterialDocumentItem.results.forEach(item => {
-                        items.push({
-                            MaterialDocument: item.MaterialDocument,
-                            MaterialDocumentYear: item.MaterialDocumentYear,
-                            MaterialDocumentItem: item.MaterialDocumentItem,
-                            Material: item.Material,
-                            Plant: item.Plant,
-                            StorageLocation: item.StorageLocation,
-                            GoodsMovementType: item.GoodsMovementType,
-                            PurchaseOrder: item.PurchaseOrder,
-                            PurchaseOrderItem: item.PurchaseOrderItem,
-                            QuantityInEntryUnit: item.QuantityInEntryUnit,
-                            EntryUnit: item.EntryUnit,
-                            GoodsMovementRefDocType: item.GoodsMovementRefDocType,
-                            Status: "Success",
-                            Message: "Material document item created successfully" // Add a consistent Message field
-                        });
+                        // Use DataTransformer for field standardization
+                        const standardizedItem = this._dataTransformer.standardizeFieldNames(item);
+                        standardizedItem.Status = "Success";
+                        standardizedItem.Message = "GRN item created successfully";
+                        items.push(standardizedItem);
                     });
                 }
 
-                return {
-                    header: header,
-                    items: items
-                };
+                return { header, items };
             } catch (e) {
                 console.error("Error parsing OData response:", e);
-                return {
-                    header: {},
-                    items: []
-                };
+                return { header: {}, items: [] };
             }
         }
 

@@ -20,7 +20,7 @@ sap.ui.define([
      */
     this.downloadTemplate = function() {
       const wb = this._createTemplateWorkbook();
-      XLSX.writeFile(wb, "JournalEntryTemplate.xlsx");
+      XLSX.writeFile(wb, "Vendor_Payments.xlsx");
     };
     
     /**
@@ -105,7 +105,8 @@ sap.ui.define([
         "Reference Key-1",
         "Item Text",
         "Business Place",
-        "Special GL Code"
+        "Special GL Code",
+        "Payment Reference"
       ];
       const creditorData = [
         [
@@ -119,7 +120,8 @@ sap.ui.define([
           "Ref Vendor",
           "Item Vendor",
           "1007",
-          "A"
+          "A",
+          "123456789"
         ]
       ];
       const creditorSheet = XLSX.utils.aoa_to_sheet([
@@ -296,7 +298,7 @@ sap.ui.define([
           typeStr = "export";
       }
 
-      return `journal_entries_${typeStr}_${timestamp}.${extension}`;
+      return `Vendor_Payments_${typeStr}_${timestamp}.${extension}`;
     };
     
     /**

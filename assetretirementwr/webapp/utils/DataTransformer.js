@@ -55,7 +55,6 @@ sap.ui.define([
                     "Accounting Document Header Text": row.AccountingDocumentHeaderText || "",
                     "Transaction Currency": row.FxdAstRtrmtRevnTransCrcy || "",
                     "Retirement Amount": row.AstRtrmtAmtInTransCrcy || "",
-                    "Quantity": row.FxdAstRtrmtQuantityInBaseUnit || "",
                     "Base Unit SAP Code": row.BaseUnitSAPCode || "",
                     "Base Unit ISO Code": row.BaseUnitISOCode || "",
                     "Accounting Document Type": row.AccountingDocumentType || "",
@@ -130,7 +129,6 @@ sap.ui.define([
                     "Accounting Document Header Text": entry.AccountingDocumentHeaderText || "",
                     "Transaction Currency": entry.FxdAstRtrmtRevnTransCrcy || "",
                     "Retirement Amount": entry.AstRtrmtAmtInTransCrcy || "",
-                    "Quantity": entry.FxdAstRtrmtQuantityInBaseUnit || "",
                     "Base Unit SAP Code": entry.BaseUnitSAPCode || "",
                     "Base Unit ISO Code": entry.BaseUnitISOCode || "",
                     "Accounting Document Type": entry.AccountingDocumentType || "",
@@ -214,7 +212,6 @@ sap.ui.define([
                 AccountingDocumentHeaderText: entry.AccountingDocumentHeaderText || "",
 
                 // Quantity and Units
-                FxdAstRtrmtQuantityInBaseUnit: this._formatQuantity(entry.FxdAstRtrmtQuantityInBaseUnit),
                 BaseUnitSAPCode: entry.BaseUnitSAPCode || "",
                 BaseUnitISOCode: entry.BaseUnitISOCode || "",
 

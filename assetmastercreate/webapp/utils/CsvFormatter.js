@@ -1,8 +1,7 @@
-
 sap.ui.define([], function () {
     "use strict";
 
-     // Helper to ensure XLSX utils are loaded for CSV conversion
+    // Helper to ensure XLSX utils are loaded for CSV conversion
     const checkXLSXUtils = () => {
         if (typeof window.XLSX === 'undefined' || typeof window.XLSX.utils === 'undefined') {
             throw new Error("XLSX library utils not loaded. CSV export requires them for robust conversion.");
@@ -23,7 +22,8 @@ sap.ui.define([], function () {
             return new Promise((resolve, reject) => {
                 try {
                     checkXLSXUtils();
-                     if (!data || data.length === 0) {
+
+                    if (!data || data.length === 0) {
                         reject(new Error("No data provided for CSV export."));
                         return;
                     }

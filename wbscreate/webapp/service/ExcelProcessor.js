@@ -328,7 +328,7 @@ sap.ui.define([
           standardizedRow._originalData = rowObject;
           standardizedRow.Status = "Pending";
           standardizedRow.ValidationErrors = [];
-          debugger
+   
           // Convert 'X' to boolean for boolean fields
           if (standardizedRow.WBSElementIsBillingElement === 'X') {
             standardizedRow.WBSElementIsBillingElement = true;

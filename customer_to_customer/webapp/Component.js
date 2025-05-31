@@ -38,6 +38,11 @@ sap.ui.define([
                     console.error(error.message);
                     sap.ui.getCore().byId("messageBox").setText("Error: XLSX library is required for this functionality.");
                 });
+            // set the device model
+            this.setModel(models.createDeviceModel(), "device");
+
+            // enable routing
+            this.getRouter().initialize();
         }
     });
 });

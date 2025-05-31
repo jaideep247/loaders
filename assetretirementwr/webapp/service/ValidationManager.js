@@ -118,7 +118,6 @@ sap.ui.define(
             { field: "DocumentReferenceID", label: "Document Reference ID", required: false, maxLength: 16 },
             { field: "AccountingDocumentHeaderText", label: "Header Text", required: false, maxLength: 25 },
             { field: "DocumentItemText", label: "Item Text", required: false, maxLength: 50 },
-            { field: "FxdAstRtrmtQuantityInBaseUnit", label: "Quantity", required: false },
             { field: "BaseUnitSAPCode", label: "Base Unit", required: false, maxLength: 3 },
             { field: "BaseUnitISOCode", label: "Base Unit ISO Code", required: false, maxLength: 3 },
             { field: "AccountingDocumentType", label: "Accounting Document Type", required: false, maxLength: 2 },
@@ -144,7 +143,7 @@ sap.ui.define(
           });
 
           // Conditional requirement: Base Unit is required if Quantity is provided
-          if (entry.FxdAstRtrmtQuantityInBaseUnit && !entry.BaseUnitSAPCode) {
+          if (!entry.BaseUnitSAPCode) {
             errors.push({ field: "BaseUnitSAPCode", message: "Base Unit is required when Quantity is provided." });
           }
         },
@@ -179,14 +178,7 @@ sap.ui.define(
             // Might indicate parsing/formatting error in transformer
           } else if (entry.AstRtrmtAmtInTransCrcy && typeof entry.AstRtrmtAmtInTransCrcy === 'string' && !/^-?\d+(\.\d+)?$/.test(entry.AstRtrmtAmtInTransCrcy)) {
             errors.push({ field: "AstRtrmtAmtInTransCrcy", message: `Retirement Amount ('${entry.AstRtrmtAmtInTransCrcy}') is not a valid number format.` });
-          }
-
-          // Quantity validation 
-          if (entry.FxdAstRtrmtQuantityInBaseUnit === null && entry.Status !== "Invalid") {
-            // Might indicate parsing/formatting error in transformer
-          } else if (entry.FxdAstRtrmtQuantityInBaseUnit && typeof entry.FxdAstRtrmtQuantityInBaseUnit === 'string' && !/^-?\d+(\.\d{1,3})?$/.test(entry.FxdAstRtrmtQuantityInBaseUnit)) {
-            errors.push({ field: "FxdAstRtrmtQuantityInBaseUnit", message: `Quantity ('${entry.FxdAstRtrmtQuantityInBaseUnit}') is not a valid number format (expected up to 3 decimals).` });
-          }
+          }        
         },
 
         /**
@@ -308,8 +300,7 @@ sap.ui.define(
             "AccountingDocumentHeaderText": "Optional. Document header description, up to 25 characters.",
             "FxdAstRtrmtRevnTransCrcy": "Required. 3-letter ISO currency code (e.g., USD, EUR).",
             "AstRtrmtAmtInTransCrcy": "Required. Retirement amount in transaction currency (e.g., 5000.00).",
-            "FxdAstRtrmtQuantityInBaseUnit": "Optional. Quantity being retired (e.g., 1.000).",
-            "BaseUnitSAPCode": "Optional unless Quantity provided. SAP unit code (e.g., EA, PC).",
+           "BaseUnitSAPCode": "Optional unless Quantity provided. SAP unit code (e.g., EA, PC).",
             "BaseUnitISOCode": "Optional. ISO unit code.",
             "AccountingDocumentType": "Optional. Document type code, up to 2 characters.",
             "AssignmentReference": "Optional. Assignment reference, up to 18 characters.",

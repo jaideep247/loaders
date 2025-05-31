@@ -644,7 +644,7 @@ sap.ui.define([
               entry.debtorTransactions.find(debtor =>
                 debtor["Sequence ID"] === item["Sequence ID"]
               ) : null;
-         
+
             soapEnvelope += `<Item>
                                 <ReferenceDocumentItem>${itemIndex}</ReferenceDocumentItem>
                                 <CompanyCode>${entry.header["Company Code"] || "1000"}</CompanyCode>                                
@@ -667,12 +667,13 @@ sap.ui.define([
             itemIndex++;
           });
         }
-       
+
         // Add Creditor transactions (credit entries)
         // Fix: Check if debtorTransactions exists and is an array
         if (entry.debtorTransactions && Array.isArray(entry.debtorTransactions)) {
           entry.debtorTransactions.forEach((item) => {
             let specialGLCode = item["Special GL Indicator"];
+            let paymentReference = item["Payment Reference"]; 
             soapEnvelope += `<DebtorItem>
                                 <ReferenceDocumentItem>${itemIndex}</ReferenceDocumentItem>
                                 <Debtor>${item["Customer Code"]}</Debtor>
@@ -686,6 +687,9 @@ sap.ui.define([
                                 <DownPaymentTerms>
                                     ${specialGLCode ? `<SpecialGLCode>${specialGLCode}</SpecialGLCode>` : ""}
                                 </DownPaymentTerms>
+                                <PaymentDetails>
+                                    ${paymentReference ? `<PaymentReference>${paymentReference}</PaymentReference>` : ""}
+                                </PaymentDetails>
                                 <ValueDate>${item["Value Date"]}</ValueDate>
                                 </DebtorItem>`;
             itemIndex++;
@@ -760,7 +764,7 @@ sap.ui.define([
     },
 
     _parseSOAPResponse: function ($response, validTransactions) {
-    
+
       const uploadResults = [];
       const processedSequenceIds = new Set(); // Track processed sequence IDs
 

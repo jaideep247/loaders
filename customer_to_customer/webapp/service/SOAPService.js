@@ -702,6 +702,7 @@ sap.ui.define([
 
         if (entry.debtorTransactions && Array.isArray(entry.debtorTransactions)) {
           entry.debtorTransactions.forEach((item) => {
+            let specialGLCode = item["Special GL Indicator"];
             soapEnvelope += `<DebtorItem>
                                 <ReferenceDocumentItem>${itemIndex}</ReferenceDocumentItem>
                                 <Debtor>${item["Customer Code"]}</Debtor>
@@ -712,6 +713,9 @@ sap.ui.define([
                                 <Reference1IDByBusinessPartner>${item["Reference Key 1"]}</Reference1IDByBusinessPartner>
                                 <Reference3IDByBusinessPartner>${item["Reference Key 3"]}</Reference3IDByBusinessPartner>                                                                                                       
                                 <BusinessPlace>${item["Business Place"] || ""}</BusinessPlace>
+                                <DownPaymentTerms>
+                                    ${specialGLCode ? `<SpecialGLCode>${specialGLCode}</SpecialGLCode>` : ""}
+                                </DownPaymentTerms>                                
                                 </DebtorItem>`;
             itemIndex++;
           });

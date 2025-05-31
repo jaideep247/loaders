@@ -14,13 +14,14 @@ sap.ui.define([
         this._progressTracker = new ProgressTracker();
         this._batchDisplayModel = null;
         this._timeoutId = null;
+        this._batchOptions = {}; // To store batch options
 
-        // Processing state (simplified)
+        // Processing state
         this._processingState = {
             isProcessing: false,
             isCanceled: false,
-            currentBatchIndex: 0,
-            totalBatches: 0
+            currentBatchIndex: 0, // For UI display batches
+            totalBatches: 0     // For UI display batches
         };
 
         // Response data
@@ -30,7 +31,8 @@ sap.ui.define([
             failureCount: 0,
             successRecords: [],
             errorRecords: [],
-            allMessages: []
+            allMessages: [],
+            initialEntries: [] // To store the initial set of entries
         };
 
         this._logInfo = function (message) {
@@ -55,9 +57,10 @@ sap.ui.define([
                         timeRemaining: "Calculating...",
                         processingSpeed: "0 entries/sec",
                         currentBatch: 0,
-                        totalBatches: this._processingState.totalBatches,
+                        totalBatches: this._processingState.totalBatches, // UI display total batches
                         isCompleted: false,
-                        isError: false
+                        isError: false,
+                        batchOptions: this._batchOptions // Store batchOptions for access if needed
                     });
 
                     this.oController.getView().setModel(this._batchDisplayModel, "batchDisplay");
@@ -73,23 +76,17 @@ sap.ui.define([
                             resolve(oDialog);
                         }).catch(error => {
                             this._logError("Error loading fragment", error);
-                            // Even if dialog fails, continue processing
-                            resolve(null);
+                            resolve(null); // Continue even if dialog fails
                         });
                     } else {
-                        try {
-                            if (!this._batchProcessingDialog.isOpen()) {
-                                this._batchProcessingDialog.open();
-                            }
-                        } catch (error) {
-                            this._logError("Error opening dialog", error);
+                        if (!this._batchProcessingDialog.isOpen()) {
+                            this._batchProcessingDialog.open();
                         }
                         resolve(this._batchProcessingDialog);
                     }
                 } catch (error) {
                     this._logError("Error initializing batch display", error);
-                    // Continue even if display fails
-                    resolve(null);
+                    resolve(null); // Continue even if display fails
                 }
             });
         };
@@ -102,8 +99,10 @@ sap.ui.define([
                 const elapsedMinutes = progress.elapsedTime / 60;
                 const speed = elapsedMinutes > 0 ? Math.round(progress.processed / elapsedMinutes) : 0;
 
+                const currentModelData = this._batchDisplayModel.getData();
+
                 this._batchDisplayModel.setData({
-                    status: "Processing entries...",
+                    ...currentModelData,
                     totalEntries: progress.total,
                     processedEntries: progress.processed,
                     successCount: progress.successCount,
@@ -114,22 +113,22 @@ sap.ui.define([
                     totalBatches: this._processingState.totalBatches,
                     displayText: {
                         entries: `${progress.processed} of ${progress.total} entries`,
-                        batches: `${this._processingState.currentBatchIndex} of ${this._processingState.totalBatches} batches`
+                        sequences: `${this._processingState.currentBatchIndex} of ${this._processingState.totalBatches} sequence groups`
                     },
-                    isCompleted: false,
-                    isError: false,
+                    isCompleted: currentModelData.isCompleted || false,
+                    isError: currentModelData.isError || false,
                     processingSpeed: `${speed} entries/min`,
                     entriesProgress: progress.percentage,
-                    batchProgress: (this._processingState.currentBatchIndex / this._processingState.totalBatches) * 100
+                    sequenceProgress: this._processingState.totalBatches > 0 ?
+                        (this._processingState.currentBatchIndex / this._processingState.totalBatches) * 100 : 0
                 });
             } catch (error) {
                 this._logError("Error updating progress display", error);
             }
         };
 
-        // Main processing method - now delegates to ODataService
+        // Main processing method
         this.startBatchProcessing = function (entries, options = {}) {
-          
             if (!entries || !entries.length) {
                 return Promise.reject(new Error("No entries to process"));
             }
@@ -138,8 +137,10 @@ sap.ui.define([
                 return Promise.reject(new Error("OData Service not initialized in controller"));
             }
 
-            const batchOptions = {
-                batchSize: 10,
+            // Store batchOptions on 'this' to make it accessible in callbacks if needed,
+            // though direct closure access also works if callbacks are defined within this function's scope.
+            this._batchOptions = {
+                batchSize: 10, // Default UI batch size for display
                 showProgress: true,
                 ...options
             };
@@ -148,120 +149,163 @@ sap.ui.define([
             this._processingState = {
                 isProcessing: true,
                 isCanceled: false,
-                currentBatchIndex: 0,
-                totalBatches: Math.ceil(entries.length / batchOptions.batchSize)
+                currentBatchIndex: 0, // For UI display batches
+                totalBatches: Math.ceil(entries.length / this._batchOptions.batchSize) // For UI display batches
             };
+            if (this._processingState.totalBatches === 0 && entries.length > 0) { // Ensure totalBatches is at least 1 if there are entries
+                this._processingState.totalBatches = 1;
+            }
+
 
             // Initialize progress tracker
             this._progressTracker.start(entries.length);
 
-            // Initialize response data
+            // Initialize response data & store initial entries
             this._responseData = {
                 totalRecords: entries.length,
                 successCount: 0,
                 failureCount: 0,
                 successRecords: [],
                 errorRecords: [],
-                allMessages: []
+                allMessages: [],
+                initialEntries: entries.map(entry => ({ ...entry })) // Store a deep copy of initial entries
             };
 
-            // Clear any previous timeout
             if (this._timeoutId) {
                 clearTimeout(this._timeoutId);
                 this._timeoutId = null;
             }
 
-            // Display progress dialog if enabled
-            const initPromise = batchOptions.showProgress
+            const initPromise = this._batchOptions.showProgress
                 ? this._initBatchProcessingDisplay(entries.length)
                 : Promise.resolve();
 
             return initPromise.then(() => {
-                // Define callbacks for ODataService
                 const callbacks = {
-                    batchStart: (batchIndex, totalBatches) => {
-                        this._processingState.currentBatchIndex = batchIndex;
+                    batchStart: (sequenceGroupIndex, totalSequenceGroups) => {
+                        // This callback from ODataService indicates the start of a sequence group batch
+                        this._logInfo(`ODataService: Sequence group ${sequenceGroupIndex} of ${totalSequenceGroups} initiated.`);
+                        if (this._batchDisplayModel) {
+                            this._batchDisplayModel.setProperty("/status", `Processing sequence group ${sequenceGroupIndex} of ${totalSequenceGroups}...`);
+                        }
+
+                        // Update current batch index for UI display
+                        this._processingState.currentBatchIndex = sequenceGroupIndex;
+                        this._processingState.totalBatches = totalSequenceGroups;
+
                         this._updateProgressDisplay();
                     },
-                    
-                    batchProgress: (batchIndex, totalBatches, processedCount, totalCount) => {
-                        this._processingState.currentBatchIndex = batchIndex;
+
+                    batchProgress: (sequenceGroupIndex, totalSequenceGroups, processedItems, totalItems) => {
+                        // This callback from ODataService reports progress within sequence groups
+                        if (this._batchDisplayModel) {
+                            this._batchDisplayModel.setProperty("/status",
+                                `Processing sequence group ${sequenceGroupIndex} of ${totalSequenceGroups} - ${processedItems} of ${totalItems} items processed...`);
+                        }
+
+                        // Update the display batch index
+                        this._processingState.currentBatchIndex = sequenceGroupIndex;
+                        if (this._processingState.totalBatches !== totalSequenceGroups) {
+                            this._processingState.totalBatches = totalSequenceGroups;
+                        }
+
+                        // Update item progress display
+                        if (this._batchDisplayModel) {
+                            this._batchDisplayModel.setProperty("/processedEntries", processedItems);
+                            this._batchDisplayModel.setProperty("/percentage", totalItems > 0 ? (processedItems / totalItems) * 100 : 0);
+                        }
+
                         this._updateProgressDisplay();
                     },
-                    
+
                     success: (result) => {
-                        // Update our internal response data with the results from ODataService
+                        this._logInfo("ODataService: Sequence-based batch processing reported success.");
+                        if (this._batchDisplayModel) {
+                            this._batchDisplayModel.setProperty("/status", "Processing completed successfully");
+                        }
                         this._handleBatchResult(result);
                         this._finalizeProgress(true);
-                        
-                        // Dialog will remain open until explicitly closed by the user
                         return result;
                     },
-                    
-                    error: (error) => {
-                        // Handle error, but don't automatically close the dialog
-                        this._logError("Error in batch processing", error);
-                        this._handleBatchResult(error);
+
+                    error: (error, resultFromODataErrorCallback) => {
+                        this._logError("ODataService: Sequence-based batch processing reported an error.", error);
+                        if (this._batchDisplayModel) {
+                            this._batchDisplayModel.setProperty("/status", "Processing completed with errors");
+                        }
+
+                        if (resultFromODataErrorCallback) {
+                            this._handleBatchResult(resultFromODataErrorCallback);
+                        } else {
+                            // Construct a result indicating total failure
+                            const totalFailureResult = {
+                                totalRecords: this._responseData.totalRecords,
+                                successCount: 0,
+                                failureCount: this._responseData.totalRecords,
+                                successRecords: [],
+                                failedRecordsList: this._responseData.initialEntries.map(entry => ({
+                                    originalEntry: entry,
+                                    Sequence: entry.Sequence || "N/A",
+                                    Status: "Error",
+                                    RawData: entry,
+                                    ErrorMessage: `Sequence batch submission failed: ${error.message || "Unknown error"}`,
+                                    ErrorDetails: error.stack || error.details,
+                                    ValidationErrors: [],
+                                    error: { message: `Sequence batch submission failed: ${error.message || "Unknown error"}` }
+                                }))
+                            };
+                            this._handleBatchResult(totalFailureResult);
+                        }
                         this._finalizeProgress(false, error);
-                        
-                        // Return error response
                         return this._createErrorResponse(error);
                     }
                 };
 
                 // Delegate actual processing to ODataService
+                // 'entries' here are the transformedItems from POController
                 return this.oController._oDataService.createPurchaseOrders(entries, callbacks);
             });
         };
 
-        // Combined handler for successful or error results
-        this._handleBatchResult = function(result) {
-            // Make sure we handle both success and error results
+        this._handleBatchResult = function (result) {
             if (!result) return;
 
-            // Update success records if available
-            if (result.successRecords || result.successfulRecords) {
-                const successRecords = result.successRecords || result.successfulRecords || [];
+            if (result.successRecords) {
+                const successRecords = result.successRecords || [];
                 this._responseData.successCount += successRecords.length;
                 this._responseData.successRecords = [...this._responseData.successRecords, ...successRecords];
-                
-                // Update progress tracker with successful records
                 this._progressTracker.update(successRecords.length, true, successRecords);
             }
 
-            // Update error records if available
-            if (result.errorRecords || result.failedRecordsList) {
-                const errorRecords = result.errorRecords || result.failedRecordsList || [];
-                this._responseData.failureCount += errorRecords.length;
-                this._responseData.errorRecords = [...this._responseData.errorRecords, ...errorRecords];
-                
-                // Update progress tracker with failed records
-                this._progressTracker.update(errorRecords.length, false, errorRecords);
+            // ODataService returns failedRecordsList, BatchProcessingManager used errorRecords internally
+            const errorRecordsList = result.errorRecords || result.failedRecordsList || [];
+            if (errorRecordsList.length > 0) {
+                this._responseData.failureCount += errorRecordsList.length;
+                // Ensure errorRecords in _responseData are compatible with what _createErrorResponse expects
+                // _formatErrorRecord from ODataService should provide the correct structure.
+                this._responseData.errorRecords = [...this._responseData.errorRecords, ...errorRecordsList];
+                this._progressTracker.update(errorRecordsList.length, false, errorRecordsList);
             }
 
-            // Handle error response
-            if (result.error || result.canceled) {
+            if (result.error || result.cancelled) { // 'cancelled' from ODataService result
                 this._processingState.isProcessing = false;
-                if (result.canceled) {
+                if (result.cancelled) {
                     this._processingState.isCanceled = true;
                 }
             }
-
-            // Update display
-            this._updateProgressDisplay();
+            this._updateProgressDisplay(); // Reflect final counts from _progressTracker
         };
 
-        // Error response helper
         this._createErrorResponse = function (error) {
-            const progress = this._progressTracker.getProgress();
+            const progress = this._progressTracker.getProgress(); // Gets up-to-date counts
             return {
                 error: true,
                 errorMessage: error ? error.message : "Unknown error occurred",
                 successCount: progress.successCount,
                 failureCount: progress.failureCount,
                 totalCount: progress.total,
-                successRecords: progress.successRecords || [],
-                errorRecords: progress.errorRecords || []
+                successRecords: this._responseData.successRecords, // Use accumulated success records
+                errorRecords: this._responseData.errorRecords     // Use accumulated error records
             };
         };
 
@@ -269,54 +313,61 @@ sap.ui.define([
             if (!this._batchDisplayModel) return;
 
             try {
-                // Check if already finalized
                 const currentData = this._batchDisplayModel.getData();
                 if (currentData && currentData.isCompleted) {
                     return;
                 }
 
                 const progress = this._progressTracker.getProgress();
+                const finalStatus = success ? "Processing completed successfully" :
+                    (this._processingState.isCanceled ? "Processing canceled by user" :
+                        (error ? `Processing completed with errors: ${error.message}` : "Processing completed with errors"));
 
                 this._batchDisplayModel.setData({
-                    ...this._batchDisplayModel.getData(),
-                    status: success ? "Processing completed successfully" :
-                        (error ? `Processing completed with errors: ${error.message}` : "Processing completed with errors"),
-                    error: error ? error.message : "",
+                    ...currentData,
+                    status: finalStatus,
+                    error: error && !this._processingState.isCanceled ? error.message : (this._processingState.isCanceled ? "Processing was canceled." : ""),
                     timeRemaining: "Completed",
                     processingTime: `${progress.elapsedTime.toFixed(2)}s`,
                     isCompleted: true,
-                    isError: !success
+                    isError: !success || this._processingState.isCanceled,
+                    // Ensure final counts are reflected
+                    processedEntries: progress.processed,
+                    successCount: progress.successCount,
+                    failureCount: progress.failureCount,
+                    percentage: progress.percentage
                 });
-            } catch (error) {
-                this._logError("Error finalizing progress", error);
+            } catch (e) {
+                this._logError("Error finalizing progress", e);
             }
         };
 
-        // Cancel processing by delegating to ODataService
         this.cancelBatchProcessing = function () {
-            if (this._processingState.isProcessing) {
-                this._processingState.isCanceled = true;
-
-                if (this._batchDisplayModel) {
-                    try {
-                        this._batchDisplayModel.setProperty("/status", "Processing canceled by user");
-                        this._batchDisplayModel.setProperty("/isError", true);
-                        this._batchDisplayModel.setProperty("/error", "Processing was canceled by the user");
-                        this._batchDisplayModel.setProperty("/isCompleted", true);
-                    } catch (error) {
-                        this._logError("Error updating model during cancel", error);
-                    }
-                }
+            if (this._processingState.isProcessing && !this._processingState.isCanceled) {
+                this._processingState.isCanceled = true; // Mark as canceled first
 
                 // Delegate cancellation to ODataService
                 if (this.oController._oDataService?.cancelBatchProcessing) {
                     try {
+                        // ODataService's cancelBatchProcessing is now synchronous or returns a promise
+                        // indicating the cancellation signal has been sent.
                         this.oController._oDataService.cancelBatchProcessing();
+                        this._logInfo("Cancellation signal sent to ODataService.");
                     } catch (error) {
-                        this._logError("Error canceling OData processing", error);
+                        this._logError("Error signaling cancel to ODataService", error);
                     }
                 }
-
+                // The ODataService loop will check _isCancelled.
+                // Finalize progress will reflect cancellation status.
+                // No need to immediately call _finalizeProgress here if ODataService error/success path handles it.
+                // However, if user clicks cancel on dialog, we might want to update UI immediately.
+                if (this._batchDisplayModel) {
+                    this._batchDisplayModel.setProperty("/status", "Cancelling processing...");
+                }
+                // The actual finalization will happen when the ODataService's current operation
+                // (queueing or submitting) acknowledges the cancellation and calls the error/success callback.
+                // If ODataService's `createPurchaseOrders` returns a `cancelled:true` result,
+                // `_handleBatchResult` and `_finalizeProgress` will correctly update the UI.
                 return true;
             }
             return false;
@@ -333,20 +384,24 @@ sap.ui.define([
         };
 
         this.getResponseData = function () {
-            return this._responseData;
+            // Ensure the response data reflects the latest from progress tracker
+            const progress = this._progressTracker.getProgress();
+            return {
+                ...this._responseData,
+                successCount: progress.successCount,
+                failureCount: progress.failureCount,
+                totalRecords: progress.total
+                // successRecords and errorRecords are already accumulated in _responseData
+            };
         };
 
         this.getProcessingState = function () {
             return this._processingState;
         };
 
-        // Add a method to force close dialog - can be triggered from outside
         this.forceCloseDialog = function () {
             this.closeBatchProcessingDialog();
-
-            // Ensure processing state is finalized
             this._processingState.isProcessing = false;
-
             if (this._timeoutId) {
                 clearTimeout(this._timeoutId);
                 this._timeoutId = null;

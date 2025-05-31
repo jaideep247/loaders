@@ -4,7 +4,7 @@
 >
     <Dialog
         id="helpDialog"
-        title="Material Document Excel Upload Help"
+        title="GRN Excel Upload Help"
         contentWidth="600px"
     >
         <content>
@@ -26,7 +26,7 @@
                                 <items>
                                     <Title
                                         id="_IDGenTitle3"
-                                        text="How to Upload Material Documents"
+                                        text="How to Upload GRNs"
                                         class="sapUiSmallMarginTop"
                                     />
                                     <Text
@@ -36,7 +36,7 @@
                                     />
                                     <Text
                                         id="_IDGenText39"
-                                        text="2. Fill in the template with your material document data."
+                                        text="2. Fill in the template with your GRN data."
                                     />
                                     <Text
                                         id="_IDGenText40"
@@ -48,7 +48,7 @@
                                     />
                                     <Text
                                         id="_IDGenText42"
-                                        text="5. Click 'Submit Material Documents' to process valid entries."
+                                        text="5. Click 'Submit GRNs' to process valid entries."
                                     />
                                 </items>
                             </VBox>
@@ -65,7 +65,7 @@
                                     <StandardListItem
                                         id="_IDGenStandardListItem1"
                                         title="Missing Material"
-                                        description="Material number is required for each material document."
+                                        description="Material number is required for each GRN."
                                     />
                                     <StandardListItem
                                         id="_IDGenStandardListItem3"
@@ -80,7 +80,7 @@
                                     <StandardListItem
                                         id="_IDGenStandardListItem6"
                                         title="Invalid Goods Movement Type"
-                                        description="Goods Movement Type must be valid for the material document type."
+                                        description="Goods Movement Type must be valid for the GRN type."
                                     />
                                     <StandardListItem
                                         id="_IDGenStandardListItem7"
@@ -168,7 +168,7 @@
                                                 <items>
                                                     <StandardListItem
                                                         id="_IDGenStandardListItem17"
-                                                        title="Material Document Header Text: Document header text"
+                                                        title="GRN Header Text: Document header text"
                                                     />
                                                     <StandardListItem
                                                         id="_IDGenStandardListItem18"
@@ -221,12 +221,12 @@
                                 <items>
                                     <Title
                                         id="_IDGenTitle4"
-                                        text="Material Document Processing Rules"
+                                        text="GRN Processing Rules"
                                         class="sapUiSmallMarginTop"
                                     />
                                     <Text
                                         id="_IDGenText57"
-                                        text="Each material document must follow these rules:"
+                                        text="Each GRN must follow these rules:"
                                         class="sapUiTinyMarginTop"
                                     />
                                     <List id="_IDGenList5">
