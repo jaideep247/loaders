@@ -178,7 +178,48 @@ sap.ui.define([
       // Assuming UIManager is initialized in the controller's init method
       return this._uiManager;
     },
+    /**
+     * Handles the press event for export buttons
+     * @param {sap.ui.base.Event} oEvent - The event object
+     */
+    // In assetmastercreate/controller/AssetMasterCreate.js
+    onExportPress: function (oEvent) {
+      try {
+        let format = "xlsx";
+        let type = "all";
 
+        const source = oEvent.getSource();
+        if (source && source.getCustomData) {
+          const customData = source.getCustomData();
+          customData.forEach(data => {
+            if (data.getKey() === "format") {
+              format = data.getValue().toLowerCase();
+            } else if (data.getKey() === "type") {
+              type = data.getValue();
+            }
+          });
+        }
+
+        // Corrected: Use _batchProcessingManager instead of _batchManager
+        const resultsToExport = this._batchProcessingManager.getResponseData();
+        if (!resultsToExport || (resultsToExport.successRecords.length === 0 && resultsToExport.errorRecords.length === 0)) {
+          this._errorHandler.showWarning("No processing results available to export.");
+          return;
+        }
+
+        this._exportManager.exportBatchResults(resultsToExport, type, format)
+          .then(() => {
+            this._errorHandler.showSuccess(`Export of ${type} results completed successfully.`);
+          })
+          .catch(error => {
+            console.error(`Export failed for type "<span class="math-inline">\{type\}", format "</span>{format}":`, error);
+            this._errorHandler.showError("Export failed: " + error.message);
+          });
+      } catch (error) {
+        console.error("Error in export process:", error);
+        this._errorHandler.showError("Export failed: " + error.message);
+      }
+    },
     /**
      * Submit valid assets to SAP
      */

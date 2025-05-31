@@ -260,7 +260,7 @@ sap.ui.define([
                         return this._createErrorResponse(error);
                     }
                 };
-
+        
                 // Delegate actual processing to ODataService
                 // 'entries' here are the transformedItems from POController
                 return this.oController._oDataService.createPurchaseOrders(entries, callbacks);

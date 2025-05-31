@@ -193,7 +193,7 @@ sap.ui.define(
        * @private
        */
       this._processEntryDataForDisplay = function (oEntry) {
-        debugger
+
         try {
           // Use DataTransformer if available, otherwise process manually
           if (this.dataTransformer && typeof this.dataTransformer.processEntryDataForDisplay === 'function') {

@@ -257,7 +257,7 @@ sap.ui.define([
                             PlannedUsefulLifeInPeriods: areaData.PlannedUsefulLifeInPeriods || '0',
                             AcqnProdnCostScrapPercent: String(this._parseNumeric(areaData.AcqnProdnCostScrapPercent, "")),
                             ScrapAmountInCoCodeCrcy: String(this._parseNumeric(areaData.ScrapAmountInCoCodeCrcy, "")),
-                            CompanyCodeCurrency: areaData.CompanyCodeCurrency || this.config.defaultCurrency,                           
+                            CompanyCodeCurrency: areaData.CompanyCodeCurrency || this.config.defaultCurrency,
                         }]
                     });
                 });
@@ -499,6 +499,251 @@ sap.ui.define([
                     delete obj[key];
                 }
             });
+        },
+        // ====================================================================
+        // Batch Results Processing for Export
+        // ====================================================================
+
+        /**
+         * Process diverse batch results structures into a unified format for export.
+         * @param {Object} batchData - The raw batch data object (expected to contain results from BatchProcessingManager).
+         * @param {string} [exportType="all"] - Filters results ("all", "success", "error"/"errors").
+         * @returns {Array<object>} - An array of standardized objects for export.
+         */
+        processBatchResults(batchData, exportType = "all") {
+            try {
+                if (!batchData) {
+                    console.warn("processBatchResults: No batch data provided.");
+                    return [];
+                }
+
+                // Prioritize using successRecords and errorRecords directly from batchData or batchData.responseData
+                const successRecordsRaw = batchData.successRecords || batchData.responseData?.successRecords || [];
+                const errorRecordsRaw = batchData.errorRecords || batchData.responseData?.errorRecords || [];
+
+                let successRecordsArray = successRecordsRaw;
+                let errorRecordsArray = errorRecordsRaw;
+
+                if (!Array.isArray(successRecordsArray)) {
+                    console.warn("processBatchResults: successRecords is not an array.", successRecordsRaw);
+                    successRecordsArray = [];
+                }
+                if (!Array.isArray(errorRecordsArray)) {
+                    console.warn("processBatchResults: errorRecords is not an array.", errorRecordsRaw);
+                    errorRecordsArray = [];
+                }
+
+                console.debug(`processBatchResults: Found ${successRecordsArray.length} raw success records, ${errorRecordsArray.length} raw error records.`);
+
+                let combinedRecords = [];
+
+                // Process success records if requested
+                if (exportType === "all" || exportType === "success") {
+                    combinedRecords = combinedRecords.concat(
+                        successRecordsArray.map(record => this._transformFallbackRecord(record, true))
+                    );
+                }
+
+                // Process error records if requested
+                if (exportType === "all" || exportType === "error" || exportType === "errors") {
+                    combinedRecords = combinedRecords.concat(
+                        errorRecordsArray.map(record => this._transformFallbackRecord(record, false))
+                    );
+                }
+
+                if (combinedRecords.length === 0) {
+                    console.warn(`processBatchResults: No records found matching type '${exportType}'.`);
+                    // Return a specific structure indicating no records found
+                    return [{ Status: "No Records", Message: `No records found matching type '${exportType}'.` }];
+                }
+
+                // Reorder columns before returning
+                const reorderedRecords = this._reorderColumns(combinedRecords);
+                console.debug(`processBatchResults: Processed ${reorderedRecords.length} records.`);
+                return reorderedRecords;
+
+            } catch (error) {
+                console.error("Error processing batch results:", error);
+                // Return a structured error message for export
+                return [{ Status: "Processing Error", ErrorMessage: "Internal error processing batch results: " + error.message, ErrorDetails: error.stack }];
+            }
+        },
+        /**
+         * Reorders the columns of an array of records based on a predefined desired order.
+         * Fields not in the desiredOrder will be appended at the end.
+         *
+         * @param {Array<object>} records An array of objects where each object represents a row.
+         * @returns {Array<object>} A new array of objects with columns reordered.
+         * @private
+         */
+        _reorderColumns: function (records) {
+            if (!records || !Array.isArray(records) || records.length === 0) {
+                return records;
+            }
+
+            // Set desired order based on the provided JSON structure
+            const desiredOrder = [
+                // General Identification and Asset Core Data
+                "SequenceNumber",
+                "Status",
+                "Message",
+                "ProcessedAt",
+                "CompanyCode",
+                "AssetClass",
+                "AssetIsForPostCapitalization",
+                "MasterFixedAsset",
+                "FixedAsset",
+                "FixedAssetDescription",
+                "AssetAdditionalDescription",
+                "AssetSerialNumber",
+                "BaseUnit", // from OriginalRequest
+                "BaseUnitSAPCode",
+                "BaseUnitISOCode",
+                "AssetScreenLayout",
+                "AssetAccountDetermination",
+                "AssetTypeName",
+
+                // Account Assignment and Location
+                "WBSElementExternalID",
+                "YY1_WBS_ELEMENT", // from OriginalRequest/CustomFields
+                "Room",
+                "CostCenter", // Keeping from prior, common
+                "GLAccount", // Keeping from prior, common
+
+                // Inventory and Notes
+                "InventoryNote",
+                "Inventory",
+                "LastInventoryDate",
+                "InventoryIsCounted",
+
+                // India Specific Master Data
+                "IN_AssetBlock",
+                "IN_AssetPutToUseDate",
+                "IN_AssetIsPriorYear",
+
+                // Original Acquisition Details
+                "OriginalMasterFixedAsset",
+                "OriginalFixedAsset",
+                "OriginalFixedAssetValueDate",
+                "FixedAssetOrderDate",
+                "OriginalAcquisitionFiscalYear",
+                "OriginalAcquisitionCurrency",
+                "OriginalAcquisitionAmount",
+                "InHouseProdnPercent",
+                "AssetIsAcquiredUsed",
+                "AssetCountryOfOrigin",
+                "AssetManufacturerName",
+
+                // Lifecycle and Status
+                "AssetCompletenessStatus",
+                "AssetLifecycleStatus",
+                "AssetUnderConstructionStatus",
+                "IsMainAsset",
+                "LastReorganizationDate",
+
+                // Legacy Data
+                "LegacyMasterFixedAsset",
+                "LegacyFixedAsset",
+                "LegacyFixedAssetCompanyCode",
+                "LegacyDataTransferDate",
+                "LegacyDataTransferSequence",
+
+                // Ledger and Valuation Details (assuming flattened structure)
+                "Ledger",
+                "AssetCapitalizationDate",
+                "AssetDepreciationArea",
+                "DepreciationStartDate",
+                "ValidityStartDate",
+                "DepreciationKey",
+                "PlannedUsefulLifeInYears",
+                "PlannedUsefulLifeInPeriods",
+                "NegativeAmountIsAllowed",
+                "AcqnProdnCostScrapPercent",
+                "ScrapAmountInCoCodeCrcy",
+                "CompanyCodeCurrency",
+
+                // Supplier and Partner (keeping for commonality)
+                "Supplier",
+                "PartnerCompany",
+
+
+                // System and Processing Information
+                "CreatedByUser",
+                "CreationDate",
+                "CreationDateTime",
+                "LastChangedByUser",
+                "LastChangeDate",
+                "LastChangeDateTime",
+            ];
+
+            const reorderedRecords = records.map(record => {
+                const reorderedRecord = {};
+                const seenKeys = new Set(); // To keep track of keys already added
+
+                // Add columns in the desired order if they exist in the record
+                desiredOrder.forEach(key => {
+                    if (record.hasOwnProperty(key)) {
+                        reorderedRecord[key] = record[key];
+                        seenKeys.add(key);
+                    }
+                });
+
+                // Add any remaining keys from the record that weren't in the desired order
+                // This ensures custom fields or unexpected fields are still included at the end
+                Object.keys(record).forEach(key => {
+                    if (Object.prototype.hasOwnProperty.call(record, key) && !seenKeys.has(key)) {
+                        reorderedRecord[key] = record[key];
+                    }
+                });
+
+                return reorderedRecord;
+            });
+
+            return reorderedRecords;
+        },
+        /**
+         * Helper to transform records from the fallback success/error arrays.
+         * @param {object} record - The raw record from successRecords or errorRecords.
+         * @param {boolean} isSuccessRecord - Flag indicating if this is from successRecords.
+         * @returns {object} - Transformed record object for export.
+         * @private
+         */
+        _transformFallbackRecord(record, isSuccessRecord) {
+            // If you already have a complete record, just ensure consistent status and error/success messaging
+            const exportRecord = { ...record };
+
+            // Remove internal/system-specific fields
+            const fieldsToRemove = [
+                '_sheetName',
+                '_originalData',
+                '_originalIndex',
+                'OriginalRequest',
+                'ValidationErrors',
+                'statusMessage',
+                'SAP__Messages',
+                'success',
+                'successmessage',
+                '@$ui5.context.isTransient',
+                '@odata.context',
+                '@odata.etag', '@odata.metadataEtag'
+            ];
+            fieldsToRemove.forEach(key => delete exportRecord[key]);
+
+            // Ensure consistent status field
+            exportRecord.Status = isSuccessRecord ? "Success" : "Error";
+
+            // For success records, add a success message if not already present
+            if (isSuccessRecord && !exportRecord.SuccessMessage) {
+                exportRecord.SuccessMessage = exportRecord.Message;
+            }
+
+            // For error records, ensure error details are meaningful
+            if (!isSuccessRecord) {
+                exportRecord.ErrorMessage = exportRecord.ErrorMessage || exportRecord.ErrorMessage || "Processing failed";
+                exportRecord.ErrorCode = exportRecord.ErrorCode || "UNKNOWN_ERROR";
+            }
+
+            return exportRecord;
         },
 
         // =================

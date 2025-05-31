@@ -149,7 +149,7 @@ sap.ui.define([], function () {
             if (!errorRecords || !Array.isArray(errorRecords)) {
                 return [];
             }
-            
+    
             return errorRecords.map(record => {
                 // Extract sequence from multiple possible locations
                 const sequence = 

@@ -176,7 +176,7 @@ sap.ui.define(
           this.totalRecords = purchaseOrders.length;
           this._batchStartTime = new Date();
 
-          // Group by sequence ID
+          // Group by sequence ID (using OriginalSequence for grouping)
           const sequenceGroups = this._groupBySequenceId(purchaseOrders);
           this._totalBatches = Object.keys(sequenceGroups).length;
 
@@ -219,14 +219,15 @@ sap.ui.define(
       }
 
       /**
-       * Group purchase orders by sequence ID
+       * Group purchase orders by sequence ID using OriginalSequence for grouping
        * @private
        */
       _groupBySequenceId(purchaseOrders) {
         const groups = {};
 
         purchaseOrders.forEach((order, index) => {
-          const sequenceId = order.Sequence || order.OriginalSequence || `NoSequence_${index}`;
+          // Use OriginalSequence for grouping, fallback to Sequence, then generate unique ID
+          const sequenceId = order.OriginalSequence || order.Sequence || `NoSequence_${index}`;
 
           if (!groups[sequenceId]) {
             groups[sequenceId] = [];
@@ -335,19 +336,19 @@ sap.ui.define(
             .catch(error => {
               this._logError(`Error processing sequence batch ${sequenceId}`, error);
               this._updateProgress(sequenceIndex, callbacks);
-              
+
               // Mark all entries as failed
               sequenceEntries.forEach(entry => {
                 const failedRecord = {
                   entry: entry,
                   error: "Sequence batch processing failed: " + error.message,
                   details: ErrorUtils.extractErrorMessage(error),
-                  originalSequence: entry.Sequence || "Unknown"
+                  originalSequence: entry.OriginalSequence || entry.Sequence || "Unknown"
                 };
                 this.failureCount++;
                 this.failedRecords.push(failedRecord);
               });
-              
+
               resolve();
             });
         });
@@ -362,7 +363,7 @@ sap.ui.define(
         if (!oModel) {
           throw new Error("OData model is not initialized");
         }
-        
+
         const listBinding = oModel.bindList(this._entityPath, null, null, null, { $count: true });
         const uniqueGroupId = `sequence_${sequenceId}_${Date.now()}`;
 
@@ -376,10 +377,8 @@ sap.ui.define(
               return;
             }
 
-            // Create a clean entry object
-            const cleanEntry = jQuery.extend(true, {}, entry);
-            delete cleanEntry.Sequence;
-            delete cleanEntry.OriginalSequence;
+            // Create a clean entry object for OData (remove tracking fields)
+            const cleanEntry = this._prepareODataPayload(entry);
 
             try {
               const context = listBinding.create(cleanEntry, false, uniqueGroupId);
@@ -391,16 +390,16 @@ sap.ui.define(
 
                   if (completedContext === context) {
                     listBinding.detachCreateCompleted(handleCreateCompleted);
-
+                  
                     if (success) {
                       const responseData = context.getObject() || {};
                       const successRecord = {
                         ...responseData,
                         OriginalRequest: entry,
-                        OriginalSequence: sequenceId,
+                        OriginalSequence: entry.OriginalSequence || entry.Sequence || sequenceId,
                         Status: "Success",
                         ProcessedAt: new Date().toISOString(),
-                        Message: `Purchase order created successfully in sequence ${sequenceId}`,
+                        Message: `Purchase order ${responseData.PurchaseOrder} created successfully in sequence ${sequenceId}`,
                         success: true
                       };
 
@@ -427,7 +426,7 @@ sap.ui.define(
                         entry: entry,
                         error: errorMessage,
                         details: technicalDetails || errorMessage,
-                        originalSequence: sequenceId
+                        originalSequence: entry.OriginalSequence || entry.Sequence || sequenceId
                       };
 
                       this.failureCount++;
@@ -447,7 +446,7 @@ sap.ui.define(
                 entry: entry,
                 error: ErrorUtils.extractErrorMessage(error) || "Unknown error occurred",
                 details: error.message,
-                originalSequence: sequenceId
+                originalSequence: entry.OriginalSequence || entry.Sequence || sequenceId
               };
 
               this.failureCount++;
@@ -466,20 +465,47 @@ sap.ui.define(
 
         } catch (error) {
           this._logError(`Error processing sequence batch ${sequenceId}`, error);
-          
+
           // Mark all entries as failed
           sequenceEntries.forEach(entry => {
             const failedRecord = {
               entry: entry,
               error: "Sequence batch submission failed: " + error.message,
               details: ErrorUtils.extractErrorMessage(error),
-              originalSequence: sequenceId
+              originalSequence: entry.OriginalSequence || entry.Sequence || sequenceId
             };
 
             this.failureCount++;
             this.failedRecords.push(failedRecord);
           });
         }
+      }
+
+      /**
+       * Prepare OData payload by removing tracking fields that shouldn't be sent to the API
+       * @param {Object} entry - Purchase order entry with tracking fields
+       * @returns {Object} Clean purchase order entry for OData API
+       * @private
+       */
+      _prepareODataPayload(entry) {
+        if (!entry) {
+          return null;
+        }
+
+        // Create a deep copy to avoid modifying the original
+        const cleanEntry = jQuery.extend(true, {}, entry);
+
+        // Remove tracking fields that shouldn't be sent to OData API
+        delete cleanEntry.Sequence;
+        delete cleanEntry.OriginalSequence;
+        delete cleanEntry.Status;
+        delete cleanEntry.Message;
+        delete cleanEntry.ErrorMessage;
+        delete cleanEntry.ValidationErrors;
+        delete cleanEntry.ProcessedAt;
+        delete cleanEntry.OriginalRequest;
+
+        return cleanEntry;
       }
 
       /**
@@ -503,19 +529,30 @@ sap.ui.define(
       }
 
       /**
-       * Create final result object
+       * Create final result object with preserved original sequence information
        * @private
        */
       _createFinalResult(cancelled = false) {
+        // Ensure all success and failure records include OriginalSequence for tracking
+        const enrichedSuccessRecords = this.successEntries.map(record => ({
+          ...record,
+          OriginalSequence: record.OriginalSequence || record.OriginalRequest?.OriginalSequence || record.OriginalRequest?.Sequence
+        }));
+
+        const enrichedFailedRecords = this.failedRecords.map(record => ({
+          ...record,
+          OriginalSequence: record.originalSequence || record.entry?.OriginalSequence || record.entry?.Sequence
+        }));
+
         return {
           cancelled: cancelled,
           totalRecords: this.totalRecords,
           successCount: this.successCount,
           failureCount: this.failureCount,
-          successRecords: this.successEntries,
-          errorRecords: this.failedRecords,
-          successfulRecords: this.successEntries, // For compatibility
-          failedRecordsList: this.failedRecords    // For compatibility
+          successRecords: enrichedSuccessRecords,
+          errorRecords: enrichedFailedRecords,
+          successfulRecords: enrichedSuccessRecords, // For compatibility
+          failedRecordsList: enrichedFailedRecords    // For compatibility
         };
       }
 
@@ -528,18 +565,29 @@ sap.ui.define(
           this._logInfo("Cancellation requested for batch processing");
           this._isProcessing = false;
 
+          // Ensure original sequence is preserved in cancellation response
+          const enrichedSuccessRecords = this.successEntries.map(record => ({
+            ...record,
+            OriginalSequence: record.OriginalSequence || record.OriginalRequest?.OriginalSequence || record.OriginalRequest?.Sequence
+          }));
+
+          const enrichedFailedRecords = this.failedRecords.map(record => ({
+            ...record,
+            OriginalSequence: record.originalSequence || record.entry?.OriginalSequence || record.entry?.Sequence
+          }));
+
           return Promise.resolve({
             cancelled: true,
             totalRecords: this.totalRecords,
             successCount: this.successCount,
             failureCount: this.failureCount,
-            failedRecords: this.failedRecords,
-            successRecords: this.successEntries,
-            failedRecordsList: this.failedRecords,
-            successfulRecords: this.successEntries,
+            failedRecords: enrichedFailedRecords,
+            successRecords: enrichedSuccessRecords,
+            failedRecordsList: enrichedFailedRecords,
+            successfulRecords: enrichedSuccessRecords,
             responseData: {
               successItems: this.successCount,
-              errorItems: this.failedRecords
+              errorItems: enrichedFailedRecords
             }
           });
         }

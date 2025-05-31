@@ -63,7 +63,7 @@ sap.ui.define([
                     item.details ||
                     (entry.Status && entry.Status !== 'Success') ||
                     item.success === false;
-
+          
                 // Sequence ID determination with multiple fallback options
                 const sequenceId =
                     entry.Sequence !== undefined ? entry.Sequence :
@@ -252,7 +252,7 @@ sap.ui.define([
          * @private
          */
         _exportPDF(data, filename) {
-
+          
             this._loadPDFLibrary()
                 .then(() => {
                     this._generatePDF(data, filename);
@@ -268,39 +268,35 @@ sap.ui.define([
          * Generate PDF document
          * @private
          */
-        _generatePDF(data, filename) {
+        _generatePDF(data, filename) { 
             try {
                 // Define essential fields with their display names and approximate widths for PDF table
                 const fieldDefinitions = {
                     'Sequence': { width: 40, text: 'Seq #' },
-                    'Status': { width: 50, text: 'Status' },
-                    'PurchaseOrder': { width: 80, text: 'PO Number' },
+                    'Status': { width: 40, text: 'Status' },
+                    'PurchaseOrder': { width: 50, text: 'PO Number' },
                     'POType': { width: 50, text: 'PO Type' }, // Added
-                    'CompanyCode': { width: 60, text: 'Company' },
-                    'Supplier': { width: 100, text: 'Supplier' },
+                    'CompanyCode': { width: 40, text: 'Company' },
+                    'Supplier': { width: 50, text: 'Supplier' },
                     'DocumentCurrency': { width: 60, text: 'Currency' }, // Added
                     'TotalAmount': { width: 60, text: 'Total Amt' }, // Added
                     'CreationDate': { width: 60, text: 'PO Date' }, // Added
                     'PurchasingOrganization': { width: 70, text: 'P Org' }, // Added
                     'PurchasingGroup': { width: 50, text: 'P Group' }, // Added
                     'Message': { width: 150, text: 'Processing Message' }, // Changed text for clarity
-                    'SAPMessages': { width: 150, text: 'SAP Messages' }, // Added for detailed error
                     'ErrorDetails': { width: 150, text: 'Error Details' }, // Added
-                    'ErrorDescription': { width: 150, text: 'Error Description' }, // Added
-                    'TechnicalDetails': { width: 150, text: 'Technical Details' }, // Added
-                    'StackTrace': { width: 150, text: 'Stack Trace' }, // Added
-                    'Timestamp': { width: 80, text: 'Processed At' }
+                    'ErrorDescription': { width: 150, text: 'Error Description' }, // Added                    
                 };
 
                 // Get available fields from first data item, prioritize existing order if possible
                 const availableFields = Object.keys(data[0] || {});
-
+    
                 // Filter to only include fields that exist in data and are defined, maintaining a logical order
                 const fieldsToShow = Object.entries(fieldDefinitions)
                     .filter(([field]) => availableFields.includes(field))
                     // Sort based on a preferred display order, then by their appearance in `availableFields`
                     .sort((a, b) => {
-                        const order = ['Sequence', 'Status', 'PurchaseOrder', 'POType', 'CompanyCode', 'Supplier', 'DocumentCurrency', 'TotalAmount', 'CreationDate', 'PurchasingOrganization', 'PurchasingGroup', 'Message', 'SAPMessages', 'ErrorDetails', 'ErrorDescription', 'TechnicalDetails', 'StackTrace', 'Timestamp'];
+                        const order = ['Sequence', 'Status', 'PurchaseOrder', 'POType', 'CompanyCode', 'Supplier', 'DocumentCurrency', 'TotalAmount', 'CreationDate', 'PurchasingOrganization', 'PurchasingGroup', 'Message','ErrorDetails', 'ErrorDescription'];
                         const indexA = order.indexOf(a[0]);
                         const indexB = order.indexOf(b[0]);
 

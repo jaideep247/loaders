@@ -68,7 +68,7 @@ sap.ui.define([
      * @param {object} [options={}] - PDF generation options.
      * @returns {Promise<Blob>} Promise resolving with the PDF Blob.
      */
-    format(data, options = {}) {      
+    format(data, options = {}) {
       return new Promise((resolve, reject) => {
         // First load/ensure PDF libraries are available
         this._loadPdfLibrary()
@@ -81,7 +81,7 @@ sap.ui.define([
 
               // Define title based on report type
               const reportType = options.reportType || "all";
-              let title = options.title || "GI/GR Document - Upload Log Report";
+              let title = options.title || "Asset Master Create - Upload Report";
               if (reportType === "success") {
                 title += " (Success Records)";
               } else if (reportType === "error") {
@@ -92,110 +92,56 @@ sap.ui.define([
               const columns = [
                 {
                   name: "Seq No",
-                  prop: "SequenceNumber",
-                  width: 25,
+                  prop: "OriginalSequence",
+                  width: 30,
                   wrap: false
                 },
                 {
-                  name: "Material No",
-                  prop: "MaterialDocument",
-                  width: 25,
-                  wrap: false
-                },
-                {
-                  name: "Mat Doc Year",
-                  prop: "MaterialDocumentYear",
-                  width: 15,
-                  wrap: false
-                },
-                {
-                  name: "GRN Doc",
-                  prop: "GRNDocumentNumber",
+                  name: "Company Code",
+                  prop: "CompanyCode",
                   width: 40,
+                  wrap: false
+                },
+                {
+                  name: "Asset Class",
+                  prop: "AssetClass",
+                  width: 40,
+                  wrap: false
+                },
+                {
+                  name: "Description",
+                  prop: "FixedAssetDescription",
+                  width: 80,
                   wrap: true
                 },
                 {
-                  name: "Doc Date",
-                  prop: "DocumentDate",
-                  width: 30,
-                  wrap: false
-                },
-                {
-                  name: "Posting Date",
-                  prop: "PostingDate",
-                  width: 30,
-                  wrap: false
-                },
-                {
-                  name: "Material",
-                  prop: "Material",
-                  width: 40,
+                  name: "Additional Desc",
+                  prop: "AssetAdditionalDescription",
+                  width: 70,
                   wrap: true
                 },
                 {
-                  name: "Plant",
-                  prop: "Plant",
-                  width: 25,
-                  wrap: false
-                },
-                {
-                  name: "Storage Loc",
-                  prop: "StorageLocation",
-                  width: 30,
-                  wrap: false
-                },
-                {
-                  name: "GM Type",
-                  prop: "GoodsMovementType",
-                  width: 30,
-                  wrap: false
-                },
-                {
-                  name: "Account Assign",
-                  prop: "AccountAssignment",
-                  width: 40,
-                  wrap: true
-                },
-                {
-                  name: "Quantity",
-                  prop: "QuantityInEntryUnit",
-                  width: 30,
-                  wrap: false
-                },
-                {
-                  name: "Unit",
-                  prop: "EntryUnit",
-                  width: 20,
+                  name: "Serial Number",
+                  prop: "AssetSerialNumber",
+                  width: 50,
                   wrap: false
                 },
                 {
                   name: "WBS Element",
-                  prop: "WBSElement",
-                  width: 40,
-                  wrap: true
-                },
-                {
-                  name: "GL Account",
-                  prop: "GLAccount",
-                  width: 40,
-                  wrap: true
-                },
-                {
-                  name: "Special Stock",
-                  prop: "SpecialStockIdfgWBSElement",
-                  width: 40,
-                  wrap: true
+                  prop: "WBSElementExternalID",
+                  width: 50,
+                  wrap: false
                 },
                 {
                   name: "Status",
                   prop: "Status",
-                  width: 25,
+                  width: 35,
                   wrap: false
                 },
                 {
                   name: "Message",
-                  prop: "MaterialDocumentMessage",
-                  width: 60,
+                  prop: "Message",
+                  width: 100,
                   wrap: true
                 }
               ];
@@ -223,16 +169,22 @@ sap.ui.define([
               // Process data rows with intelligent truncation
               data.forEach((item) => {
                 const row = columns.map((col) => {
-                  const rawValue = item[col.prop] || "";
+                  let rawValue = item[col.prop] || "";
+
+                  // Special handling for boolean fields
+                  if (col.prop === "AssetIsForPostCapitalization") {
+                    rawValue = rawValue === true || rawValue === "true" || rawValue === "X" ? "Yes" : "No";
+                  }
+
                   // Apply truncation based on column configuration
                   const processedValue = col.wrap
-                    ? truncateText(rawValue, col.width)
+                    ? truncateText(rawValue, col.width * 2)
                     : String(rawValue);
 
                   // Status color coding
                   const textStyle =
                     col.prop === "Status"
-                      ? processedValue === "Success"
+                      ? processedValue === "Valid" || processedValue === "Success"
                         ? "successText"
                         : "errorText"
                       : "normalText";
@@ -247,18 +199,19 @@ sap.ui.define([
                 tableBody.push(row);
               });
 
-              // Count success and error records
-              const successCount = data.filter(
-                (item) => item.Status === "Success"
+              // Count valid and invalid records
+              const validCount = data.filter(
+                (item) => item.Status === "Valid" || item.Status === "Success"
               ).length;
-              const errorCount = data.filter(
-                (item) => item.Status === "Error"
+              const invalidCount = data.filter(
+                (item) => item.Status === "Invalid" || item.Status === "Error" || item.Status === "Failed"
               ).length;
 
               // Create document definition
               const docDefinition = {
                 pageOrientation: options.orientation || "landscape",
                 pageSize: options.pageSize || "A4",
+                pageMargins: [20, 40, 20, 40],
                 content: [
                   {
                     text: title,
@@ -284,11 +237,27 @@ sap.ui.define([
                           : rowIndex % 2 === 0
                             ? "#F2F2F2"
                             : null;
-                      }
+                      },
+                      hLineWidth: function (i, node) {
+                        return 0.5;
+                      },
+                      vLineWidth: function (i, node) {
+                        return 0.5;
+                      },
+                      hLineColor: function (i, node) {
+                        return '#CCCCCC';
+                      },
+                      vLineColor: function (i, node) {
+                        return '#CCCCCC';
+                      },
+                      paddingLeft: function (i, node) { return 4; },
+                      paddingRight: function (i, node) { return 4; },
+                      paddingTop: function (i, node) { return 2; },
+                      paddingBottom: function (i, node) { return 2; }
                     }
                   },
                   {
-                    text: `Summary: Total ${data.length} entries, ${successCount} successful, ${errorCount} failed`,
+                    text: `Summary: Total ${data.length} assets, ${validCount} valid, ${invalidCount} invalid`,
                     style: "summary",
                     margin: [0, 10, 0, 0]
                   }
@@ -296,38 +265,57 @@ sap.ui.define([
                 styles: {
                   header: {
                     fontSize: 18,
-                    bold: true
+                    bold: true,
+                    color: '#2E4053'
                   },
                   subheader: {
-                    fontSize: 10
+                    fontSize: 10,
+                    color: '#5D6D7E'
                   },
                   tableHeader: {
                     bold: true,
                     color: "white",
-                    fontSize: 8
+                    fontSize: 8,
+                    alignment: 'center'
                   },
                   normalText: {
-                    fontSize: 7
+                    fontSize: 7,
+                    color: '#2C3E50'
                   },
                   successText: {
-                    color: "green",
-                    fontSize: 7
+                    color: '#27AE60',
+                    fontSize: 7,
+                    bold: true
                   },
                   errorText: {
-                    color: "red",
-                    fontSize: 7
+                    color: '#E74C3C',
+                    fontSize: 7,
+                    bold: true
                   },
                   summary: {
                     fontSize: 10,
-                    bold: true
+                    bold: true,
+                    color: '#34495E'
                   }
                 },
                 footer: function (currentPage, pageCount) {
                   return {
-                    text: `Page ${currentPage} of ${pageCount}`,
-                    alignment: "right",
-                    fontSize: 8,
-                    margin: [0, 0, 40, 0]
+                    columns: [
+                      {
+                        text: 'Asset Master Create Export',
+                        alignment: 'left',
+                        fontSize: 8,
+                        color: '#7F8C8D',
+                        margin: [40, 0, 0, 0]
+                      },
+                      {
+                        text: `Page ${currentPage} of ${pageCount}`,
+                        alignment: 'right',
+                        fontSize: 8,
+                        color: '#7F8C8D',
+                        margin: [0, 0, 40, 0]
+                      }
+                    ]
                   };
                 }
               };

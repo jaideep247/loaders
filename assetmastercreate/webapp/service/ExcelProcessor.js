@@ -181,7 +181,7 @@ sap.ui.define([
      */
     _parseSheet: function (workbook, sheetName) {
       const sheet = workbook.Sheets[sheetName];
-
+      
       if (!sheet) {
         throw new Error(`Sheet "${sheetName}" not found`);
       }

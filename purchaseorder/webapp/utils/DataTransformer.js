@@ -52,6 +52,7 @@ sap.ui.define([
         // Assuming DateUtils.formatDateForOData handles various input date types and returns yyyy-MM-dd string
         return {
           Sequence: item.Sequence || "",
+          OriginalSequence: item.Sequence || "", // Preserve original sequence
           LegacyPurchasingDocumentNumber: item.LegacyPurchasingDocumentNumber || "",
           CompanyCode: item.CompanyCode || "",
           PurchasingDocumentType: item.PurchasingDocumentType || "", // This will be PurchaseOrderType in OData
@@ -85,6 +86,7 @@ sap.ui.define([
 
     /**
      * Transform flat data (grouped by a PO identifier like 'Sequence') into OData deep create format.
+     * Preserves original sequence for tracking but excludes it from OData payload.
      * @param {Array} flatEntries - Array of flat purchase order item entries.
      * Each entry represents one line item but contains header info.
      * @returns {Array} Array of transformed purchase orders in OData deep create format.
@@ -108,6 +110,9 @@ sap.ui.define([
         const firstEntry = groupedItemEntries[0]; // Use the first item for header data
 
         const purchaseOrder = {
+          // Preserve original sequence for tracking (will be removed before OData call)
+          OriginalSequence: firstEntry.Sequence || firstEntry.OriginalSequence,
+
           // Header fields from the first entry of the group
           PurchaseOrderType: firstEntry.PurchasingDocumentType || "NB", // Default if not provided
           PurchaseOrderDate: DateUtils.formatDateForOData(firstEntry.PurchasingDocumentDate || new Date()), // Expects "yyyy-MM-dd"
@@ -136,7 +141,6 @@ sap.ui.define([
             PurchaseOrderQuantityUnit: entry.PriceUnit || "EA", // Map from PriceUnit, default EA
             TaxCode: entry.TaxCode,
             IsReturnsItem: entry.Return === "X" || entry.Return === true || entry.Return === "true", // Convert to boolean
-            // PurchaseContractItem: entry.PurchaseContractItem, // If this field exists in your OData item entity
 
             _PurchaseOrderItemNote: [],
             _PurchaseOrderScheduleLineTP: [],
@@ -155,7 +159,6 @@ sap.ui.define([
             delete poItem._PurchaseOrderItemNote; // Omit if empty, as per desired payload
           }
 
-       
           // Add Schedule Lines
           if (entry.PerformancePeriodStartDate && entry.PerformancePeriodEndDate) {
             poItem._PurchaseOrderScheduleLineTP.push({
@@ -190,7 +193,6 @@ sap.ui.define([
             poItem.PurchaseContractItem = entry.PurchaseContractItem;
           }
 
-
           purchaseOrder._PurchaseOrderItem.push(poItem);
         });
 
@@ -201,6 +203,30 @@ sap.ui.define([
       return odataPurchaseOrders;
     }
 
+    /**
+     * Prepare OData payload by removing tracking fields that shouldn't be sent to the API
+     * @param {Object} purchaseOrderEntry - Purchase order entry with tracking fields
+     * @returns {Object} Clean purchase order entry for OData API
+     */
+    prepareODataPayload(purchaseOrderEntry) {
+      if (!purchaseOrderEntry) {
+        return null;
+      }
+
+      // Create a deep copy to avoid modifying the original
+      const cleanEntry = jQuery.extend(true, {}, purchaseOrderEntry);
+
+      // Remove tracking fields that shouldn't be sent to OData API
+      delete cleanEntry.Sequence;
+      delete cleanEntry.OriginalSequence;
+      delete cleanEntry.Status;
+      delete cleanEntry.Message;
+      delete cleanEntry.ErrorMessage;
+      delete cleanEntry.ValidationErrors;
+      delete cleanEntry.ProcessedAt;
+
+      return cleanEntry;
+    }
 
     /**
      * Transform data to UI format (for display purposes)
@@ -213,7 +239,8 @@ sap.ui.define([
         data = [data];
       }
       return data.map((entry) => ({
-        Sequence: entry.Sequence,
+        Sequence: entry.Sequence || entry.OriginalSequence,
+        OriginalSequence: entry.OriginalSequence,
         LegacyPurchasingDocumentNumber: entry.LegacyPurchasingDocumentNumber,
         CompanyCode: entry.CompanyCode,
         PurchasingDocumentType: entry.PurchasingDocumentType,
@@ -261,8 +288,10 @@ sap.ui.define([
       }
       return excelData.map((row, index) => {
         try {
+          const sequence = this._formatStringValue(row["Sequence"]);
           return {
-            Sequence: this._formatStringValue(row["Sequence"]),
+            Sequence: sequence,
+            OriginalSequence: sequence, // Preserve original sequence for tracking
             LegacyPurchasingDocumentNumber: this._formatStringValue(row["Legacy Purchasing Document Number"]),
             CompanyCode: this._formatStringValue(row["Company Code"]),
             PurchasingDocumentType: this._formatStringValue(row["Purchasing Document Type"]),
@@ -299,6 +328,7 @@ sap.ui.define([
           console.error("Error transforming Excel row:", error, row);
           return {
             Sequence: (index + 1).toString(),
+            OriginalSequence: (index + 1).toString(),
             Status: "Invalid",
             ValidationErrors: [{
               field: "General",
@@ -317,7 +347,7 @@ sap.ui.define([
      */
     _groupBySequence(data) {
       return data.reduce((groups, entry) => {
-        const sequence = entry.Sequence || 'PO_UNKNOWN_' + Date.now(); // Fallback key if sequence is missing
+        const sequence = entry.Sequence || entry.OriginalSequence || 'PO_UNKNOWN_' + Date.now(); // Fallback key if sequence is missing
         if (!groups[sequence]) {
           groups[sequence] = [];
         }

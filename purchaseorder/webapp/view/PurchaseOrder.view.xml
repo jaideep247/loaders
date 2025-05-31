@@ -313,8 +313,7 @@
                                     </Toolbar>
                                     <Table
                                         id="itemsTable"
-                                        items="{purchaseOrders>/entries}"
-                                        mode="MultiSelect"
+                                        items="{purchaseOrders>/entries}"                                        
                                         noDataText="No items available. Please upload an Excel file with purchase orders."
                                         growing="true"
                                         growingThreshold="15"

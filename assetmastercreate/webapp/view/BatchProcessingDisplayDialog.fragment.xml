@@ -11,7 +11,7 @@
         class="sapUiSizeCompact"
         contentWidth="650px"
         contentHeight="550px"
-        title="Processing Service Entries"
+        title="Processing Assets Master Entries"
         resizable="true"
         draggable="true"
         stretch="{device>/system/phone}"

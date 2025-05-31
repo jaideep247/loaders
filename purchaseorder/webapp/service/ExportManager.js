@@ -181,28 +181,43 @@ sap.ui.define([
         this._findSequenceValue(primaryRecord) ||
         "Unknown";
 
-      // Determine status and message
+      // Determine status and message based on the data structure
       let status = "Success";
       let message = "Processing complete";
 
-      // Check for error conditions
+      // Check for error conditions first
       if (originalRecord.error || originalRecord.details ||
         (primaryRecord.Status && primaryRecord.Status !== 'Success')) {
         status = "Error";
         message = originalRecord.error ||
           originalRecord.details ||
           originalRecord.Message ||
+          primaryRecord.Message ||
           "Processing failed";
+      } else {
+        // For successful records, extract the success message
+        if (originalRecord.Message) {
+          message = originalRecord.Message;
+        } else if (primaryRecord.Message) {
+          message = primaryRecord.Message;
+        } else if (originalRecord.success && primaryRecord.PurchaseOrder) {
+          // Construct success message if not explicitly provided
+          const poNumber = primaryRecord.PurchaseOrder;
+          const sequenceId = exportRecord.Sequence;
+          message = `Purchase order ${poNumber} created successfully in sequence ${sequenceId}`;
+        } else if (primaryRecord.PurchaseOrder) {
+          message = `Purchase order ${primaryRecord.PurchaseOrder} processed successfully`;
+        }
       }
 
-      // Validate PO number
+      // Validate PO number for additional error checking
       if (!primaryRecord.PurchaseOrder ||
         String(primaryRecord.PurchaseOrder).trim() === '') {
         status = "Error";
-        message = originalRecord.error ||
-          originalRecord.details ||
-          originalRecord.Message ||
-          "Processing failed";
+        // Keep the original error message if it exists, otherwise provide a default
+        if (!originalRecord.error && !originalRecord.details) {
+          message = "Purchase order number is missing or invalid";
+        }
       }
 
       // Flatten the record
@@ -235,23 +250,35 @@ sap.ui.define([
         flattenObject(primaryRecord),
         {
           Status: status,
-          Message: message
+          Message: message,
+          // Preserve important tracking fields
+          OriginalSequence: originalRecord.OriginalSequence || primaryRecord.OriginalSequence || exportRecord.Sequence,
+          ProcessedAt: originalRecord.ProcessedAt || primaryRecord.ProcessedAt || new Date().toISOString()
         }
       );
 
       // Clean up sensitive or redundant fields
       const fieldsToRemove = [
-        'entry', 'error', 'details', 'errorMessage',
-        'OriginalRequest', 'originalSequence',
-        'success', 'ProcessedAt'
+        'entry',
+        'error',
+        'details',
+        'errorMessage',
+        'success'
       ];
+
       fieldsToRemove.forEach(field => {
         delete exportRecord[field];
       });
 
+      // Keep OriginalRequest for reference but move it to the end
+      if (exportRecord.OriginalRequest) {
+        const originalRequest = exportRecord.OriginalRequest;
+        delete exportRecord.OriginalRequest;
+        exportRecord.OriginalRequest_Sequence = originalRequest.OriginalSequence || originalRequest.Sequence;
+      }
+
       return exportRecord;
     }
-
     /**
      * Find sequence value from various possible locations
      */

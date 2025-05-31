@@ -199,7 +199,7 @@ sap.ui.define([
 
                         this._updateProgressDisplay();
                     },
-
+                    
                     batchProgress: (sequenceGroupIndex, totalSequenceGroups, processedItems, totalItems) => {
                         // This callback from ODataService reports progress within sequence groups
                         if (this._batchDisplayModel) {

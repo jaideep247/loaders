@@ -192,7 +192,7 @@ sap.ui.define([
       try {
         processedData = this._dataTransformer.processRowsForExport(data, reportType);
         if (!processedData || processedData.length === 0) {
-          const msg = `No data of type '${reportType}' available to export.`;
+          const msg = `No data of type '${reportType}' available to export.;`;
           this._errorHandler.showWarning(msg);
           return Promise.reject(new Error(msg));
         }
@@ -253,6 +253,10 @@ sap.ui.define([
     exportBatchResults(batchData, type = "all", format = "xlsx") {
       let processedData;
       try {
+        // This method assumes DataTransformer has a processBatchResults method
+        // which takes the raw batchData (containing successRecords and errorRecords)
+        // and the 'type' ("all", "success", "error") to filter and format the data
+        // into a flat array suitable for generic export.
         processedData = this._dataTransformer.processBatchResults(batchData, type);
         if (!processedData || processedData.length === 0 || (processedData.length === 1 && processedData[0].Status === "No Records")) {
           const msg = processedData.length === 1 && processedData[0].Status === "No Records" ?
@@ -291,6 +295,7 @@ sap.ui.define([
             orientation: "landscape",
             pageSize: "A4"
           };
+          // Assumes PdfFormatter.format can take processedData and options
           return this._pdfFormatter.format(processedData, pdfOptions)
             .then(blob => {
               triggerDownload(blob, pdfFileName);
@@ -302,18 +307,27 @@ sap.ui.define([
             });
 
         case "xlsx":
-        default:
+        default: // Default to XLSX if format is not recognized
           const xlsxFileName = baseFileName + this._xlsxFormatter.getFileExtension();
           const sheetName = `${reportTypeDesc} Records`;
-          return this._xlsxFormatter.formatSingleSheet(processedData, sheetName)
-            .then(blob => {
+          // For XLSX, try SapSpreadsheetFormatter first, then fallback to XlsxFormatter
+          return this._sapSpreadsheetFormatter.formatAndDownload(processedData, xlsxFileName, {
+            sheetName: sheetName,
+            title: `Batch Report - ${reportTypeDesc}`
+          }).catch(sapError => {
+            console.warn("ExportManager: SAP Spreadsheet failed for XLSX batch export, falling back to basic XLSX.", sapError);
+            return this._xlsxFormatter.formatSingleSheet(processedData, sheetName);
+          }).then(blob => {
+            // If SapSpreadsheetFormatter succeeded, it handles download itself.
+            // If XlsxFormatter was used as fallback, it returns a blob to trigger download.
+            if (blob) { // Check if blob is returned (only by XlsxFormatter fallback)
               triggerDownload(blob, xlsxFileName);
-              this._errorHandler.showSuccess("XLSX export successful.");
-            })
-            .catch(error => {
-              this._errorHandler.showError("XLSX export failed: " + error.message);
-              throw error;
-            });
+            }
+            this._errorHandler.showSuccess("XLSX export successful.");
+          }).catch(error => {
+            this._errorHandler.showError("XLSX export failed: " + error.message);
+            throw error;
+          });
       }
     }
 

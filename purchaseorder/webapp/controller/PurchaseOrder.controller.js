@@ -283,7 +283,7 @@ sap.ui.define([
 
             // Get entries to submit - either valid entries only or all entries
             const validEntries = purchaseOrderModel.getProperty("/validEntries") || [];
-
+   
             if (!validEntries || validEntries.length === 0) {
                 MessageBox.error("No valid items to submit.");
                 return;
@@ -419,7 +419,7 @@ sap.ui.define([
          */
         _submitItems: function (items) {
             BusyIndicator.show(0);
-
+       
             // Update upload summary
             const uploadSummaryModel = this.getView().getModel("uploadSummary");
             uploadSummaryModel.setProperty("/isSubmitting", true);
@@ -519,7 +519,7 @@ sap.ui.define([
         // Add helper method to analyze sequence results
         _analyzeSequenceResults: function (result) {
             const sequenceAnalysis = {};
-
+      
             // Analyze successful records
             if (result.successRecords) {
                 result.successRecords.forEach(record => {
